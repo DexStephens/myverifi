@@ -2,19 +2,63 @@
 pragma solidity ^0.8.28;
 
 contract owned {
+    address owner;
 
-}
-
-contract documented {
-
-}
-
-contract Degree is owned, documented {
     constructor() {
+        owner = msg.sender;
+    }
 
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the owner");
+        _;
     }
 }
 
+contract documented {
+    modifier hasLink(string memory doc) {
+        bytes memory docBytes = bytes(doc);
+
+        require(docBytes.length > 4);
+
+        require(
+            docBytes[0] == 'h' &&
+            docBytes[1] == 't' &&
+            docBytes[2] == 't' &&
+            docBytes[3] == 'p'
+        );
+        _;
+    }
+}
+
+contract DegreeRegistry is owned, documented {
+    struct Degree {
+
+    }
+
+    struct University {
+        address owner;
+        bytes4 ceebCode;
+        string name;
+    }
+
+    mapping(address => Degree[]) private _degreesEarned;
+    // Use the CEEB code as the identifier
+    mapping(bytes4 => University) private _universities;
+
+    constructor() {
+
+    }
+
+    function addUniversity(bytes4 ceeb, string memory university) public onlyOwner {
+
+    }
+
+    function assignDegree() public {}
+
+    // What events do I want?
+}
+
+// msg.sender is an address
 // Numbers: can take gwei, wei, or ether, assumed to be wei by default
 // Time: suffixes of seconds, minutes, hours, days, and weeks
 // Error Handling: assert(bool condition), require(bool condition, (optional)string memory message), revert((optional)string memory reason)
@@ -28,3 +72,4 @@ contract Degree is owned, documented {
 // What is with the view keyword?
 // How does contract inheritance work and how does one contract use another contract, what does the deployment process for that look like?
 // what is payable?
+// What's with the requirement of _?
