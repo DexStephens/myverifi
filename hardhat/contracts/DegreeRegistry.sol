@@ -80,8 +80,7 @@ contract DegreeRegistry is owned, documented {
         Degree memory newDegree = Degree(university, docLink, assignee, major, level, block.timestamp, false);
         
         if (!recipientExists(assignee)) {
-            Degree[] memory degrees;
-            _degreesEarned[assignee] = DegreeList(degrees, true);
+            _degreesEarned[assignee].exists = true;
         }
 
         _degreesEarned[assignee].degrees.push(newDegree);
