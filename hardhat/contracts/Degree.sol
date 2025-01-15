@@ -31,14 +31,17 @@ contract documented {
 }
 
 contract DegreeRegistry is owned, documented {
-    struct Degree {
-
-    }
-
     struct University {
         address owner;
         bytes4 ceebCode;
         string name;
+        bool exists;
+    }
+
+    struct Degree {
+        University university;
+        address recipient;
+        bool revoked;
     }
 
     mapping(address => Degree[]) private _degreesEarned;
@@ -49,13 +52,19 @@ contract DegreeRegistry is owned, documented {
 
     }
 
-    function addUniversity(bytes4 ceeb, string memory university) public onlyOwner {
+    function universityExists(bytes4 code) private view returns (bool exists) {
+        return _universities[code].exists;
+    }
 
+    function addUniversity(bytes4 ceeb, string memory university) public onlyOwner {
+        require(!universityExists(ceeb), "University already exists");
     }
 
     function assignDegree() public {}
 
     // What events do I want?
+    event UniversityAdded(University university);
+    event DegreeEarned(address recipient, Degree degree);
 }
 
 // msg.sender is an address
