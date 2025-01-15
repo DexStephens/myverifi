@@ -62,7 +62,6 @@ contract DegreeRegistry is owned, documented {
 
     function assignDegree() public {}
 
-    // What events do I want?
     event UniversityAdded(University university);
     event DegreeEarned(address recipient, Degree degree);
 }
