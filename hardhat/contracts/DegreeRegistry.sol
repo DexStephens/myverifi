@@ -41,26 +41,52 @@ contract DegreeRegistry is owned, documented {
     struct Degree {
         University university;
         address recipient;
+        string major;
+        string level;
+        uint256 timestamp;
         bool revoked;
     }
 
-    mapping(address => Degree[]) private _degreesEarned;
+    struct DegreeList {
+        Degree[] degrees;
+        bool exists;
+    }
+
+    mapping(address => DegreeList) private _degreesEarned;
     // Use the CEEB code as the identifier
     mapping(bytes4 => University) private _universities;
-
-    constructor() {
-
-    }
 
     function universityExists(bytes4 code) private view returns (bool exists) {
         return _universities[code].exists;
     }
 
-    function addUniversity(bytes4 ceeb, string memory university) public onlyOwner {
-        require(!universityExists(ceeb), "University already exists");
+    function recipientExists(address recipient) private view returns (bool exists) {
+        return _degreesEarned[recipient].exists;
     }
 
-    function assignDegree() public {}
+    function addUniversity(bytes4 ceeb, string memory university, address owner) public onlyOwner {
+        require(!universityExists(ceeb), "University already exists");
+        University memory newUniversity = University(owner, ceeb, university, true);
+        _universities[ceeb] = newUniversity;
+
+        emit UniversityAdded(newUniversity);
+    }
+
+    function assignDegree(address assignee, bytes4 ceeb, string memory major, string memory level) public {
+        require(universityExists(ceeb), "University does not exist");
+        University memory university = _universities[ceeb];
+
+        Degree memory newDegree = Degree(university, assignee, major, level, block.timestamp, false);
+        
+        if (!recipientExists(assignee)) {
+            Degree[] memory degrees;
+            _degreesEarned[assignee] = DegreeList(degrees, true);
+        }
+
+        _degreesEarned[assignee].degrees.push(newDegree);
+
+        emit DegreeEarned(assignee, newDegree);
+    }
 
     event UniversityAdded(University university);
     event DegreeEarned(address recipient, Degree degree);
@@ -81,3 +107,4 @@ contract DegreeRegistry is owned, documented {
 // How does contract inheritance work and how does one contract use another contract, what does the deployment process for that look like?
 // what is payable?
 // What's with the requirement of _?
+// Working with array structs is being very complicated?
