@@ -15,7 +15,7 @@ contract owned {
 }
 
 contract documented {
-    modifier hasLink(string memory doc) {
+    function hasLink(string memory doc) internal pure {
         bytes memory docBytes = bytes(doc);
 
         require(docBytes.length > 4);
@@ -26,7 +26,6 @@ contract documented {
             docBytes[2] == 't' &&
             docBytes[3] == 'p'
         );
-        _;
     }
 }
 
@@ -40,6 +39,7 @@ contract DegreeRegistry is owned, documented {
 
     struct Degree {
         University university;
+        string docLink;
         address recipient;
         string major;
         string level;
@@ -72,11 +72,12 @@ contract DegreeRegistry is owned, documented {
         emit UniversityAdded(newUniversity);
     }
 
-    function assignDegree(address assignee, bytes4 ceeb, string memory major, string memory level) public {
+    function assignDegree(address assignee, bytes4 ceeb, string memory major, string memory level, string memory docLink) public {
         require(universityExists(ceeb), "University does not exist");
         University memory university = _universities[ceeb];
 
-        Degree memory newDegree = Degree(university, assignee, major, level, block.timestamp, false);
+        hasLink(docLink);
+        Degree memory newDegree = Degree(university, docLink, assignee, major, level, block.timestamp, false);
         
         if (!recipientExists(assignee)) {
             Degree[] memory degrees;
