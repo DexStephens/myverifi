@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 contract owned {
-    address owner;
+    address public owner;
 
     constructor() {
         owner = msg.sender;
@@ -32,7 +32,7 @@ contract documented {
 contract DegreeRegistry is owned, documented {
     struct University {
         address owner;
-        bytes4 ceebCode;
+        string ceebCode;
         string name;
         bool exists;
     }
@@ -54,17 +54,21 @@ contract DegreeRegistry is owned, documented {
 
     mapping(address => DegreeList) private _degreesEarned;
     // Use the CEEB code as the identifier
-    mapping(bytes4 => University) private _universities;
+    mapping(string => University) private _universities;
 
-    function universityExists(bytes4 code) private view returns (bool exists) {
+    function universityExists(string memory code) private view returns (bool exists) {
         return _universities[code].exists;
+    }
+
+    function isUniversityOwner(address sender, string memory ceeb) private view returns (bool isOwner) {
+        return _universities[ceeb].owner == sender;
     }
 
     function recipientExists(address recipient) private view returns (bool exists) {
         return _degreesEarned[recipient].exists;
     }
 
-    function addUniversity(bytes4 ceeb, string memory university, address owner) public onlyOwner {
+    function addUniversity(string memory ceeb, string memory university, address owner) public onlyOwner {
         require(!universityExists(ceeb), "University already exists");
         University memory newUniversity = University(owner, ceeb, university, true);
         _universities[ceeb] = newUniversity;
@@ -72,8 +76,9 @@ contract DegreeRegistry is owned, documented {
         emit UniversityAdded(newUniversity);
     }
 
-    function assignDegree(address assignee, bytes4 ceeb, string memory major, string memory level, string memory docLink) public {
+    function assignDegree(address assignee, string memory ceeb, string memory major, string memory level, string memory docLink) public {
         require(universityExists(ceeb), "University does not exist");
+        require(isUniversityOwner(msg.sender, ceeb), "Only University owner can assign degrees");
         University memory university = _universities[ceeb];
 
         hasLink(docLink);
@@ -86,6 +91,11 @@ contract DegreeRegistry is owned, documented {
         _degreesEarned[assignee].degrees.push(newDegree);
 
         emit DegreeEarned(assignee, newDegree);
+    }
+
+    function getDegrees(address recipient) public view returns (Degree[] memory) {
+        require(recipientExists(recipient), "No degrees found for this address.");
+        return _degreesEarned[recipient].degrees;
     }
 
     event UniversityAdded(University university);
