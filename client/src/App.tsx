@@ -11,6 +11,7 @@ function App() {
   return (
     <>
       <Home />
+      {/* Show dashboard if they are authenticated */}
       {viewState === null ? (
         <>
           <button onClick={() => setViewState("hardhat")}>

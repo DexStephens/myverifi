@@ -1,9 +1,11 @@
 import "./Home.scss";
 import HomeSection from "../components/HomeSection";
+import HomeHeader from "../components/HomeHeader";
 
 export default function Home() {
   return (
     <div className="home-wrapper">
+      <HomeHeader />
       {/* call to action and link*/}
       <HomeSection>
         <div>
