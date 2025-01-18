@@ -1,12 +1,12 @@
-import { createWalletClient, http, PrivateKeyAccount } from "viem";
+import { createWalletClient, http, WalletClient } from "viem";
 import { publicClient } from "../utils/client";
 import { hardhat } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 export default function ConnectWallet({
-  setAccount,
+  setWalletClient,
 }: {
-  setAccount: React.Dispatch<React.SetStateAction<PrivateKeyAccount | null>>;
+  setWalletClient: React.Dispatch<React.SetStateAction<WalletClient | null>>;
 }) {
   const publicClientActions = async () => {
     console.log("Public client", publicClient);
@@ -31,17 +31,15 @@ export default function ConnectWallet({
       "0xea6c44ac03bff858b476bba40716402b03e41b8e97e276d1baec7c37d42484a0"
     );
 
-    console.log(account);
-
     const client = createWalletClient({
       account,
       chain: hardhat,
       transport: http(),
     });
 
-    console.log("Wallet client", client);
+    console.log("Connected wallet client", client);
 
-    setAccount(account);
+    setWalletClient(client);
   };
 
   return (

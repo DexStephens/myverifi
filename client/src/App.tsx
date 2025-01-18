@@ -2,6 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import HardhatConnection from "./components/HardhatConnection";
 import MetamaskConnection from "./components/MetamaskConnection";
+import Home from "./pages/Home";
 
 function App() {
   const [viewState, setViewState] = useState<"metamask" | "hardhat" | null>(
@@ -9,7 +10,7 @@ function App() {
   );
   return (
     <>
-      <h1>myverifi</h1>
+      <Home />
       {viewState === null ? (
         <>
           <button onClick={() => setViewState("hardhat")}>

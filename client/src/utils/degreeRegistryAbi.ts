@@ -1,4 +1,6 @@
-export const degreeRegistryAbi = [
+import { Abi } from "viem";
+
+export const degreeRegistryAbi: Abi = [
   {
     anonymous: false,
     inputs: [

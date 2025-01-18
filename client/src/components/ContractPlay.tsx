@@ -1,21 +1,81 @@
-import { PrivateKeyAccount, getContract } from "viem";
+import {
+  getContract,
+  WalletClient,
+  GetContractReturnType,
+  PublicClient,
+  Log,
+  Block,
+  Hash,
+} from "viem";
 import { degreeRegistryAbi } from "../utils/degreeRegistryAbi";
 import { publicClient } from "../utils/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+export type DegreeRegistryContract = GetContractReturnType<
+  typeof degreeRegistryAbi,
+  WalletClient | PublicClient
+>;
 
 export default function ContractPlay({
-  account,
+  walletClient,
 }: {
-  account: PrivateKeyAccount;
+  walletClient: WalletClient;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [contract, setContract] = useState<any>(null);
-  const [events, setEvents] = useState<[]>([]);
+  const [contract, setContract] = useState<DegreeRegistryContract | null>(null);
+  const [events, setEvents] = useState<Log[]>([]);
+
+  useEffect(() => {
+    // This IS working
+    const unwatch = publicClient.watchBlocks({
+      onBlock: (block) => blockHandler(block),
+      onError: (error) => console.log("error", error),
+    });
+
+    return () => unwatch();
+  }, []);
+
+  useEffect(() => {
+    if (!contract) return;
+
+    const unwatch = publicClient.watchContractEvent({
+      address: contract?.address,
+      abi: degreeRegistryAbi,
+      onLogs: (logs) => console.log("Event logs", logs),
+      onError: (error) => {
+        console.error("Error watching event:", error);
+      },
+    });
+
+    return () => unwatch();
+  }, [contract]);
+
+  const blockHandler = async (block: Block) => {
+    for (const [i, transactionHash] of block.transactions.entries()) {
+      try {
+        if (
+          typeof transactionHash === "string" &&
+          transactionHash.startsWith("0x")
+        ) {
+          const data = await publicClient.getTransaction({
+            hash: transactionHash,
+          });
+
+          console.log(`Block ${block.hash}, Transaction ${i + 1}`, data);
+        }
+      } catch (error) {
+        console.error(
+          `Error fetching transaction ${i + 1} in block ${block.hash}`,
+          error
+        );
+      }
+    }
+  };
 
   const pullContract = async () => {
+    console.log("Contract info", import.meta.env.VITE_CONTRACT_ADDRESS);
     const contract = getContract({
       address:
-        import.meta.env.CONTRACT_ADDRESS ??
+        import.meta.env.VITE_CONTRACT_ADDRESS ??
         "0x5fbdb2315678afecb367f032d93f642f64180aa4",
       abi: degreeRegistryAbi,
       client: publicClient,
@@ -25,18 +85,60 @@ export default function ContractPlay({
   };
 
   // TODO: need a test account to create a university with, and accounts to add degrees to, need to handle events for when events are emitted and display them as they occur
-  const addUniversity = async () => {};
+  const addUniversity = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const assignDegree = async () => {};
+    if (contract && walletClient.account) {
+      // Highly recommended to simulate to make sure the write will not have any errors: https://viem.sh/docs/contract/writeContract#usage
+      const { request } = await publicClient.simulateContract({
+        address: contract.address,
+        abi: contract.abi,
+        functionName: "addUniversity",
+        args: [
+          "0041",
+          "Brigham Young University",
+          walletClient.account.address,
+        ],
+        account: walletClient.account,
+      });
 
-  const listenToAddUniversity = async () => {};
+      console.log("Simulation result", request);
 
-  const listenToAssignDegree = async () => {};
+      const result = await walletClient.writeContract(request);
+
+      console.log("Write to contract result", result);
+
+      const transaction = await publicClient.waitForTransactionReceipt({
+        hash: result,
+      });
+
+      console.log("Transaction data", transaction);
+
+      const logs = await publicClient.getLogs();
+
+      console.log("Logs", logs);
+    }
+  };
+
+  const assignDegree = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    if (contract) {
+      const unwatch = publicClient.watchContractEvent({
+        address: contract?.address,
+        abi: contract?.abi,
+        onLogs: (logs) => console.log("logs", logs),
+      });
+
+      return () => unwatch();
+    }
+  }, [contract, events]);
 
   return (
     <div>
       <h1>Account Details</h1>
-      <p>{JSON.stringify(account)}</p>
       {contract === null ? (
         <button onClick={pullContract}>Pull Contract Information</button>
       ) : (
@@ -44,20 +146,22 @@ export default function ContractPlay({
           <h4>Perform contract actions</h4>
           <ul>
             <li>
-              <form action="">
+              <form onSubmit={addUniversity}>
                 <p>Add University</p>
+                <button type="submit">Submit</button>
               </form>
             </li>
             <li>
-              <form action="">
+              <form onSubmit={assignDegree}>
                 <p>Add Degree</p>
+                <button type="submit">Submit</button>
               </form>
             </li>
           </ul>
           <p>List of occurred events</p>
           <ol>
             {events.map((event) => (
-              <li></li>
+              <li>{event.data}</li>
             ))}
           </ol>
         </div>
