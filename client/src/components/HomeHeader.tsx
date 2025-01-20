@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export default function HomeHeader() {
   return (
     <div
@@ -14,7 +16,7 @@ export default function HomeHeader() {
       }}
     >
       <p>myverifi</p>
-      <p>Login</p>
+      <Link to="/login">Login</Link>
     </div>
   );
 }
