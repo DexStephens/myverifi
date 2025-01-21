@@ -3,9 +3,7 @@ import {
   WalletClient,
   GetContractReturnType,
   PublicClient,
-  Log,
   Block,
-  Hash,
 } from "viem";
 import { degreeRegistryAbi } from "../utils/degreeRegistryAbi";
 import { publicClient } from "../utils/client";
@@ -22,7 +20,6 @@ export default function ContractPlay({
   walletClient: WalletClient;
 }) {
   const [contract, setContract] = useState<DegreeRegistryContract | null>(null);
-  const [events, setEvents] = useState<Log[]>([]);
 
   useEffect(() => {
     // This IS working
@@ -134,7 +131,7 @@ export default function ContractPlay({
 
       return () => unwatch();
     }
-  }, [contract, events]);
+  }, [contract]);
 
   return (
     <div>
@@ -159,11 +156,7 @@ export default function ContractPlay({
             </li>
           </ul>
           <p>List of occurred events</p>
-          <ol>
-            {events.map((event) => (
-              <li>{event.data}</li>
-            ))}
-          </ol>
+          <ol></ol>
         </div>
       )}
     </div>
