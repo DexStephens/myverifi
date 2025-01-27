@@ -9,6 +9,10 @@ const config: HardhatUserConfig = {
         auto: true,
       },
     },
+    // sepolia: {
+    //   url: "???", //This is a url that I can get through alchemy for their testnet??
+    //   accounts: ["???"], //This should be the private key
+    // },
   },
 };
 

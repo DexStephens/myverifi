@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import authRoutes from "./routes/auth.route";
+import issuanceRoutes from "./routes/issuance.route";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/issuances", issuanceRoutes);
 
 //Error handling middleware
 app.use((err: Error, req: Request, res: Response) => {
