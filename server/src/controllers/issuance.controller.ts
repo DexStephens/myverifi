@@ -17,6 +17,7 @@ export class IssuanceController {
   }
 
   static async respond(req: Request, res: Response): Promise<void> {
+    console.log("response and request", res, req);
     const { id } = req.params;
     const { did } = req.body;
 
