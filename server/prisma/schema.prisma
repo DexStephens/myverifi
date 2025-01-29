@@ -19,4 +19,5 @@ model User {
   email   String   @unique
   fName   String?
   lName   String?
+  subscription Json?
 }
