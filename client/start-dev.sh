@@ -15,6 +15,9 @@ echo "Hardhat node is up. Deploying contract..."
 # Deploy the contract to the running Hardhat node
 npx hardhat ignition deploy ./ignition/modules/DegreeRegistry.ts --network localhost &
 
+# Deploy the DID Registry contract to the running Hardhat node
+npx hardhat ignition deploy ./ignition/modules/DIDRegistry.ts --network localhost &
+
 # Navigate to the client directory and start the Vite development server
 cd ../client
 vite
