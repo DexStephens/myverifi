@@ -3,7 +3,7 @@ const {
 } = require("@nomicfoundation/hardhat-toolbox-viem/network-helpers");
 const { expect } = require("chai");
 import hre from "hardhat";
-import { decodeEventLog, toHex } from "viem";
+import { decodeEventLog, fromHex, toHex } from "viem";
 
 //TO RUN THE TEST, GO TO THE HARDHAT DIRECTORY, RUN 'NPX HARDHAT TEST', YOU DON'T NEED TO DEPLOY THEM LOCALLY FIRST THE FIXTURE TAKES CARE OF THAT
 
@@ -160,11 +160,12 @@ describe("DID Registry", function () {
 
       const identity = owner.account.address;
       const name = toHex("JohnDoeName", { size: 32 });
+      const email = toHex("john.doe@example.com", { size: 32 });
       const value = toHex("Excellent Student", { size: 32 });
       const validity = 7200n; // validity period of 2 hours
 
       const txHash = await didRegistry.write.setAttribute(
-        [identity, name, value, validity],
+        [identity, name, email, value, validity],
         {
           account: owner.account.address,
         }
@@ -194,8 +195,12 @@ describe("DID Registry", function () {
         owner.account.address.toLowerCase()
       );
       expect(event.args.name.toLowerCase()).to.equal(name.toLowerCase());
+      expect(event.args.email.toLowerCase()).to.equal(email.toLowerCase());
       expect(event.args.value.toLowerCase()).to.equal(value.toLowerCase());
       expect(event.args.validTo).to.equal(blockTimestamp + validity);
+      //how to actually get the values from the event
+      //console.log(fromHex(event.args.name, "string"));
+      //console.log(fromHex(event.args.email, "string"));
     });
   });
 });

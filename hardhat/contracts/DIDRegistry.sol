@@ -20,7 +20,7 @@ contract DIDRegistry {
     //EVENTS TO TRACK WHAT HAPPENS ON THE CONTRACT, GAS EFFICIENT WAY TO STORE INFO ON BLOCKCHAIN
     event DIDOwnerChanged(address indexed identity, address owner, uint previousChange);
     event DIDDelegateChanged(address indexed identity, bytes32 delegateType, address delegate, uint validTo, uint previousChange);
-    event DIDAttributeChanged(address indexed identity, bytes32 name, bytes value, uint validTo, uint previousChange);
+    event DIDAttributeChanged(address indexed identity, bytes32 name, bytes32 email, bytes value, uint validTo, uint previousChange);
     
 
     //FUNCTIONS TO MODIFY AND INTERACT WITH YOUR DID
@@ -91,32 +91,32 @@ contract DIDRegistry {
     revokeDelegate(identity, checkSignature(identity, sigV, sigR, sigS, hash), delegateType, delegate);
   }
 
-  function setAttribute(address identity, address actor, bytes32 name, bytes memory value, uint validity ) internal onlyOwner(identity, actor) {
-    emit DIDAttributeChanged(identity, name, value, block.timestamp + validity, changed[identity]);
+  function setAttribute(address identity, address actor, bytes32 name, bytes32 email, bytes memory value, uint validity ) internal onlyOwner(identity, actor) {
+    emit DIDAttributeChanged(identity, name, email, value, block.timestamp + validity, changed[identity]);
     changed[identity] = block.number;
   }
 
-  function setAttribute(address identity, bytes32 name, bytes memory value, uint validity) public {
-    setAttribute(identity, msg.sender, name, value, validity);
+  function setAttribute(address identity, bytes32 name, bytes32 email, bytes memory value, uint validity) public {
+    setAttribute(identity, msg.sender, name, email, value, validity);
   }
 
-  function setAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, bytes32 name, bytes memory value, uint validity) public {
+  function setAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, bytes32 name, bytes32 email, bytes memory value, uint validity) public {
     bytes32 hash = keccak256(abi.encodePacked(bytes1(0x19), bytes1(0), this, nonce[identityOwner(identity)], identity, "setAttribute", name, value, validity));
-    setAttribute(identity, checkSignature(identity, sigV, sigR, sigS, hash), name, value, validity);
+    setAttribute(identity, checkSignature(identity, sigV, sigR, sigS, hash), name, email, value, validity);
   }
 
-  function revokeAttribute(address identity, address actor, bytes32 name, bytes memory value ) internal onlyOwner(identity, actor) {
-    emit DIDAttributeChanged(identity, name, value, 0, changed[identity]);
+  function revokeAttribute(address identity, address actor, bytes32 name, bytes32 email, bytes memory value ) internal onlyOwner(identity, actor) {
+    emit DIDAttributeChanged(identity, name, email, value, 0, changed[identity]);
     changed[identity] = block.number;
   }
 
-  function revokeAttribute(address identity, bytes32 name, bytes memory value) public {
-    revokeAttribute(identity, msg.sender, name, value);
+  function revokeAttribute(address identity, bytes32 name, bytes32 email, bytes memory value) public {
+    revokeAttribute(identity, msg.sender, name, email, value);
   }
 
-  function revokeAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, bytes32 name, bytes memory value) public {
+  function revokeAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, bytes32 name, bytes32 email, bytes memory value) public {
     bytes32 hash = keccak256(abi.encodePacked(bytes1(0x19), bytes1(0), this, nonce[identityOwner(identity)], identity, "revokeAttribute", name, value));
-    revokeAttribute(identity, checkSignature(identity, sigV, sigR, sigS, hash), name, value);
+    revokeAttribute(identity, checkSignature(identity, sigV, sigR, sigS, hash), name, email, value);
   }
 
 }
