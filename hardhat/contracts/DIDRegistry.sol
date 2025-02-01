@@ -24,6 +24,7 @@ contract DIDRegistry {
     
 
     //FUNCTIONS TO MODIFY AND INTERACT WITH YOUR DID
+//TESTED
      function identityOwner(address identity) public view returns(address) {
      address owner = owners[identity];
      if (owner != address(0x00)) {
@@ -44,12 +45,13 @@ contract DIDRegistry {
     return (validity > block.timestamp);
   }
 
+//TESTED
   function changeOwner(address identity, address actor, address newOwner) internal onlyOwner(identity, actor) {
     owners[identity] = newOwner;
     emit DIDOwnerChanged(identity, newOwner, changed[identity]);
     changed[identity] = block.number;
   }
-
+//TESTED
   function changeOwner(address identity, address newOwner) public {
     changeOwner(identity, msg.sender, newOwner);
   }
