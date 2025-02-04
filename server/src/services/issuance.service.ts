@@ -1,10 +1,10 @@
 import { JsonObject } from "@prisma/client/runtime/library";
-import { UserModel } from "../models/user.model";
+import { HolderUserModel } from "../models/holderUser.model";
 import { PushUtil } from "../utils/push.util";
 
 export class IssuanceService {
   static async create(email: string, organization: string): Promise<void> {
-    const user = await UserModel.findUserByEmail(email);
+    const user = await HolderUserModel.findUserByEmail(email);
     if (!user) {
       throw new Error("User not found");
     }
