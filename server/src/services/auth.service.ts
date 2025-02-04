@@ -1,18 +1,124 @@
-import { UserModel } from "../models/user.model";
+import { HolderUserModel } from "../models/holderUser.model";
+import { WebUserModel } from "../models/webUser.model";
+import { AuthUtils } from "../utils/auth.utils";
+import { HolderUserLoginResponse, WebUserLoginResponse } from "../types";
 
 export class AuthService {
-  static async loginUser(email: string, password: string): Promise<boolean> {
-    return false;
+  static async loginWebUser(
+    email: string,
+    password: string
+  ): Promise<WebUserLoginResponse | null> {
+    try {
+      const { password_hash, ...user } = await WebUserModel.findUser(email);
+      if (!user) {
+        return null;
+      }
+
+      const isPasswordValid = await AuthUtils.verifyPassword(
+        password,
+        password_hash
+      );
+
+      return isPasswordValid
+        ? {
+            email: user.email,
+            title: user.title,
+            street_address: user.street_address,
+            city: user.city,
+            state: user.state,
+            zip: user.zip,
+            country: user.country,
+            phone: user.phone,
+          }
+        : null;
+    } catch (e) {
+      console.error("Error logging in web user:", e);
+      return null;
+    }
   }
 
-  static async registerUser(email: string): Promise<boolean> {
-    const user = await UserModel.findUserByEmail(email);
-    console.log("User", user);
-    if (user) {
+  static async registerWebUser(
+    email: string,
+    password: string,
+    title: string,
+    street_address: string,
+    city: string,
+    state: string,
+    zip: string,
+    country: string,
+    phone: string
+  ): Promise<boolean> {
+    try {
+      const user = await WebUserModel.findUser(email, title);
+      if (user) {
+        return false;
+      }
+
+      const hashedPassword = await AuthUtils.hashPassword(password);
+
+      await WebUserModel.createUser({
+        email,
+        password_hash: hashedPassword,
+        title,
+        street_address,
+        city,
+        state,
+        zip,
+        country,
+        phone,
+      });
+
+      return true;
+    } catch (e) {
+      console.error("Error registering web user:", e);
       return false;
     }
+  }
 
-    await UserModel.createUser({ email });
-    return true;
+  static async loginWalletUser(
+    email: string,
+    password: string
+  ): Promise<HolderUserLoginResponse | null> {
+    try {
+      const { password_hash, ...user } = await HolderUserModel.findUserByEmail(
+        email
+      );
+      if (!user) {
+        return null;
+      }
+
+      const isPasswordValid = await AuthUtils.verifyPassword(
+        password,
+        password_hash
+      );
+      return isPasswordValid ? { email: user.email } : null;
+    } catch (e) {
+      console.error("Error logging in wallet user:", e);
+      return null;
+    }
+  }
+
+  static async registerWalletUser(
+    email: string,
+    password: string
+  ): Promise<boolean> {
+    try {
+      const existingUser = await HolderUserModel.findUserByEmail(email);
+      if (existingUser) {
+        return false;
+      }
+
+      const hashedPassword = await AuthUtils.hashPassword(password);
+
+      await HolderUserModel.createUser({
+        email,
+        password_hash: hashedPassword,
+      });
+
+      return true;
+    } catch (e) {
+      console.error("Error registering wallet user:", e);
+      return false;
+    }
   }
 }
