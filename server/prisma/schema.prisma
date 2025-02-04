@@ -14,10 +14,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model HolderUser {
   id      Int      @id @default(autoincrement())
   email   String   @unique
-  fName   String?
-  lName   String?
+  password_hash String
   subscription Json?
+}
+
+model WebUser {
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  password_hash String
+  title String
+  street_address String
+  city String
+  state String
+  zip String
+  country String
+  phone String
+  org_address OrganizationAddress?
+}
+
+model OrganizationAddress {
+  id      Int      @id @default(autoincrement())
+  public_key String @unique @db.Text
+  org WebUser @relation(fields: [org_id], references: [id])
+  org_id Int @unique
 }
