@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import authRoutes from "./routes/auth.route";
 import issuanceRoutes from "./routes/issuance.route";
 import subscriptionRoutes from "./routes/subscription.route";
@@ -36,7 +36,7 @@ app.use("/issuances", issuanceRoutes);
 app.use("/subscriptions", subscriptionRoutes);
 
 //Error handling middleware
-app.use((err: Error, req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
     status: "error",
