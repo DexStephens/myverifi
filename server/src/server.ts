@@ -1,5 +1,5 @@
 import app from "./app";
-import prisma from "./utils/db.util";
+import prisma from "./config/db.config";
 
 const startServer = async () => {
   try {
