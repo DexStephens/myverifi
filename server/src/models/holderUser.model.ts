@@ -1,5 +1,5 @@
 import { HolderUser } from "@prisma/client";
-import prisma from "../utils/db.util";
+import prisma from "../config/db.config";
 
 export class HolderUserModel {
   static async createUser(data: {

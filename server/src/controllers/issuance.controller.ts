@@ -4,9 +4,10 @@ import { IssuanceService } from "../services/issuance.service";
 export class IssuanceController {
   static async create(req: Request, res: Response): Promise<void> {
     const { email, organization } = req.body;
+    const file = req.file;
 
     try {
-      await IssuanceService.create(email, organization);
+      await IssuanceService.create(email, organization, file);
       res.status(200).json({
         status: "success",
         data: {},

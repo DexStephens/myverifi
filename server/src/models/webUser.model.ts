@@ -1,5 +1,5 @@
 import { WebUser } from "@prisma/client";
-import prisma from "../utils/db.util";
+import prisma from "../config/db.config";
 
 export class WebUserModel {
   static async createUser(data: {
