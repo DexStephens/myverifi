@@ -46,7 +46,11 @@ export class AuthController {
       phone,
     } = req.body;
 
-    console.log(req.body);
+    //console.log(req.body); So we don't display the password
+    //We'll use this instead
+    console.log(
+      `email: ${email}\ntitle: ${title}\nstreet_address: ${street_address}\ncity: ${city}\nstate: ${state}\nzip: ${zip}\ncountry: ${country}\nphone: ${phone}`
+    );
 
     try {
       SchemaValidationUtil.WebRegisterSchema.parse(req.body);
@@ -58,7 +62,7 @@ export class AuthController {
       return;
     }
 
-    const success = await AuthService.registerWebUser(
+    const result = await AuthService.registerWebUser(
       email,
       password,
       title,
@@ -70,10 +74,13 @@ export class AuthController {
       phone
     );
 
-    if (success) {
+    console.log("Registration result:", result);
+    if (result) {
       res.status(201).json({
         status: "success",
-        data: {},
+        data: {
+          user: result,
+        },
       });
     } else {
       res.status(400).json({

@@ -47,10 +47,10 @@ export class AuthService {
     zip: string,
     country: string,
     phone: string
-  ): Promise<boolean> {
+  ): Promise<WebUserLoginResponse | false> {
     try {
-      const user = await WebUserModel.findUser(email, title);
-      if (user) {
+      const existingUser = await WebUserModel.findUser(email, title);
+      if (existingUser) {
         return false;
       }
 
@@ -68,7 +68,18 @@ export class AuthService {
         phone,
       });
 
-      return true;
+      const user = await WebUserModel.findUser(email, title);
+
+      return {
+        email: user.email,
+        title: user.title,
+        street_address: user.street_address,
+        city: user.city,
+        state: user.state,
+        zip: user.zip,
+        country: user.country,
+        phone: user.phone,
+      };
     } catch (e) {
       console.error("Error registering web user:", e);
       return false;
