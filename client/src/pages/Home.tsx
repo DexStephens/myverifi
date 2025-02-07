@@ -94,7 +94,7 @@ export default function Home() {
                 Tanner Greenwood
               </Typography>
               <Typography variant="body2" component="p" align="center">
-                Co-Founder & CEO
+                RAD DESCRIPTION
               </Typography>
             </CardContent>
           </Card>
@@ -104,7 +104,7 @@ export default function Home() {
                 Jacob Sargent
               </Typography>
               <Typography variant="body2" component="p" align="center">
-                CTO
+                RAD DESCRIPTION
               </Typography>
             </CardContent>
           </Card>
@@ -114,7 +114,7 @@ export default function Home() {
                 Dexter Stephens
               </Typography>
               <Typography variant="body2" component="p" align="center">
-                Lead Developer
+                RAD DESCRIPTION
               </Typography>
             </CardContent>
           </Card>
@@ -124,7 +124,7 @@ export default function Home() {
                 Drew Wilson
               </Typography>
               <Typography variant="body2" component="p" align="center">
-                Design Director
+                RAD DESCRIPTION
               </Typography>
             </CardContent>
           </Card>
