@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { WalletClient } from "viem";
-import ConnectWallet from "./ConnectWallet";
+import ConnectWallet from "./WagmiConnectWallet";
 import ContractPlay from "./ContractPlay";
 
 export default function HardhatConnection() {
