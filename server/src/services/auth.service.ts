@@ -1,15 +1,16 @@
-import { HolderUserModel } from "../models/holderUser.model";
-import { WebUserModel } from "../models/webUser.model";
 import { AuthUtils } from "../utils/auth.utils";
-import { HolderUserLoginResponse, WebUserLoginResponse } from "../types";
+import { AuthResponse, NewIssuer } from "../types";
+import { UserModel } from "../models/user.model";
+import { IssuerModel } from "../models/issuer.model";
+import { HolderModel } from "../models/holder.model";
 
 export class AuthService {
-  static async loginWebUser(
+  static async loginUser(
     email: string,
     password: string
-  ): Promise<WebUserLoginResponse | null> {
+  ): Promise<AuthResponse | null> {
     try {
-      const { password_hash, ...user } = await WebUserModel.findUser(email);
+      const { password_hash, ...user } = await UserModel.findUserByEmail(email);
       if (!user) {
         return null;
       }
@@ -22,13 +23,18 @@ export class AuthService {
       return isPasswordValid
         ? {
             email: user.email,
-            title: user.title,
-            street_address: user.street_address,
-            city: user.city,
-            state: user.state,
-            zip: user.zip,
-            country: user.country,
-            phone: user.phone,
+            holder: user.holder
+              ? {
+                  credential_issues: user.holder?.credential_issues ?? [],
+                }
+              : undefined,
+            issuer: user.issuer
+              ? {
+                  name: user.issuer?.name,
+                  contract_address: user.issuer?.contract_address,
+                  credential_types: user.issuer?.credential_types ?? [],
+                }
+              : undefined,
           }
         : null;
     } catch (e) {
@@ -37,88 +43,47 @@ export class AuthService {
     }
   }
 
-  static async registerWebUser(
+  static async registerUser(
     email: string,
     password: string,
-    title: string,
-    street_address: string,
-    city: string,
-    state: string,
-    zip: string,
-    country: string,
-    phone: string
-  ): Promise<boolean> {
+    issuer: NewIssuer
+  ): Promise<AuthResponse | null> {
     try {
-      const user = await WebUserModel.findUser(email, title);
+      const user = await UserModel.findUserByEmail(email);
       if (user) {
-        return false;
-      }
-
-      const hashedPassword = await AuthUtils.hashPassword(password);
-
-      await WebUserModel.createUser({
-        email,
-        password_hash: hashedPassword,
-        title,
-        street_address,
-        city,
-        state,
-        zip,
-        country,
-        phone,
-      });
-
-      return true;
-    } catch (e) {
-      console.error("Error registering web user:", e);
-      return false;
-    }
-  }
-
-  static async loginWalletUser(
-    email: string,
-    password: string
-  ): Promise<HolderUserLoginResponse | null> {
-    try {
-      const { password_hash, ...user } = await HolderUserModel.findUserByEmail(
-        email
-      );
-      if (!user) {
         return null;
       }
 
-      const isPasswordValid = await AuthUtils.verifyPassword(
-        password,
-        password_hash
-      );
-      return isPasswordValid ? { email: user.email } : null;
-    } catch (e) {
-      console.error("Error logging in wallet user:", e);
-      return null;
-    }
-  }
-
-  static async registerWalletUser(
-    email: string,
-    password: string
-  ): Promise<boolean> {
-    try {
-      const existingUser = await HolderUserModel.findUserByEmail(email);
-      if (existingUser) {
-        return false;
-      }
-
       const hashedPassword = await AuthUtils.hashPassword(password);
 
-      await HolderUserModel.createUser({
+      const newUser = await UserModel.createUser({
         email,
         password_hash: hashedPassword,
       });
 
-      return true;
+      let newIssuer;
+      let newHolder;
+
+      if (issuer) {
+        const { name, contract_address, json_uri } = issuer;
+        newIssuer = await IssuerModel.createIssuer({
+          userId: newUser.id,
+          contract_address,
+          name,
+          json_uri,
+        });
+      } else {
+        newHolder = await HolderModel.createHolder({ userId: newUser.id });
+      }
+
+      return {
+        email,
+        holder: newHolder,
+        issuer: newIssuer,
+      };
     } catch (e) {
-      console.error("Error registering wallet user:", e);
-      return false;
+      console.error("Error registering user:", e);
+      return null;
     }
   }
 }
