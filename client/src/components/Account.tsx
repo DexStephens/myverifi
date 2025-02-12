@@ -1,6 +1,7 @@
 import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from "wagmi";
 import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router";
+import Testing from "./Testing";
 
 export function Account() {
   const { address } = useAccount();
@@ -19,6 +20,7 @@ export function Account() {
 
   return (
     <div className="row">
+      <Testing />
       <div className="inline">
         {ensAvatar ? (
           <img alt="ENS Avatar" className="avatar" src={ensAvatar} />

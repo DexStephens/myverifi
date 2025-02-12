@@ -37,7 +37,6 @@ model Issuer {
   user              User               @relation(fields: [userId], references: [id])
   name              String
   contract_address  String
-  json_uri          String
   // An institution can issue several credential types
   credential_types  CredentialType[]
 }

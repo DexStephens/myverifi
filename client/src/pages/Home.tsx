@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import HomeSection from "../components/HomeSection";
 import HomeHeader from "../components/HomeHeader";
 import "./Home.scss";
+import { WagmiConnectWallet } from "../components/WagmiConnectWallet";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Home() {
     <div className="home-wrapper">
       <HomeHeader />
 
+      <WagmiConnectWallet />
       {/* Call to Action Section */}
       <HomeSection>
         <Grid2

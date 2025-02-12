@@ -7,11 +7,11 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract InstitutionCredential is ERC1155, Ownable {
     string public institutionName;
-    mapping(uint256 => string) public tokenURIs;
+    mapping(uint256 => bool) public tokenIds;
     mapping(uint256 => bool) public revokedTokens;
     uint256 private _nextTokenId = 1;
 
-    event CredentialCreated(uint256 indexed tokenId, string uri);
+    event CredentialCreated(uint256 indexed tokenId, string institutionName);
     event CredentialIssued(address indexed recipient, uint256 tokenId);
     event CredentialRevoked(uint256 tokenId);
 
@@ -22,16 +22,15 @@ contract InstitutionCredential is ERC1155, Ownable {
         institutionName = name;
     }
 
-    function createCredentialType(string memory jsonUri) external onlyOwner returns (uint256) {
+    function createCredentialType() external onlyOwner {
         uint256 tokenId = _nextTokenId++;
-        tokenURIs[tokenId] = jsonUri;
-        emit CredentialCreated(tokenId, jsonUri);
-        return tokenId;
+        tokenIds[tokenId] = true;
+        emit CredentialCreated(tokenId, institutionName);
     }
 
     function issueCredential(address recipient, uint256 tokenId) external onlyOwner {
         require(balanceOf(recipient, tokenId) == 0, "Recipient already has this credential");
-        require(bytes(tokenURIs[tokenId]).length > 0, "Credential type does not exist");
+        require(tokenIds[tokenId] == true, "Credential type does not exist");
 
         _mint(recipient, tokenId, 1, "");
         emit CredentialIssued(recipient, tokenId);
