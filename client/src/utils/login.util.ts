@@ -1,6 +1,6 @@
 export async function loginWebUser(email: string, password: string) {
   try {
-    const response = await fetch("http://localhost:3000/auth/web_login", {
+    const response = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {
@@ -12,7 +12,7 @@ export async function loginWebUser(email: string, password: string) {
     console.log("Server response:", data);
 
     if (data.status === "success") {
-      return { status: true, user: data.data.user };
+      return { status: true, user: data.data };
     } else {
       return {
         status: false,
