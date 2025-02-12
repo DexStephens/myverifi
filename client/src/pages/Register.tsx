@@ -8,10 +8,14 @@ import {
   Card,
   CardContent,
   FormControl,
+  Stack,
 } from "@mui/material";
 import "./Home.scss";
 import HomeHeader from "../components/HomeHeader";
 import { registerUser } from "../utils/registration.util";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useAccount } from "wagmi";
+import { Connect } from "../components/Connect";
 
 interface RegistrationFormData {
   email: string;
@@ -40,6 +44,7 @@ export default function Register() {
     country: "",
     phone: "",
   });
+  const { isConnected, address } = useAccount();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -80,6 +85,7 @@ export default function Register() {
         const response = await registerUser(
           formData.email,
           formData.password,
+          address,
           formData.title,
           formData.street_address,
           formData.city,
@@ -172,6 +178,14 @@ export default function Register() {
                       />
                     </FormControl>
                   ))}
+                  {isConnected ? (
+                    <Stack direction="row">
+                      <CheckCircleIcon sx={{ color: "green" }} /> Wallet
+                      connected
+                    </Stack>
+                  ) : (
+                    <Connect />
+                  )}
                   <Grid
                     container
                     justifyContent="center"
