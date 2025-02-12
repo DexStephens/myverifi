@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import "./Home.scss";
 import HomeHeader from "../components/HomeHeader";
-import { registerWebUser } from "../utils/registration.util";
+import { registerUser } from "../utils/registration.util";
 
 interface RegistrationFormData {
   email: string;
@@ -77,7 +77,7 @@ export default function Register() {
       setLoading(true);
       setError(null);
       try {
-        const response = await registerWebUser(
+        const response = await registerUser(
           formData.email,
           formData.password,
           formData.title,

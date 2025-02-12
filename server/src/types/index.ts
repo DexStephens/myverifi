@@ -1,14 +1,18 @@
-export interface WebUserLoginResponse {
+import { CredentialIssue, CredentialType } from "@prisma/client";
+export interface AuthResponse {
   email: string;
-  title: string;
-  street_address: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  phone: string;
+  issuer?: {
+    name: string;
+    contract_address: string;
+    credential_types: CredentialType[];
+  };
+  holder?: {
+    credential_issues: CredentialIssue[];
+  };
 }
 
-export interface HolderUserLoginResponse {
-  email: string;
+export interface NewIssuer {
+  name: string;
+  contract_address: string;
+  json_uri: string;
 }

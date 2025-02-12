@@ -1,5 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your updated Prisma schema file.
+// Updated models: Holder, Institution, Verifier, CredentialType, and CredentialIssue
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
@@ -14,30 +14,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model HolderUser {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  password_hash String
-  subscription Json?
+model User {
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  password_hash     String
+  
+  // One-to-one relation fields with either role
+  holder            Holder?
+  issuer            Issuer?
 }
 
-model WebUser {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  password_hash String
-  title String
-  street_address String
-  city String
-  state String
-  zip String
-  country String
-  phone String
-  org_address OrganizationAddress?
+model Holder {
+  id                Int                @id @default(autoincrement())
+  userId            Int                @unique
+  user              User               @relation(fields: [userId], references: [id])
+  credential_issues CredentialIssue[]
 }
 
-model OrganizationAddress {
-  id      Int      @id @default(autoincrement())
-  public_key String @unique @db.Text
-  org WebUser @relation(fields: [org_id], references: [id])
-  org_id Int @unique
+model Issuer {
+  id                Int                @id @default(autoincrement())
+  userId            Int                @unique
+  user              User               @relation(fields: [userId], references: [id])
+  name              String
+  contract_address  String
+  json_uri          String
+  // An institution can issue several credential types
+  credential_types  CredentialType[]
+}
+
+model CredentialType {
+  id              Int              @id @default(autoincrement())
+  name            String
+  token_id        String
+  issuer_id       Int
+  issuer          Issuer      @relation(fields: [issuer_id], references: [id])
+  // A credential type can be assigned to many holders via issuance
+  credential_issues CredentialIssue[]
+}
+
+model CredentialIssue {
+  id                  Int              @id @default(autoincrement())
+  holder_id           Int
+  credential_type_id  Int
+  holder              Holder           @relation(fields: [holder_id], references: [id])
+  credential_type     CredentialType   @relation(fields: [credential_type_id], references: [id])
 }

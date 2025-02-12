@@ -1,27 +1,22 @@
 import { z } from "zod";
 
 const passwordSchema = z.string().min(8);
+const emailSchema = z.string().min(8);
+const issuerSchema = z.object({
+  name: z.string(),
+  contract_address: z.string(),
+  json_uri: z.string(),
+});
 
 export class SchemaValidationUtil {
   static LoginSchema = z.object({
-    email: z.string().email(),
+    email: emailSchema,
     password: passwordSchema,
   });
 
-  static WalletRegisterSchema = z.object({
-    email: z.string().email(),
+  static RegisterSchema = z.object({
+    email: emailSchema,
     password: passwordSchema,
-  });
-
-  static WebRegisterSchema = z.object({
-    email: z.string().email(),
-    password: passwordSchema,
-    title: z.string(),
-    street_address: z.string(),
-    city: z.string(),
-    state: z.string(),
-    zip: z.string(),
-    country: z.string(),
-    phone: z.string(),
+    issuer: issuerSchema.optional(),
   });
 }
