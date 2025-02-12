@@ -1,4 +1,4 @@
-export async function registerWebUser(
+export async function registerUser(
   email: string,
   password: string,
   title: string,
@@ -10,7 +10,7 @@ export async function registerWebUser(
   phone: string
 ) {
   try {
-    const response = await fetch("http://localhost:3000/auth/web_register", {
+    const response = await fetch("http://localhost:3000/auth/register", {
       method: "POST",
       body: JSON.stringify({
         email,
@@ -34,7 +34,7 @@ export async function registerWebUser(
     if (data.status === "success") {
       return {
         status: true,
-        user: data.data.user,
+        user: data.data,
       };
     } else {
       return {
