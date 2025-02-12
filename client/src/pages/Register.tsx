@@ -12,6 +12,7 @@ import {
 import "./Home.scss";
 import HomeHeader from "../components/HomeHeader";
 import { registerUser } from "../utils/registration.util";
+import { useUser } from "../context/UserContext";
 
 interface RegistrationFormData {
   email: string;
@@ -29,6 +30,7 @@ export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { setUser } = useUser();
   const [formData, setFormData] = useState<RegistrationFormData>({
     email: "",
     password: "",
@@ -86,12 +88,13 @@ export default function Register() {
           formData.state,
           formData.zip,
           formData.country,
-          formData.phone
+          formData.phone,
+          setUser
         );
 
         if (response.status) {
           console.log("Registration successful:", response.user);
-          sessionStorage.setItem("user", JSON.stringify(response.user));
+          //sessionStorage.setItem("user", JSON.stringify(response.user));
           navigate("/connectwallet");
         } else {
           setError(response.error || "Registration failed");

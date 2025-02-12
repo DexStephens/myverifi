@@ -2,8 +2,9 @@ import { WagmiConnectWallet } from "../components/WagmiConnectWallet";
 import { useAccount } from "wagmi";
 import { useNavigate } from "react-router";
 import { Button, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import HomeHeader from "../components/HomeHeader";
+import { useUser } from "../context/UserContext";
 
 export interface WebUserLoginResponse {
   email: string;
@@ -18,17 +19,14 @@ export interface WebUserLoginResponse {
 
 export default function Dashboard() {
   const { isConnected } = useAccount();
+  const { user } = useUser();
   const navigate = useNavigate();
-  const [user, setUser] = useState<WebUserLoginResponse | null>(null);
 
   useEffect(() => {
-    const user = sessionStorage.getItem("user");
-    if (user) {
-      setUser(JSON.parse(user));
-    } else {
+    if (!user) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleIssueCredential = () => {
     navigate("/issuecredential");
@@ -38,7 +36,7 @@ export default function Dashboard() {
     <>
       <HomeHeader />
       <div>
-        <Typography variant="h6">Welcome, {user?.title}</Typography>
+        <Typography variant="h6">Welcome, {user?.email}</Typography>
 
         <h1>Your Dashboard</h1>
         <WagmiConnectWallet />

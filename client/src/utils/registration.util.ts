@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export async function registerUser(
   email: string,
   password: string,
@@ -7,7 +9,8 @@ export async function registerUser(
   state: string,
   zip: string,
   country: string,
-  phone: string
+  phone: string,
+  setUser: (user: User) => void
 ) {
   try {
     const response = await fetch("http://localhost:3000/auth/register", {
@@ -32,6 +35,7 @@ export async function registerUser(
     console.log("Registration response:", data);
 
     if (data.status === "success") {
+      setUser(data.data);
       return {
         status: true,
         user: data.data,
