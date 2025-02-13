@@ -12,7 +12,7 @@ export async function registerUser(
       body: JSON.stringify({
         email,
         password,
-        title,
+        name: title,
       }),
       headers: {
         "Content-Type": "application/json",
