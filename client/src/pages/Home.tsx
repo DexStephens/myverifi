@@ -3,13 +3,17 @@ import { useNavigate } from "react-router";
 import HomeSection from "../components/HomeSection";
 import HomeHeader from "../components/HomeHeader";
 import "./Home.scss";
-import { WagmiConnectWallet } from "../components/WagmiConnectWallet";
-
+import { useUser } from "../context/UserContext";
 export default function Home() {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const handleGetVerified = () => {
-    navigate("/register");
+    if (user) {
+      navigate("/dashboard");
+    } else {
+      navigate("/register");
+    }
   };
 
   return (

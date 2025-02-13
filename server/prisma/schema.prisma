@@ -18,7 +18,7 @@ model User {
   id                Int                @id @default(autoincrement())
   email             String             @unique
   password_hash     String
-  address           String
+  address           String?
   
   // One-to-one relation fields with either role
   holder            Holder?

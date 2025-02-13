@@ -1,14 +1,16 @@
+import { User } from "./user";
+
 export async function registerUser(
   email: string,
   password: string,
-  address: string | undefined,
   title: string,
   street_address: string,
   city: string,
   state: string,
   zip: string,
   country: string,
-  phone: string
+  phone: string,
+  setUser: (user: User) => void
 ) {
   try {
     const response = await fetch("http://localhost:3000/auth/register", {
@@ -16,7 +18,6 @@ export async function registerUser(
       body: JSON.stringify({
         email,
         password,
-        address,
         title,
         street_address,
         city,
@@ -38,6 +39,7 @@ export async function registerUser(
     console.log("Registration response:", data);
 
     if (data.status === "success") {
+      setUser(data.data);
       return {
         status: true,
         user: data.data,

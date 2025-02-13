@@ -46,7 +46,6 @@ export class AuthService {
   static async registerUser(
     email: string,
     password: string,
-    address: string,
     issuer: NewIssuer
   ): Promise<AuthResponse | null> {
     try {
@@ -60,7 +59,6 @@ export class AuthService {
       const newUser = await UserModel.createUser({
         email,
         password_hash: hashedPassword,
-        address,
       });
 
       let newIssuer;

@@ -1,4 +1,10 @@
-export async function loginWebUser(email: string, password: string) {
+import { User } from "./user";
+
+export async function loginUser(
+  email: string,
+  password: string,
+  setUser: (user: User) => void
+) {
   try {
     const response = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
@@ -12,6 +18,7 @@ export async function loginWebUser(email: string, password: string) {
     console.log("Server response:", data);
 
     if (data.status === "success") {
+      setUser(data.data);
       return { status: true, user: data.data };
     } else {
       return {
