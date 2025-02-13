@@ -2,10 +2,12 @@ import { useState, FormEvent } from "react";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router";
 import HomeHeader from "../components/HomeHeader";
-import { loginWebUser } from "../utils/login.util";
+import { loginUser } from "../utils/login.util";
+import { useUser } from "../context/UserContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,7 @@ export default function Login() {
     setLoading(true);
     setError(null);
     try {
-      const response = await loginWebUser(email, password);
+      const response = await loginUser(email, password, setUser);
       console.log("Login response:", response);
 
       if (response.status) {
