@@ -94,7 +94,7 @@ export default function Register() {
 
         if (response.status) {
           console.log("Registration successful:", response.user);
-          //sessionStorage.setItem("user", JSON.stringify(response.user));
+          sessionStorage.setItem("user", JSON.stringify(response.user));
           navigate("/dashboard");
         } else {
           setError(response.error || "Registration failed");

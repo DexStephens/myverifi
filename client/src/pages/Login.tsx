@@ -32,7 +32,7 @@ export default function Login() {
       console.log("Login response:", response);
 
       if (response.status) {
-        //sessionStorage.setItem("user", JSON.stringify(response.user));
+        sessionStorage.setItem("user", JSON.stringify(response.user));
         navigate("/dashboard");
       } else {
         console.error("Login failed: ", response.error);
