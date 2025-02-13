@@ -1,7 +1,6 @@
 export async function registerUser(
   email: string,
   password: string,
-  address: string | undefined,
   title: string,
   street_address: string,
   city: string,
@@ -16,7 +15,6 @@ export async function registerUser(
       body: JSON.stringify({
         email,
         password,
-        address,
         title,
         street_address,
         city,
