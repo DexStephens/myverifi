@@ -8,27 +8,32 @@ import {
   CardContent,
   FormControl,
   Container,
+  Select,
+  MenuItem,
+  InputLabel,
+  SelectChangeEvent,
 } from "@mui/material";
 
 import HomeHeader from "../components/HomeHeader";
 
 interface CredentialFormData {
-  title: string;
-  description: string;
-  issuedDate: Date | null;
-  expiryDate: Date | null;
-  ipfsHash: string;
+  credentialId: string;
+  walletAddress: string;
 }
+
+//Placeholder before we can bring in the actual credentials from the server
+const existingCredentials = [
+  { id: "1", title: "Credential 1" },
+  { id: "2", title: "Credential 2" },
+  { id: "3", title: "Credential 3" },
+];
 
 export default function IssueCredential() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
-    title: "",
-    description: "",
-    issuedDate: new Date(),
-    expiryDate: null,
-    ipfsHash: "",
+    credentialId: "",
+    walletAddress: "",
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,14 +43,17 @@ export default function IssueCredential() {
       [name]: value,
     }));
   };
+  
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const validateForm = (): boolean => {
-    if (
-      !formData.title ||
-      !formData.description ||
-      !formData.issuedDate ||
-      !formData.ipfsHash
-    ) {
+    if (!formData.credentialId || !formData.walletAddress) {
       setError("Please fill in all required fields");
       return false;
     }
@@ -93,35 +101,28 @@ export default function IssueCredential() {
 
               <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
-                  <FormControl>
-                    <TextField
-                      label="Credential Title"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                      required
-                      fullWidth
-                    />
+                <FormControl fullWidth required>
+                    <InputLabel id="credential-select-label">Select Credential</InputLabel>
+                    <Select
+                      labelId="credential-select-label"
+                      name="credentialId"
+                      value={formData.credentialId}
+                      onChange={handleSelectChange}
+                      label="Select Credential"
+                    >
+                      {existingCredentials.map((credential) => (
+                        <MenuItem key={credential.id} value={credential.id}>
+                          {credential.title}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </FormControl>
 
-                  <FormControl>
+                  <FormControl fullWidth required>
                     <TextField
-                      label="Description"
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      required
-                      multiline
-                      rows={4}
-                      fullWidth
-                    />
-                  </FormControl>
-
-                  <FormControl>
-                    <TextField
-                      label="IPFS Hash"
-                      name="ipfsHash"
-                      value={formData.ipfsHash}
+                      label="Wallet Address"
+                      name="walletAddress"
+                      value={formData.walletAddress}
                       onChange={handleInputChange}
                       required
                       fullWidth
