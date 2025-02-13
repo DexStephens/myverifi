@@ -95,7 +95,7 @@ export default function Register() {
         if (response.status) {
           console.log("Registration successful:", response.user);
           //sessionStorage.setItem("user", JSON.stringify(response.user));
-          navigate("/connectwallet");
+          navigate("/dashboard");
         } else {
           setError(response.error || "Registration failed");
         }
