@@ -46,8 +46,8 @@ export class AuthService {
   static async registerUser(
     email: string,
     password: string,
-    address: string,
-    issuer: NewIssuer
+    issuer: NewIssuer,
+    address?: string
   ): Promise<AuthResponse | null> {
     try {
       const user = await UserModel.findUserByEmail(email);

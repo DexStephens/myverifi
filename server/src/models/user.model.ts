@@ -5,7 +5,7 @@ export class UserModel {
   static async createUser(data: {
     email: string;
     password_hash: string;
-    address: string;
+    address?: string;
   }): Promise<User> {
     return prisma.user.create({
       data,

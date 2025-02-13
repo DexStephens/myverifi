@@ -47,8 +47,8 @@ export class AuthController {
     const data = await AuthService.registerUser(
       email,
       password,
-      address,
-      issuer
+      issuer,
+      address
     );
 
     if (data !== null) {
