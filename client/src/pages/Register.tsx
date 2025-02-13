@@ -1,21 +1,18 @@
-import { useState, FormEvent, ChangeEvent, useEffect } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router";
 import {
   Typography,
   Button,
+  Grid,
   TextField,
   Card,
   CardContent,
   FormControl,
-  Stack,
-  Container,
 } from "@mui/material";
 import "./Home.scss";
 import HomeHeader from "../components/HomeHeader";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
-import { useAccount } from "wagmi";
-import { WagmiConnectWallet } from "../components/WagmiConnectWallet";
 
 interface RegistrationFormData {
   email: string;
@@ -27,7 +24,6 @@ interface RegistrationFormData {
   zip: string;
   country: string;
   phone: string;
-  wallet_address: string;
 }
 
 export default function Register() {
@@ -35,7 +31,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setUser } = useUser();
-  const { address } = useAccount();
   const [formData, setFormData] = useState<RegistrationFormData>({
     email: "",
     password: "",
@@ -46,22 +41,7 @@ export default function Register() {
     zip: "",
     country: "",
     phone: "",
-    wallet_address: address ?? "",
   });
-
-  useEffect(() => {
-    if (address) {
-      setFormData((prev) => ({
-        ...prev,
-        wallet_address: address,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        wallet_address: "",
-      }));
-    }
-  }, [address]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -115,7 +95,7 @@ export default function Register() {
         if (response.status) {
           console.log("Registration successful:", response.user);
           //sessionStorage.setItem("user", JSON.stringify(response.user));
-          navigate("/dashboard");
+          navigate("/connectwallet");
         } else {
           setError(response.error || "Registration failed");
         }
@@ -145,99 +125,84 @@ export default function Register() {
     zip: false,
     country: false,
     phone: false,
-    wallet_address: false,
   });
 
   return (
     <>
       <HomeHeader />
-      <Container maxWidth="md" sx={{ width: "60%" }}>
-        <div className="home-wrapper">
-          <Card>
-            <CardContent>
-              <Typography
-                variant="h4"
-                component="h1"
-                align="center"
-                gutterBottom
-              >
-                Register Your Organization
-              </Typography>
-              {error && (
-                <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
-                  {error}
+      <div className="home-wrapper">
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          style={{ minHeight: "100vh" }}
+        >
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography
+                  variant="h4"
+                  component="h1"
+                  align="center"
+                  gutterBottom
+                >
+                  Register Your Organization
                 </Typography>
-              )}
-              <form onSubmit={handleSubmit}>
-                {Object.keys(formData).map((field) => (
-                  <FormControl
-                    key={field}
-                    fullWidth
-                    margin="normal"
-                    error={errors[field as keyof RegistrationFormData]}
+                {error && (
+                  <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+                    {error}
+                  </Typography>
+                )}
+                <form onSubmit={handleSubmit}>
+                  {Object.keys(formData).map((field) => (
+                    <FormControl
+                      key={field}
+                      fullWidth
+                      margin="normal"
+                      error={errors[field as keyof RegistrationFormData]}
+                    >
+                      <TextField
+                        label={
+                          field.charAt(0).toUpperCase() +
+                          field.slice(1).replace("_", "")
+                        }
+                        name={field}
+                        type={field === "password" ? "password" : "text"}
+                        value={formData[field as keyof RegistrationFormData]}
+                        onChange={handleInputChange}
+                        required
+                        fullWidth
+                      />
+                    </FormControl>
+                  ))}
+                  <Grid
+                    container
+                    justifyContent="center"
+                    spacing={2}
+                    marginTop={4}
                   >
-                    <TextField
-                      label={
-                        field.charAt(0).toUpperCase() +
-                        field.slice(1).replace("_", " ")
-                      }
-                      name={field}
-                      type={field === "password" ? "password" : "text"}
-                      value={formData[field as keyof RegistrationFormData]}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </FormControl>
-                ))}
-
-                <Stack spacing={2} sx={{ mt: 4, mb: 4 }}>
-                  <Stack direction="row" spacing={2} justifyContent="center">
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={loading}
+                    >
+                      {loading ? "Registering..." : "Register"}
+                    </Button>
                     <Button
                       variant="contained"
                       color="primary"
-                      href="https://metamask.io/"
-                      target="_blank"
+                      onClick={handleExistingUser}
                     >
-                      Create a Wallet
+                      Already have an account? Login
                     </Button>
-                    <WagmiConnectWallet />
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  justifyContent="center"
-                  sx={{ mt: 4 }}
-                >
-                  <Typography
-                    onClick={handleExistingUser}
-                    sx={{
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                      color: "primary.main",
-                      "&:hover": {
-                        color: "primary.dark",
-                      },
-                      alignSelf: "center",
-                    }}
-                  >
-                    Already have an account? Login
-                  </Typography>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                  >
-                    {loading ? "Registering..." : "Register"}
-                  </Button>
-                </Stack>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </Container>
+                  </Grid>
+                </form>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </div>
     </>
   );
 }
