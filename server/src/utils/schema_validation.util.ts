@@ -17,7 +17,6 @@ export class SchemaValidationUtil {
   static RegisterSchema = z.object({
     email: emailSchema,
     password: passwordSchema,
-    address: z.string().optional(),
     issuer: issuerSchema.optional(),
   });
 }
