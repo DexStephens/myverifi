@@ -19,8 +19,6 @@ export default function Home() {
   return (
     <div className="home-wrapper">
       <HomeHeader />
-
-      <WagmiConnectWallet />
       {/* Call to Action Section */}
       <HomeSection>
         <Grid2
