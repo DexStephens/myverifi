@@ -3,13 +3,7 @@ import { User } from "./user";
 export async function registerUser(
   email: string,
   password: string,
-  title: string,
-  street_address: string,
-  city: string,
-  state: string,
-  zip: string,
-  country: string,
-  phone: string,
+  title: string | undefined,
   setUser: (user: User) => void
 ) {
   try {
@@ -19,12 +13,6 @@ export async function registerUser(
         email,
         password,
         title,
-        street_address,
-        city,
-        state,
-        zip,
-        country,
-        phone,
       }),
       headers: {
         "Content-Type": "application/json",

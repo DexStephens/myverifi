@@ -8,7 +8,9 @@ import {
   CardContent,
   FormControl,
   Box,
-  Container
+  Container,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
 import "./Home.scss";
 import HomeHeader from "../components/HomeHeader";
@@ -16,15 +18,10 @@ import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
 
 interface RegistrationFormData {
+  isOrganization: boolean;
   email: string;
   password: string;
-  title: string;
-  street_address: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  phone: string;
+  title?: string;
 }
 
 export default function Register() {
@@ -36,12 +33,7 @@ export default function Register() {
     email: "",
     password: "",
     title: "",
-    street_address: "",
-    city: "",
-    state: "",
-    zip: "",
-    country: "",
-    phone: "",
+    isOrganization: false,
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -59,18 +51,18 @@ export default function Register() {
 
   // Validate form fields
   const validateForm = (): boolean => {
-    const newErrors = Object.keys(formData).reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: !formData[key as keyof RegistrationFormData],
-      }),
-      {} as Record<keyof RegistrationFormData, boolean>
-    );
+    const newErrors: Record<keyof RegistrationFormData, boolean> = {
+      email: !formData.email,
+      password: !formData.password,
+      title: formData.isOrganization && !formData.title ? true : false,
+      isOrganization: false,
+    };
 
     const hasErrors = Object.values(newErrors).some((error) => error);
     if (hasErrors) {
       setError("Please fill in all required fields");
     }
+    setErrors(newErrors);
     return !hasErrors;
   };
 
@@ -84,12 +76,6 @@ export default function Register() {
           formData.email,
           formData.password,
           formData.title,
-          formData.street_address,
-          formData.city,
-          formData.state,
-          formData.zip,
-          formData.country,
-          formData.phone,
           setUser
         );
 
@@ -120,12 +106,7 @@ export default function Register() {
     email: false,
     password: false,
     title: false,
-    street_address: false,
-    city: false,
-    state: false,
-    zip: false,
-    country: false,
-    phone: false,
+    isOrganization: false,
   });
 
   return (
@@ -149,49 +130,69 @@ export default function Register() {
                   align="center"
                   gutterBottom
                 >
-                  Register
+                  {formData.isOrganization? "Organization Registration" : "Registration"}
                 </Typography>
                 {error && (
                   <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
                     {error}
                   </Typography>
                 )}
-                <form onSubmit={handleSubmit}>
-                  {Object.keys(formData).map((field) => (
-                    <FormControl
-                      key={field}
-                      fullWidth
-                      margin="normal"
-                      error={errors[field as keyof RegistrationFormData]}
-                    >
-                      <TextField
-                        label={
-                          field.charAt(0).toUpperCase() +
-                          field.slice(1).replace("_", "")
+                <FormControl fullWidth margin="normal">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="isOrganization"
+                        checked={formData.isOrganization}
+                        onChange={(e) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            isOrganization: e.target.checked,
+                            title: e.target.checked ? "" : undefined,
+                          }))
                         }
-                        name={field}
-                        type={field === "password" ? "password" : "text"}
-                        value={formData[field as keyof RegistrationFormData]}
+                      />
+                    }
+                    label="I am an organization that would like to issue credentials"
+                  />
+                </FormControl>
+                <form onSubmit={handleSubmit}>
+                  <FormControl fullWidth margin="normal" error={errors.email}>
+                    <TextField
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      fullWidth
+                    />
+                  </FormControl>
+                  <FormControl fullWidth margin="normal" error={errors.password}>
+                    <TextField
+                      label="Password"
+                      name="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required
+                      fullWidth
+                    />
+                  </FormControl>
+                  {formData.isOrganization && (
+                    <FormControl fullWidth margin="normal" error={errors.title}>
+                      <TextField
+                        label="Title"
+                        name="title"
+                        type="text"
+                        value={formData.title}
                         onChange={handleInputChange}
-                        required
+                        required={formData.isOrganization}
                         fullWidth
                       />
                     </FormControl>
-                  ))}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: 2,
-                      mt: 4,
-                    }}
-                  >
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                    >
+                  )}
+                  <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
+                    <Button type="submit" variant="contained" color="primary" disabled={loading}>
                       {loading ? "Registering..." : "Register"}
                     </Button>
                     <Button
