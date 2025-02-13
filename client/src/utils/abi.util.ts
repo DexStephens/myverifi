@@ -13,13 +13,7 @@ export const credentialFactoryAbi = [
       },
     ],
     name: "deployInstitutionContract",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -46,7 +40,7 @@ export const credentialFactoryAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "institution",
         type: "address",
@@ -61,27 +55,7 @@ export const credentialFactoryAbi = [
     name: "InstitutionDeployed",
     type: "event",
   },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "institutionContracts",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
 ];
-
 export const institutionCredentialAbi = [
   {
     inputs: [
@@ -105,60 +79,15 @@ export const institutionCredentialAbi = [
     type: "constructor",
   },
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
+        internalType: "string",
+        name: "name",
+        type: "string",
       },
     ],
-    name: "CredentialCreated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "recipient",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "CredentialIssued",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "CredentialRevoked",
-    type: "event",
-  },
-  {
-    inputs: [],
     name: "createCredentialType",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -256,16 +185,60 @@ export const institutionCredentialAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "institutionName",
-    outputs: [
+    anonymous: true,
+    inputs: [
       {
+        indexed: false,
         internalType: "string",
-        name: "",
+        name: "name",
         type: "string",
       },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "institution",
+        type: "address",
+      },
     ],
-    stateMutability: "view",
-    type: "function",
+    name: "CredentialCreated",
+    type: "event",
+  },
+  {
+    anonymous: true,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+    ],
+    name: "CredentialIssued",
+    type: "event",
+  },
+  {
+    anonymous: true,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "CredentialRevoked",
+    type: "event",
   },
 ];

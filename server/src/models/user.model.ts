@@ -39,4 +39,22 @@ export class UserModel {
       },
     });
   }
+
+  static async findUserByAddress(address: string) {
+    return prisma.user.findFirst({
+      where: { address },
+      include: {
+        holder: {
+          include: {
+            credential_issues: true,
+          },
+        },
+        issuer: {
+          include: {
+            credential_types: true,
+          },
+        },
+      },
+    });
+  }
 }

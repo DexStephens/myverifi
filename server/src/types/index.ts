@@ -16,3 +16,21 @@ export interface NewIssuer {
   contract_address: string;
   json_uri: string;
 }
+
+// Contract Events
+export interface ContractCreationArgs {
+  institution: `0x${string}`;
+  contractAddress: `0x${string}`;
+}
+
+export interface CredentialCreationArgs {
+  name: string;
+  tokenId: bigint;
+  institution: `0x${string}`;
+}
+
+export interface CredentialIssuanceArgs {
+  tokenId: bigint;
+  recipient: `0x${string}`;
+  contractAddress: `0x${string}`;
+}

@@ -7,12 +7,12 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract InstitutionCredential is ERC1155, Ownable {
     string public institutionName;
-    mapping(uint256 => bool) public tokenIds;
+    mapping(uint256 => string) public tokenIds;
     mapping(uint256 => bool) public revokedTokens;
     uint256 private _nextTokenId = 1;
 
-    event CredentialCreated(uint256 indexed tokenId, string institutionName);
-    event CredentialIssued(address indexed recipient, uint256 tokenId);
+    event CredentialCreated(string name, uint256 tokenId, address institution);
+    event CredentialIssued(uint256 tokenId, address recipient);
     event CredentialRevoked(uint256 tokenId);
 
     constructor(address institutionOwner, string memory name, string memory jsonUri) 
@@ -22,18 +22,18 @@ contract InstitutionCredential is ERC1155, Ownable {
         institutionName = name;
     }
 
-    function createCredentialType() external onlyOwner {
+    function createCredentialType(string memory name) external onlyOwner {
         uint256 tokenId = _nextTokenId++;
-        tokenIds[tokenId] = true;
-        emit CredentialCreated(tokenId, institutionName);
+        tokenIds[tokenId] = name;
+        emit CredentialCreated(name, tokenId, msg.sender);
     }
 
     function issueCredential(address recipient, uint256 tokenId) external onlyOwner {
         require(balanceOf(recipient, tokenId) == 0, "Recipient already has this credential");
-        require(tokenIds[tokenId] == true, "Credential type does not exist");
+        require(bytes(tokenIds[tokenId]).length > 0, "Credential type does not exist");
 
         _mint(recipient, tokenId, 1, "");
-        emit CredentialIssued(recipient, tokenId);
+        emit CredentialIssued(tokenId, recipient);
     }
 
     function revokeCredential(uint256 tokenId) external onlyOwner {
