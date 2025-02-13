@@ -3,11 +3,12 @@ import { useNavigate } from "react-router";
 import {
   Typography,
   Button,
-  Grid,
   TextField,
   Card,
   CardContent,
   FormControl,
+  Box,
+  Container
 } from "@mui/material";
 import "./Home.scss";
 import HomeHeader from "../components/HomeHeader";
@@ -131,13 +132,15 @@ export default function Register() {
     <>
       <HomeHeader />
       <div className="home-wrapper">
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          style={{ minHeight: "100vh" }}
+        <Container
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
         >
-          <Grid item xs={12} md={6}>
+          <Box sx={{ width: { xs: "100%", md: "50%" } }}>
             <Card>
               <CardContent>
                 <Typography
@@ -146,7 +149,7 @@ export default function Register() {
                   align="center"
                   gutterBottom
                 >
-                  Register Your Organization
+                  Register
                 </Typography>
                 {error && (
                   <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
@@ -175,11 +178,13 @@ export default function Register() {
                       />
                     </FormControl>
                   ))}
-                  <Grid
-                    container
-                    justifyContent="center"
-                    spacing={2}
-                    marginTop={4}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 2,
+                      mt: 4,
+                    }}
                   >
                     <Button
                       type="submit"
@@ -196,12 +201,12 @@ export default function Register() {
                     >
                       Already have an account? Login
                     </Button>
-                  </Grid>
+                  </Box>
                 </form>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </Box>
+        </Container>
       </div>
     </>
   );
