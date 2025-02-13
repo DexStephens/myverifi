@@ -11,7 +11,7 @@ export function HolderDashboard() {
       <h1>Holder Dashboard</h1>
       <WagmiConnectWallet />
       <Typography variant="h6" sx={{ mt: 2 }}>
-        Your Credentials: {user?.holder?.credential_issues.length || 0}
+        Your Credentials: {user?.holder?.credential_issues?.length ?? 0}
       </Typography>
     </div>
   );

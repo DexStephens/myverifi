@@ -1,29 +1,19 @@
 import { AppBar, Toolbar, Button, Box, Typography, Stack } from "@mui/material";
 import { Link, useNavigate } from "react-router";
 import { useAccount, useDisconnect } from "wagmi";
-import { useEffect, useState } from "react";
-import { WebUserLoginResponse } from "../pages/Dashboard";
+import { useUser } from "../context/UserContext";
 
 export default function HomeHeader() {
-  const navigate = useNavigate();
   const { disconnect } = useDisconnect();
   const { isConnected } = useAccount();
-  const [user, setUser] = useState<WebUserLoginResponse | null>(null);
+  const { user, logout } = useUser();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const user = sessionStorage.getItem("user");
-    if (user) {
-      setUser(JSON.parse(user));
-    }
-  }, []);
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (isConnected) {
-      disconnect();
+      await disconnect();
     }
-    sessionStorage.removeItem("user");
-    setUser(null);
-    navigate("/");
+    logout();
   };
 
   return (
@@ -38,8 +28,18 @@ export default function HomeHeader() {
           {user ? (
             <Stack direction="row" spacing={2} alignItems="end">
               <Typography variant="subtitle1" sx={{ color: "white" }}>
-                Welcome, {user.title}
+                Welcome, {user.issuer?.name || user.email}
               </Typography>
+              <Button
+                onClick={() => navigate("/dashboard")}
+                variant="contained"
+                color="primary"
+                sx={{
+                  "&:hover": { backgroundColor: "#4CAF50", color: "white" },
+                }}
+              >
+                Dashboard
+              </Button>
               <Button
                 onClick={handleLogout}
                 variant="contained"

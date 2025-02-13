@@ -16,7 +16,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const handleLogout = () => {
     setUser(null);
-    navigate("/");
+    navigate("/login");
   };
 
   return (

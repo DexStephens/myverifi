@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import Login from "./pages/Login.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Register from "./pages/Register.tsx";
-import ConnectWallet from "./pages/ConnectWallet.tsx";
 import IssueCredential from "./pages/IssueCredential.tsx";
 import { WagmiProvider } from "wagmi";
 import { config } from "./components/WagmiConfig.tsx";
@@ -25,7 +24,6 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/connectwallet" element={<ConnectWallet />} />
               <Route path="/issuecredential" element={<IssueCredential />} />
             </Routes>
           </QueryClientProvider>
