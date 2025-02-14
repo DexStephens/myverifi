@@ -185,7 +185,7 @@ export const institutionCredentialAbi = [
     type: "function",
   },
   {
-    anonymous: true,
+    anonymous: false,
     inputs: [
       {
         indexed: false,
@@ -194,13 +194,13 @@ export const institutionCredentialAbi = [
         type: "string",
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "institution",
         type: "address",
@@ -210,16 +210,16 @@ export const institutionCredentialAbi = [
     type: "event",
   },
   {
-    anonymous: true,
+    anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "recipient",
         type: "address",
@@ -229,10 +229,10 @@ export const institutionCredentialAbi = [
     type: "event",
   },
   {
-    anonymous: true,
+    anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",

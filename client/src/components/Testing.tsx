@@ -3,66 +3,90 @@ import {
   credentialFactoryAbi,
   institutionCredentialAbi,
 } from "../utils/abi.util";
-import { createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
+import { Address } from "viem";
+import { CONSTANTS } from "../config/constants";
 
-const publicClient = createPublicClient({
-  chain: hardhat,
-  transport: http(),
-});
+//FUTURE CHALLENGES:
+//  Contract Creation: we need to setup a rehydration with tan stack possibly to get the contract address as quickly as possible from the server? Could use websockets but pretty heavy setup?
+//  Credential Creation: same thing as above, we need it to show up in their list of credentials asap, do we need to wait for the data to come back from the server first?
+//  Credential Issuance: same thing as above, showing the data we want to show?
 
 export default function Testing() {
   const { data: hash, isPending, writeContract } = useWriteContract();
 
-  const unwatch = publicClient.watchContractEvent({
-    address: "0xd0f350b13465b5251bb03e4bbf9fa1dbc4a378f3",
-    abi: credentialFactoryAbi,
-    eventName: "InstitutionDeployed",
-    onLogs: (logs) => console.log("viem", logs),
-  });
-
-  //NEEDSWORK: get the new contract address after creation of smart contract
-  //NEEDSWORK: why are event logs outputted multiple times, is this just a localhost thing? or potentially reloading thing
-  //NEEDSWORK: what are ways to handle this without the event, because we have disassociated data, need to look into our use cases
-
-  async function onCreateInstitutionCredentialContract() {
-    console.log("Creating credential contract");
+  async function onCreateInstitutionCredentialContract(
+    contractAddress: Address,
+    institutionName: string,
+    json_uri: string
+  ) {
     writeContract({
-      address: "0xd0f350b13465b5251bb03e4bbf9fa1dbc4a378f3",
+      address: contractAddress,
       abi: credentialFactoryAbi,
-      functionName: "deployInstitutionContract",
-      args: ["Brigham Young University", "http://testing/{id}.json"],
+      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_FACTORY_DEPLOY,
+      args: [institutionName, json_uri],
     });
   }
 
-  async function onCreateInstitutionCredentialType() {
+  async function onCreateInstitutionCredentialType(
+    contractAddress: Address,
+    title: string
+  ) {
     writeContract({
-      address: "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
+      address: contractAddress,
       abi: institutionCredentialAbi,
-      functionName: "createCredentialType",
-      args: ["MISM"],
+      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
+      args: [title],
     });
   }
 
-  async function onIssueInstitutionCredential() {
+  async function onIssueInstitutionCredential(
+    contractAddress: Address,
+    recipient: Address,
+    tokenId: bigint
+  ) {
     writeContract({
-      address: "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
+      address: contractAddress,
       abi: institutionCredentialAbi,
-      functionName: "issueCredential",
-      args: ["0xdD2FD4581271e230360230F9337D5c0430Bf44C0", 1],
+      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_ISSUE,
+      args: [recipient, tokenId],
     });
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       <h1>Testing functionality</h1>
-      <button onClick={onCreateInstitutionCredentialContract}>
+      <button
+        onClick={() =>
+          onCreateInstitutionCredentialContract(
+            "0xd0f350b13465b5251bb03e4bbf9fa1dbc4a378f3",
+            "Brigham Young University",
+            "http://testing/{id}.json"
+          )
+        }
+      >
         create credential contract
       </button>
-      <button onClick={onCreateInstitutionCredentialType}>
+      <button
+        onClick={() =>
+          onCreateInstitutionCredentialType(
+            "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
+            "MISM"
+          )
+        }
+      >
         create credential type
       </button>
-      <button onClick={onIssueInstitutionCredential}>issue credential</button>
+      <button
+        onClick={() =>
+          onIssueInstitutionCredential(
+            "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
+            "0xdD2FD4581271e230360230F9337D5c0430Bf44C0",
+            BigInt(1)
+          )
+        }
+      >
+        issue credential
+      </button>
       {isPending && <p>Pending...</p>}
       {hash && <div>Transaction hash: {hash}</div>}
     </div>

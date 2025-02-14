@@ -5,8 +5,8 @@ export class IssuerModel {
   static async createIssuer(data: {
     userId: number;
     name: string;
-    contract_address: string;
-  }): Promise<Issuer> {
+    contract_address?: string;
+  }) {
     return prisma.issuer.create({
       data,
     });

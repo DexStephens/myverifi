@@ -13,12 +13,12 @@ export class ChainService {
     for (const contract of newContracts) {
       const { contractAddress, institution } = contract;
 
-      const { issuer } = await UserModel.findUserByAddress(institution);
+      const user = await UserModel.findUserByAddress(institution);
 
-      if (issuer) {
+      if (user && user.issuer) {
         //TO CONSIDER: Should we handle if they already have a contract address?
         await IssuerModel.updateIssuerContractAddress(
-          issuer.id,
+          user.issuer.id,
           contractAddress
         );
 
@@ -34,18 +34,19 @@ export class ChainService {
       console.log("credential", credential);
       const { name, tokenId, institution } = credential;
 
-      const { issuer } = await UserModel.findUserByAddress(institution);
+      const user = await UserModel.findUserByAddress(institution);
 
       if (
-        issuer &&
-        !issuer.credential_types.find(
+        user &&
+        user.issuer &&
+        !user.issuer.credential_types.find(
           (credentialType) => credentialType.token_id === tokenId
         )
       ) {
         await CredentialTypeModel.createCredentialType({
           name,
           token_id: tokenId,
-          issuer_id: issuer.id,
+          issuer_id: user.issuer.id,
         });
 
         return;
@@ -59,7 +60,7 @@ export class ChainService {
     for (const issue of newIssues) {
       const { tokenId, recipient, contractAddress } = issue;
 
-      const { holder } = await UserModel.findUserByAddress(recipient);
+      const user = await UserModel.findUserByAddress(recipient);
 
       const credentialType =
         await CredentialTypeModel.findIssueCredentialTypeByContractAddressAndTokenId(
@@ -68,20 +69,23 @@ export class ChainService {
         );
 
       if (
-        holder &&
+        user &&
+        user.holder &&
         credentialType &&
-        !holder.credential_issues.find(
+        !user.holder.credential_issues.find(
           (credentialIssue) =>
             credentialIssue.credential_type_id === credentialType.id
         )
       ) {
         await CredentialIssueModel.createCredentialIssue({
-          holder_id: holder.id,
+          holder_id: user.holder.id,
           credential_type_id: credentialType.id,
         });
 
         return;
       }
+
+      console.log("Unable to issue credential", issue);
     }
   }
 }
