@@ -12,6 +12,12 @@ export function IssuerDashboard() {
   const handleIssueCredential = () => {
     navigate("/issuecredential");
   };
+  const handleCreateCredential = () => {
+    navigate("/createcredential");
+  };
+  const handleViewCredentials = () => {
+    navigate("/viewcredentials");
+  };
 
   return (
     <div>
@@ -20,13 +26,31 @@ export function IssuerDashboard() {
       <WagmiConnectWallet />
       <div>
         {isConnected ? (
-          <Button
+          <>
+           <Button
             variant="contained"
             color="primary"
-            onClick={handleIssueCredential}
-          >
-            Issue Credential
-          </Button>
+            onClick={handleCreateCredential}
+            >
+              Create Credential
+            </Button>
+            
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleIssueCredential}
+            >
+              Issue Credential
+            </Button>
+            
+            <Button
+            variant="contained"
+            color="primary"
+            onClick={handleViewCredentials}
+            >
+              View Credentials
+            </Button>
+          </>
         ) : (
           <Typography variant="h6">
             Connect your wallet to issue credentials
