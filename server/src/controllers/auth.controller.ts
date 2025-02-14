@@ -42,7 +42,15 @@ export class AuthController {
       return;
     }
 
-    const { email, password, issuer } = req.body;
+    const { email, password, name } = req.body;
+    let issuer;
+    if (name) {
+       issuer = {
+        name,
+        contract_address: "",
+        json_uri: "",
+      }  
+    }
 
     const data = await AuthService.registerUser(email, password, issuer);
 
