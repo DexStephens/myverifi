@@ -1,4 +1,6 @@
 import { CredentialIssue, CredentialType } from "@prisma/client";
+import { Address } from "viem";
+
 export interface AuthResponse {
   email: string;
   issuer?: {
@@ -19,18 +21,18 @@ export interface NewIssuer {
 
 // Contract Events
 export interface ContractCreationArgs {
-  institution: `0x${string}`;
-  contractAddress: `0x${string}`;
+  institution: Address;
+  contractAddress: Address;
 }
 
 export interface CredentialCreationArgs {
   name: string;
   tokenId: bigint;
-  institution: `0x${string}`;
+  institution: Address;
 }
 
 export interface CredentialIssuanceArgs {
   tokenId: bigint;
-  recipient: `0x${string}`;
-  contractAddress: `0x${string}`;
+  recipient: Address;
+  contractAddress: Address;
 }

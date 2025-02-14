@@ -25,10 +25,6 @@ export async function registerUser(
         zip,
         country,
         phone,
-        issuer: {
-          name: "TESTING",
-          contract_address: "0x0000000000000000000000",
-        },
       }),
       headers: {
         "Content-Type": "application/json",

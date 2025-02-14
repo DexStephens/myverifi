@@ -11,7 +11,7 @@ import {
   CredentialIssuanceArgs,
 } from "./types";
 
-//NEEDSWORK: load contract addresses according to the environment
+//NEEDSWORK EVENTUALLY: load contract addresses according to the environment
 
 export default class ChainEvents {
   listen() {
