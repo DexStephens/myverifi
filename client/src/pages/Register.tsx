@@ -181,7 +181,7 @@ export default function Register() {
                   {formData.isOrganization && (
                     <FormControl fullWidth margin="normal" error={errors.title}>
                       <TextField
-                        label="Title"
+                        label="Organization Name"
                         name="title"
                         type="text"
                         value={formData.title}
