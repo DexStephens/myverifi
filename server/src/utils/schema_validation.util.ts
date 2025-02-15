@@ -5,7 +5,6 @@ const emailSchema = z.string().min(8);
 const issuerSchema = z.object({
   name: z.string(),
   contract_address: z.string(),
-  json_uri: z.string(),
 });
 
 export class SchemaValidationUtil {

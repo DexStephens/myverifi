@@ -65,12 +65,11 @@ export class AuthService {
       let newHolder;
 
       if (issuer) {
-        const { name, contract_address, json_uri } = issuer;
+        const { name, contract_address } = issuer;
         newIssuer = await IssuerModel.createIssuer({
           userId: newUser.id,
           contract_address,
           name,
-          json_uri,
         });
       } else {
         newHolder = await HolderModel.createHolder({ userId: newUser.id });

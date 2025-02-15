@@ -4,7 +4,7 @@ import prisma from "../config/db.config";
 export class CredentialTypeModel {
   static async createCredentialType(data: {
     name: string;
-    token_id: string;
+    token_id: bigint;
     issuer_id: number;
   }): Promise<CredentialType> {
     return prisma.credentialType.create({
@@ -17,6 +17,20 @@ export class CredentialTypeModel {
   ): Promise<CredentialType[]> {
     return prisma.credentialType.findMany({
       where: { issuer_id },
+    });
+  }
+
+  static async findIssueCredentialTypeByContractAddressAndTokenId(
+    token_id: bigint,
+    contract_address: string
+  ) {
+    return prisma.credentialType.findFirst({
+      where: {
+        token_id,
+        issuer: {
+          contract_address,
+        },
+      },
     });
   }
 }
