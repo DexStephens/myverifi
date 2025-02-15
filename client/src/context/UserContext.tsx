@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useState } from "react";
-import { User } from "../utils/user";
+import { User } from "../utils/user.util";
 import { useNavigate } from "react-router";
 
 interface UserContextType {
