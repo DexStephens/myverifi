@@ -5,6 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import { stringify } from "bigint-json";
 
 dotenv.config();
 
@@ -16,6 +17,13 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const originalJson = res.json;
+  res.json = function (body) {
+    return originalJson.call(this, JSON.parse(stringify(body))); // Custom serialization for bigint handling in responses
+  };
+  next();
+});
 
 // Routes
 app.use("/auth", authRoutes);
