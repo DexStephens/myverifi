@@ -56,4 +56,11 @@ export class UserModel {
       },
     });
   }
+
+  static async updateUser(id: number, data: Partial<User>) {
+    return prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
 }

@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import { UserModel } from "../models/user.model";
 import { PinataUtil } from "../utils/pinata.util";
 export class IssuanceService {
@@ -26,5 +27,17 @@ export class IssuanceService {
   static async respond(id: string, did: string): Promise<void> {
     console.log(id, did);
     return null;
+  }
+
+  static async address(email: string, address: Address) {
+    const user = await UserModel.findUserByEmail(email);
+
+    if (!user || user.address) {
+      return false;
+    }
+
+    await UserModel.updateUser(user.id, { address });
+
+    return true;
   }
 }

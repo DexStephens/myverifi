@@ -31,4 +31,27 @@ export class IssuanceController {
       res.status(500).json(e);
     }
   }
+
+  static async address(req: Request, res: Response) {
+    const { email, address } = req.body;
+
+    try {
+      const success = await IssuanceService.address(email, address);
+
+      if (success) {
+        res.status(200).json({
+          status: "success",
+          data: {},
+        });
+      } else {
+        res.status(400).json({
+          status: "error",
+          message:
+            "Unable to update address due to already added address or not found user",
+        });
+      }
+    } catch (e) {
+      res.status(500).json(e);
+    }
+  }
 }

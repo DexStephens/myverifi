@@ -45,11 +45,10 @@ export class AuthController {
     const { email, password, name } = req.body;
     let issuer;
     if (name) {
-       issuer = {
+      issuer = {
         name,
         contract_address: "",
-        json_uri: "",
-      }  
+      };
     }
 
     const data = await AuthService.registerUser(email, password, issuer);
