@@ -6,6 +6,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import { stringify } from "bigint-json";
+import { ControllerError, ErrorUtil } from "./utils/error.util";
+import { ZodError } from "zod";
 
 dotenv.config();
 
@@ -31,11 +33,25 @@ app.use("/issuances", issuanceRoutes);
 
 //Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({
-    status: "error",
-    message: "Internal Server Error",
-  });
+  if (err instanceof ControllerError) {
+    res.status(400).json({
+      status: "error",
+      error: {
+        title: err.title,
+        message: err.message,
+      },
+    });
+  } else if (err instanceof ZodError) {
+    res.status(400).json({
+      status: "error",
+      error: ErrorUtil.parseZodMessage(err.message),
+    });
+  } else {
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
 });
 
 export default app;
