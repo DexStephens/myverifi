@@ -27,6 +27,7 @@ export class AuthService {
     return isPasswordValid
       ? {
           email: user.email,
+          address: user.address,
           holder: user.holder
             ? {
                 credential_issues: user.holder?.credential_issues ?? [],

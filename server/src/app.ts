@@ -49,7 +49,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   } else {
     res.status(500).json({
       status: "error",
-      message: "Internal Server Error",
+      error: "Internal Server Error",
     });
   }
 });

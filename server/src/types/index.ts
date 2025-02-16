@@ -3,6 +3,7 @@ import { Address } from "viem";
 
 export interface AuthResponse {
   email: string;
+  address?: string;
   issuer?: {
     name: string;
     contract_address: string;

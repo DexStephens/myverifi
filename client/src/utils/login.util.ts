@@ -24,9 +24,7 @@ export async function loginUser(
       return {
         status: false,
         error:
-          typeof data.message === "string"
-            ? data.message
-            : "Invalid credentials",
+          typeof data.error === "string" ? data.error : "Invalid credentials",
       };
     }
   } catch (error) {
