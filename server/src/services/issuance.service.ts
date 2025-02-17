@@ -1,30 +1,23 @@
+import { Address } from "viem";
 import { UserModel } from "../models/user.model";
-import { PinataUtil } from "../utils/pinata.util";
+import { ControllerError } from "../utils/error.util";
+import { ERROR_TITLES } from "../config/constants.config";
 export class IssuanceService {
-  static async create(
-    email: string,
-    organization: string,
-    file: Express.Multer.File
-  ): Promise<void> {
+  static async address(email: string, address: Address) {
     const user = await UserModel.findUserByEmail(email);
+
     if (!user) {
-      //TODO: need to better handle how this error is handled in the controller and returned to the user
-      throw new Error("User not found");
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No user exists for the email: ${email}`
+      );
+    } else if (user.address) {
+      throw new ControllerError(
+        ERROR_TITLES.DATA,
+        `Use initial address of: ${user.address}`
+      );
     }
 
-    let cid: string;
-    if (file) {
-      cid = await PinataUtil.upload(file);
-
-      if (!cid) {
-        //TODO: need to better handle how this error is handled in the controller and returned to the user
-        throw new Error("Failed to upload file to Pinata");
-      }
-    }
-  }
-
-  static async respond(id: string, did: string): Promise<void> {
-    console.log(id, did);
-    return null;
+    await UserModel.updateUser(user.id, { address });
   }
 }

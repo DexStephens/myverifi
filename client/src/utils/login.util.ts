@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "./user.util";
 
 export async function loginUser(
   email: string,
@@ -24,9 +24,7 @@ export async function loginUser(
       return {
         status: false,
         error:
-          typeof data.message === "string"
-            ? data.message
-            : "Invalid credentials",
+          typeof data.error === "string" ? data.error : "Invalid credentials",
       };
     }
   } catch (error) {

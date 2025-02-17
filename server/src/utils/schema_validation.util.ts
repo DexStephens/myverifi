@@ -18,4 +18,9 @@ export class SchemaValidationUtil {
     password: passwordSchema,
     issuer: issuerSchema.optional(),
   });
+
+  static updateAddressSchema = z.object({
+    email: emailSchema,
+    address: z.string(),
+  });
 }

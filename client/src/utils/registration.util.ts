@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "./user.util";
 
 export async function registerUser(
   email: string,
@@ -32,8 +32,8 @@ export async function registerUser(
       return {
         status: false,
         error:
-          typeof data.message === "string"
-            ? data.message
+          typeof data.error === "string"
+            ? data.error
             : "Unable to register user",
       };
     }
