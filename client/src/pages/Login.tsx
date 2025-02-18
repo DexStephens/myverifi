@@ -50,7 +50,7 @@ export default function Login() {
 
   return (
     <>
-      <HomeHeader showBackButton={false} />
+      <HomeHeader showBackButton={true} />
       <Container maxWidth="xs">
         <Box
           sx={{
