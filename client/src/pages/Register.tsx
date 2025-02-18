@@ -111,7 +111,7 @@ export default function Register() {
 
   return (
     <>
-      <HomeHeader />
+      <HomeHeader showBackButton={false} />
       <div className="home-wrapper">
         <Container
           sx={{
