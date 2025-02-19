@@ -4,15 +4,33 @@ import { parseApiError } from "./api.util";
 export interface User {
   email: string;
   address?: Address;
-  issuer?: {
-    name: string;
-    contract_address: string;
-    credential_types: any[];
-  };
-  holder?: {
-    credential_issues: any[];
-  };
+  issuer?: Issuer;
+  holder?: Holder;
 }
+
+type CredentialType = {
+  id: number;
+  name: string;
+  token_id: string; // Needs to be converted to bigint
+  issuer_id: number;
+};
+
+type CredentialIssue = {
+  id: number;
+  holder_id: number;
+  credential_type_id: number;
+  credential_type: CredentialType & { issuer: Issuer };
+};
+
+type Holder = {
+  credential_issues: CredentialIssue[];
+};
+
+type Issuer = {
+  name: string;
+  contract_address?: Address;
+  credential_types: CredentialType[];
+};
 
 export interface UserContextType {
   user: User | null;
