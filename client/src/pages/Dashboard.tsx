@@ -19,7 +19,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <HomeHeader />
+      <HomeHeader showBackButton={false} />
       {user.issuer ? <IssuerDashboard /> : <HolderDashboard />}
     </>
   );

@@ -1,9 +1,14 @@
-import { AppBar, Toolbar, Button, Box, Typography, Stack } from "@mui/material";
+import { AppBar, Toolbar, Button, Box, Typography, Stack, IconButton } from "@mui/material";
 import { Link, useNavigate } from "react-router";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAccount, useDisconnect } from "wagmi";
 import { useUser } from "../context/UserContext";
 
-export default function HomeHeader() {
+interface HomeHeaderProps {
+  showBackButton?: boolean;
+}
+
+export default function HomeHeader({ showBackButton }: HomeHeaderProps) {
   const { disconnect } = useDisconnect();
   const { isConnected } = useAccount();
   const { user, logout } = useUser();
@@ -16,9 +21,18 @@ export default function HomeHeader() {
     logout();
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <AppBar position="sticky" color="primary" elevation={3}>
       <Toolbar sx={{ justifyContent: "space-between", px: 4 }}>
+        {showBackButton && (
+          <IconButton edge="start" color="inherit" onClick={handleBack}>
+            <ArrowBackIcon />
+          </IconButton>
+        )}
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <Typography variant="h6" component="div">
             myverifi

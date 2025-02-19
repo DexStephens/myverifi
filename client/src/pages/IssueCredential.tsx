@@ -79,7 +79,7 @@ export default function IssueCredential() {
 
   return (
     <>
-      <HomeHeader />
+      <HomeHeader showBackButton={true} />
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
         <Card sx={{ backgroundColor: "#f5f5f5" }}>
           <CardContent>

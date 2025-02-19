@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <div className="home-wrapper">
-      <HomeHeader />
+      <HomeHeader showBackButton={false} />
       {/* Call to Action Section */}
       <HomeSection>
         <Grid2
