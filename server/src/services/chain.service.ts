@@ -100,6 +100,7 @@ export class ChainService {
           id: credentialIssue.id,
           holder_id: credentialIssue.holder_id,
           credential_type_id: credentialIssue.holder_id,
+          credential_type: credentialIssue.credential_type,
         });
         return;
       }

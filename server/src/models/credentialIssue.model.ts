@@ -5,9 +5,16 @@ export class CredentialIssueModel {
   static async createCredentialIssue(data: {
     holder_id: number;
     credential_type_id: number;
-  }): Promise<CredentialIssue> {
+  }) {
     return prisma.credentialIssue.create({
       data,
+      include: {
+        credential_type: {
+          include: {
+            issuer: true,
+          },
+        },
+      },
     });
   }
 

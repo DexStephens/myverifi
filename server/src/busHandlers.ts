@@ -40,7 +40,7 @@ export function setupEventBusHandlers(
 
   eventBus.on(
     SOCKET_EVENTS.CREDENTIAL_ISSUANCE,
-    ({ address, id, holder_id, credential_type_id }) => {
+    ({ address, id, holder_id, credential_type_id, credential_type }) => {
       const socket = users.get(address);
 
       if (socket !== undefined) {
@@ -48,6 +48,7 @@ export function setupEventBusHandlers(
           id,
           holder_id,
           credential_type_id,
+          credential_type,
         });
       }
     }
