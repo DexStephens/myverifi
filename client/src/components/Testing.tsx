@@ -5,6 +5,7 @@ import {
 } from "../utils/abi.util";
 import { Address } from "viem";
 import { CONSTANTS } from "../config/constants";
+import { uploadJsonToPinata } from "../utils/pinata.util";
 
 //FUTURE CHALLENGES:
 //  Contract Creation: we need to setup a rehydration with tan stack possibly to get the contract address as quickly as possible from the server? Could use websockets but pretty heavy setup?
@@ -29,14 +30,21 @@ export default function Testing() {
 
   async function onCreateInstitutionCredentialType(
     contractAddress: Address,
-    title: string
+    title: string,
+    jsonData: object
   ) {
-    writeContract({
-      address: contractAddress,
-      abi: institutionCredentialAbi,
-      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-      args: [title],
-    });
+    //First need to upload jsonData to pinata to get a cid to upload to the contract
+    const cid = await uploadJsonToPinata(title, jsonData);
+
+    //If successful, then we can create the credential type on our contract
+    if (cid !== null) {
+      writeContract({
+        address: contractAddress,
+        abi: institutionCredentialAbi,
+        functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
+        args: [title, cid],
+      });
+    }
   }
 
   async function onIssueInstitutionCredential(
@@ -70,7 +78,8 @@ export default function Testing() {
         onClick={() =>
           onCreateInstitutionCredentialType(
             "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
-            "MISM"
+            "MISM",
+            { test: Date.now() }
           )
         }
       >

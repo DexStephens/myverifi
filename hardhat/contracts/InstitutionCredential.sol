@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract InstitutionCredential is ERC1155, Ownable {
     string public institutionName;
+    mapping(uint256 => string) private _tokenURIs;
     mapping(uint256 => string) public tokenIds;
     mapping(uint256 => bool) public revokedTokens;
     uint256 private _nextTokenId = 1;
@@ -22,9 +23,10 @@ contract InstitutionCredential is ERC1155, Ownable {
         institutionName = name;
     }
 
-    function createCredentialType(string memory name) external onlyOwner {
+    function createCredentialType(string memory name, string memory cid) external onlyOwner {
         uint256 tokenId = _nextTokenId++;
         tokenIds[tokenId] = name;
+        _tokenURIs[tokenId] = cid;
         emit CredentialCreated(name, tokenId, msg.sender);
     }
 
@@ -47,7 +49,7 @@ contract InstitutionCredential is ERC1155, Ownable {
     }
 
     function uri(uint256 tokenId) public view override returns (string memory) {
-        return string(abi.encodePacked(super.uri(tokenId), Strings.toString(tokenId), ".json"));
+        return (_tokenURIs[tokenId]);
     }
 
     function verifyCredential(address account, uint256 tokenId) external view returns (bool) {
