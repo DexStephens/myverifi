@@ -27,14 +27,14 @@ export function IssuerDashboard() {
       <div>
         {isConnected ? (
           <>
-           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCreateCredential}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreateCredential}
             >
               Create Credential
             </Button>
-            
+
             <Button
               variant="contained"
               color="primary"
@@ -42,11 +42,11 @@ export function IssuerDashboard() {
             >
               Issue Credential
             </Button>
-            
+
             <Button
-            variant="contained"
-            color="primary"
-            onClick={handleViewCredentials}
+              variant="contained"
+              color="primary"
+              onClick={handleViewCredentials}
             >
               View Credentials
             </Button>
