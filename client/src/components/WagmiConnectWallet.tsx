@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAccount, useDisconnect, useWriteContract } from "wagmi";
 import { useUser } from "../context/UserContext";
 import { updateUserAddress } from "../utils/user.util";
-import { Address, decodeEventLog } from "viem";
+import { Address } from "viem";
 import { Account } from "./Account";
 import { Connect } from "./Connect";
 import { credentialFactoryAbi } from "../utils/abi.util";
@@ -42,29 +42,16 @@ export function WagmiConnectWallet() {
     if (isConnected && user && address) {
       if (!user?.address && !error) {
         //Update the user address in the database
-        console.log("Updating user address in the database");
         sendAddress(user.email, address);
-        console.log("User address updated in the database");
         //If the user is an issuer, deploy their smart contract, they will have to sign
         if (user.issuer) {
-          console.log(
-            "User is an issuer, Deploying institution credential contract"
-          );
           try {
-            console.log(
-              "Creating institution credential contract: ",
-              import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS,
-              user.issuer.name
-            );
             onCreateInstitutionCredentialContract(
               import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS as Address,
               user.issuer.name,
+              //Just a placeholder uri for now
               "http://testing/uri.json"
             );
-            console.log(
-              "Should have deployed the contract, check the hardhat terminal"
-            );
-            console.log("User: ", user);
           } catch (error) {
             console.error(
               "Error creating institution credential contract:",
