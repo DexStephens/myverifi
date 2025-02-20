@@ -22,24 +22,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      sessionStorage.setItem("user", JSON.stringify(user));
-    } else {
-      sessionStorage.removeItem("user");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     sessionStorage.setItem("user", JSON.stringify(user));
+  //   } else {
+  //     sessionStorage.removeItem("user");
+  //   }
+  // }, [user]);
 
   useSocket(user?.address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
-          const updatedUser = {
+          //const updatedUser =
+          return {
             ...currentUser,
             issuer: { ...currentUser.issuer, contract_address },
           };
-          sessionStorage.setItem("user", JSON.stringify(updatedUser));
-          return updatedUser;
+          // sessionStorage.setItem("user", JSON.stringify(updatedUser));
+          // return updatedUser;
         }
         return currentUser;
       });

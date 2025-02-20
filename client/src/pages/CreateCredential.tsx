@@ -75,9 +75,7 @@ export default function CreateCredential() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const contractAddress =
-      user?.issuer?.contract_address ||
-      "0xCa62B7655F46283bC4BC044893DE20C42f848b35";
+    const contractAddress = user?.issuer?.contract_address;
     if (!contractAddress) {
       alert(
         "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
@@ -131,13 +129,6 @@ export default function CreateCredential() {
     newDetails[index][field] = value;
     setCredentialDetails(newDetails);
   };
-
-  const { data: contractAddress } = useReadContract({
-    address: import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS as Address,
-    abi: credentialFactoryAbi,
-    functionName: "getInstitutionContract",
-    args: [user?.address as Address],
-  });
 
   return (
     <>
@@ -227,8 +218,8 @@ export default function CreateCredential() {
         </Card>
       </Container>
       <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-        {contractAddress}, {user?.issuer?.contract_address},{" "}
-        {user?.issuer?.credential_types}
+        {user?.issuer?.contract_address}, {user?.issuer?.credential_types}
+        {user.issuer?.contract_address}
       </Typography>
     </>
   );
