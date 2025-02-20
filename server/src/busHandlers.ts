@@ -4,8 +4,6 @@ import { Address } from "viem";
 import { SOCKET_EVENTS } from "./config/constants.config";
 import { stringify } from "bigint-json";
 
-//NEEDSWORK: should we include the full objects here so they don't have to do extra api retrievals??
-
 export const eventBus = new EventEmitter();
 
 export function setupEventBusHandlers(users: Map<Address, Socket>) {
