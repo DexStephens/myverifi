@@ -21,13 +21,16 @@ export default class ChainEvents {
     });
 
     publicClient.watchContractEvent({
-      address: "0xd0f350b13465b5251bb03e4bbf9fa1dbc4a378f3",
+      address: "0xd0F350b13465B5251bb03E4bbf9Fa1DbC4a378F3",
       abi: credentialFactoryAbi,
       eventName: "InstitutionDeployed",
       onLogs: (logs) =>
         ChainService.onContractCreated(
           this.#parseLogs<ContractCreationArgs>(logs as never)
         ),
+      onError: (error) => {
+        console.log("Error watching contract events: ", error);
+      },
     });
 
     publicClient.watchContractEvent({
