@@ -14,7 +14,7 @@ export const useSocket = (
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    if (address === undefined) return;
+    if (!address) return;
 
     console.log("Starting up socket");
     const SOCKET_URL = `${import.meta.env.VITE_SOCKET_BASE}${address}`;

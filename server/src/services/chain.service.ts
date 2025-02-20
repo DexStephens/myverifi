@@ -36,7 +36,6 @@ export class ChainService {
 
   static async onCredentialCreation(newCredentials: CredentialCreationArgs[]) {
     for (const credential of newCredentials) {
-      console.log("credential", credential);
       const { name, tokenId, institution } = credential;
 
       const user = await UserModel.findUserByAddress(institution);

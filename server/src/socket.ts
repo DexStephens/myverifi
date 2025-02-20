@@ -29,5 +29,5 @@ export function setupSocketIO(server: any) {
     });
   });
 
-  return { io, addressSockets };
+  return { addressSockets };
 }

@@ -10,10 +10,10 @@ const startServer = async () => {
     prisma.$connect().then(() => {
       //Setup socket server that stores address based connections
       const server = createServer(app);
-      const { io, addressSockets } = setupSocketIO(server);
+      const { addressSockets } = setupSocketIO(server);
 
       // Setup event bus to handle different contract events and communicate with the sockets that need to know
-      setupEventBusHandlers(io, addressSockets);
+      setupEventBusHandlers(addressSockets);
 
       //Start our web server that responds to api request
       server.listen(3000, () => {

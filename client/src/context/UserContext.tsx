@@ -17,7 +17,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   useSocket(user?.address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
-      console.log("contract created in socket eh");
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
           return {
@@ -34,7 +33,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       token_id,
       issuer_id,
     }) => {
-      console.log("credential created in socket eh");
       setUser((currentUser) => {
         if (
           currentUser &&
@@ -61,7 +59,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       credential_type_id,
       credential_type,
     }) => {
-      console.log("credential issued in socket eh");
       setUser((currentUser) => {
         if (
           currentUser &&
@@ -89,6 +86,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null);
     navigate("/login");
   };
+
+  console.log("User data", user);
 
   return (
     <UserContext.Provider value={{ user, setUser, logout: handleLogout }}>
