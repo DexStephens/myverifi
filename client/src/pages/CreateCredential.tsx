@@ -217,7 +217,7 @@ export default function CreateCredential() {
         </Card>
       </Container>
       <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-        contract address: {contractAddress}
+        {contractAddress}
       </Typography>
     </>
   );
