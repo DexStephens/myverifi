@@ -7,6 +7,8 @@ import {
   CredentialCreationArgs,
   CredentialIssuanceArgs,
 } from "../types";
+import { eventBus } from "../busHandlers";
+import { SOCKET_EVENTS } from "../config/constants.config";
 
 export class ChainService {
   static async onContractCreated(newContracts: ContractCreationArgs[]) {
@@ -16,12 +18,15 @@ export class ChainService {
       const user = await UserModel.findUserByAddress(institution);
 
       if (user && user.issuer) {
-        //TO CONSIDER: Should we handle if they already have a contract address?
         await IssuerModel.updateIssuerContractAddress(
           user.issuer.id,
           contractAddress
         );
 
+        eventBus.emit(SOCKET_EVENTS.CONTRACT_CREATION, {
+          address: user.address,
+          contract_address: contractAddress,
+        });
         return;
       }
 
@@ -31,7 +36,6 @@ export class ChainService {
 
   static async onCredentialCreation(newCredentials: CredentialCreationArgs[]) {
     for (const credential of newCredentials) {
-      console.log("credential", credential);
       const { name, tokenId, institution } = credential;
 
       const user = await UserModel.findUserByAddress(institution);
@@ -43,12 +47,19 @@ export class ChainService {
           (credentialType) => credentialType.token_id === tokenId
         )
       ) {
-        await CredentialTypeModel.createCredentialType({
+        const credentialType = await CredentialTypeModel.createCredentialType({
           name,
           token_id: tokenId,
           issuer_id: user.issuer.id,
         });
 
+        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
+          address: user.address,
+          id: credentialType.id,
+          name: credentialType.name,
+          token_id: credentialType.token_id,
+          issuer_id: credentialType.issuer_id,
+        });
         return;
       }
 
@@ -77,11 +88,19 @@ export class ChainService {
             credentialIssue.credential_type_id === credentialType.id
         )
       ) {
-        await CredentialIssueModel.createCredentialIssue({
-          holder_id: user.holder.id,
-          credential_type_id: credentialType.id,
-        });
+        const credentialIssue =
+          await CredentialIssueModel.createCredentialIssue({
+            holder_id: user.holder.id,
+            credential_type_id: credentialType.id,
+          });
 
+        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_ISSUANCE, {
+          address: recipient,
+          id: credentialIssue.id,
+          holder_id: credentialIssue.holder_id,
+          credential_type_id: credentialIssue.holder_id,
+          credential_type: credentialIssue.credential_type,
+        });
         return;
       }
 

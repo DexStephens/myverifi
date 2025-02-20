@@ -1,4 +1,4 @@
-import { createPublicClient, http } from "viem";
+import { Address, createPublicClient, http } from "viem";
 import { hardhat } from "viem/chains";
 import {
   credentialFactoryAbi,
@@ -10,64 +10,73 @@ import {
   CredentialCreationArgs,
   CredentialIssuanceArgs,
 } from "./types";
+import { CREDENTIAL_CONTRACT_EVENTS } from "./config/constants.config";
+import { IssuerModel } from "./models/issuer.model";
 
 //NEEDSWORK EVENTUALLY: load contract addresses according to the environment
 
-export default class ChainEvents {
-  listen() {
-    const publicClient = createPublicClient({
-      chain: hardhat,
-      transport: http(),
-    });
+const publicClient = createPublicClient({
+  chain: hardhat,
+  transport: http(),
+});
 
-    publicClient.watchContractEvent({
-      address: "0xd0F350b13465B5251bb03E4bbf9Fa1DbC4a378F3",
-      abi: credentialFactoryAbi,
-      eventName: "InstitutionDeployed",
-      onLogs: (logs) =>
-        ChainService.onContractCreated(
-          this.#parseLogs<ContractCreationArgs>(logs as never)
-        ),
-      onError: (error) => {
-        console.log("Error watching contract events: ", error);
-      },
-    });
+export async function startBlockchainListener(factoryAddress: Address) {
+  publicClient.watchContractEvent({
+    address: factoryAddress,
+    abi: credentialFactoryAbi,
+    eventName: CREDENTIAL_CONTRACT_EVENTS.INSTITUTION_DEPLOYED,
+    onLogs: (logs) => {
+      const contractsCreated = parseLogs<ContractCreationArgs>(logs as never);
+      ChainService.onContractCreated(contractsCreated);
+      contractsCreated.forEach((contract) =>
+        addNewCredentialContractListeners(contract.contractAddress)
+      );
+    },
+  });
 
-    publicClient.watchContractEvent({
-      address: "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
-      abi: institutionCredentialAbi,
-      eventName: "CredentialCreated",
-      onLogs: (logs) =>
-        ChainService.onCredentialCreation(
-          this.#parseLogs<CredentialCreationArgs>(logs as never)
-        ),
-    });
+  const issuers = await IssuerModel.getAllWithContracts();
+  issuers.forEach((issuer) => {
+    const { contract_address } = issuer;
 
-    publicClient.watchContractEvent({
-      address: "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
-      abi: institutionCredentialAbi,
-      eventName: "CredentialIssued",
-      onLogs: (logs) =>
-        ChainService.onCredentialIssue(
-          this.#parseLogs<CredentialIssuanceArgs>(logs as never, (log) => {
-            const { address } = log;
-            return { contractAddress: address };
-          })
-        ),
-    });
-  }
+    addNewCredentialContractListeners(contract_address as Address);
+  });
+}
 
-  #parseLogs<T>(
-    logs: never[],
-    additional?: (log: never) => Record<string, string>
-  ): T[] {
-    return logs.map((log) => {
-      const { args } = log;
+export function addNewCredentialContractListeners(contractAddress: Address) {
+  publicClient.watchContractEvent({
+    address: contractAddress,
+    abi: institutionCredentialAbi,
+    eventName: CREDENTIAL_CONTRACT_EVENTS.CREDENTIAL_CREATION,
+    onLogs: (logs) =>
+      ChainService.onCredentialCreation(
+        parseLogs<CredentialCreationArgs>(logs as never)
+      ),
+  });
 
-      return {
-        ...(args as Record<string, string>),
-        ...(additional ? additional(log) : {}),
-      } as T;
-    });
-  }
+  publicClient.watchContractEvent({
+    address: contractAddress,
+    abi: institutionCredentialAbi,
+    eventName: CREDENTIAL_CONTRACT_EVENTS.CREDENTIAL_ISSUANCE,
+    onLogs: (logs) =>
+      ChainService.onCredentialIssue(
+        parseLogs<CredentialIssuanceArgs>(logs as never, (log) => {
+          const { address } = log;
+          return { contractAddress: address };
+        })
+      ),
+  });
+}
+
+function parseLogs<T>(
+  logs: never[],
+  additional?: (log: never) => Record<string, string>
+): T[] {
+  return logs.map((log) => {
+    const { args } = log;
+
+    return {
+      ...(args as Record<string, string>),
+      ...(additional ? additional(log) : {}),
+    } as T;
+  });
 }

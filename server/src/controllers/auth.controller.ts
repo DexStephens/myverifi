@@ -43,7 +43,7 @@ export class AuthController {
       if (name) {
         issuer = {
           name,
-          contract_address: "",
+          contract_address: null,
         };
       }
 

@@ -4,4 +4,11 @@ export const CONSTANTS = {
     CREDENTIAL_TYPE_CREATION: "createCredentialType",
     CREDENTIAL_ISSUE: "issueCredential",
   },
+  SOCKET_EVENTS: {
+    CONNECTION: "connect",
+    DISCONNECT: "disconnect",
+    CONTRACT_CREATION: "contract_creation",
+    CREDENTIAL_CREATION: "credential_creation",
+    CREDENTIAL_ISSUANCE: "credential_issued",
+  },
 };
