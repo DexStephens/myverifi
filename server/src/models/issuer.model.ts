@@ -27,4 +27,14 @@ export class IssuerModel {
       data: { contract_address },
     });
   }
+
+  static async getAllWithContracts() {
+    return prisma.issuer.findMany({
+      where: {
+        contract_address: {
+          not: null,
+        },
+      },
+    });
+  }
 }

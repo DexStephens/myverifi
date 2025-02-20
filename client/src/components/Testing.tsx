@@ -6,6 +6,7 @@ import {
 import { Address } from "viem";
 import { CONSTANTS } from "../config/constants";
 import { uploadJsonToPinata } from "../utils/pinata.util";
+import { useUser } from "../context/UserContext";
 
 //FUTURE CHALLENGES:
 //  Contract Creation: we need to setup a rehydration with tan stack possibly to get the contract address as quickly as possible from the server? Could use websockets but pretty heavy setup?
@@ -13,6 +14,7 @@ import { uploadJsonToPinata } from "../utils/pinata.util";
 //  Credential Issuance: same thing as above, showing the data we want to show?
 
 export default function Testing() {
+  const { user } = useUser();
   const { data: hash, isPending, writeContract } = useWriteContract();
 
   async function onCreateInstitutionCredentialContract(
@@ -30,21 +32,21 @@ export default function Testing() {
 
   async function onCreateInstitutionCredentialType(
     contractAddress: Address,
-    title: string,
-    jsonData: object
+    title: string
+    // jsonData: object
   ) {
     //First need to upload jsonData to pinata to get a cid to upload to the contract
-    const cid = await uploadJsonToPinata(title, jsonData);
+    // const cid = await uploadJsonToPinata(title, jsonData);
 
-    //If successful, then we can create the credential type on our contract
-    if (cid !== null) {
-      writeContract({
-        address: contractAddress,
-        abi: institutionCredentialAbi,
-        functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-        args: [title, cid],
-      });
-    }
+    // //If successful, then we can create the credential type on our contract
+    // if (cid !== null) {
+    writeContract({
+      address: contractAddress,
+      abi: institutionCredentialAbi,
+      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
+      args: [title, "testCid"],
+    });
+    // }
   }
 
   async function onIssueInstitutionCredential(
@@ -67,7 +69,7 @@ export default function Testing() {
         onClick={() =>
           onCreateInstitutionCredentialContract(
             "0xd0f350b13465b5251bb03e4bbf9fa1dbc4a378f3",
-            "Brigham Young University",
+            user?.issuer?.name ?? "",
             "http://testing/{id}.json"
           )
         }
@@ -77,9 +79,10 @@ export default function Testing() {
       <button
         onClick={() =>
           onCreateInstitutionCredentialType(
-            "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
-            "MISM",
-            { test: Date.now() }
+            user?.issuer?.contract_address ??
+              "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
+            "MISM"
+            // { test: Date.now() }
           )
         }
       >
@@ -88,8 +91,9 @@ export default function Testing() {
       <button
         onClick={() =>
           onIssueInstitutionCredential(
-            "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
-            "0xdD2FD4581271e230360230F9337D5c0430Bf44C0",
+            user?.issuer?.contract_address ??
+              "0xCa62B7655F46283bC4BC044893DE20C42f848b35",
+            "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
             BigInt(1)
           )
         }
