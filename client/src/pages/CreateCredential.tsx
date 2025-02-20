@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import HomeHeader from "../components/HomeHeader";
 import { useUser } from "../context/UserContext";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import {
   Typography,
   Button,
@@ -36,6 +36,16 @@ export default function CreateCredential() {
   const navigate = useNavigate();
   const { user } = useUser();
   const { writeContract } = useWriteContract();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (!user.issuer) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  if (!user) return null;
 
   const onCreateInstitutionCredentialType = async (
     contractAddress: Address,
@@ -217,7 +227,8 @@ export default function CreateCredential() {
         </Card>
       </Container>
       <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-        {contractAddress}
+        {contractAddress}, {user?.issuer?.contract_address},{" "}
+        {user?.issuer?.credential_types}
       </Typography>
     </>
   );
