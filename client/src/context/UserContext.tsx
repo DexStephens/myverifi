@@ -1,4 +1,10 @@
-import { createContext, useContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+} from "react";
 import { User } from "../utils/user.util";
 import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
@@ -15,14 +21,25 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      sessionStorage.setItem("user", JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem("user");
+    }
+  }, [user]);
+
   useSocket(user?.address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
-          return {
+          const updatedUser = {
             ...currentUser,
             issuer: { ...currentUser.issuer, contract_address },
           };
+          sessionStorage.setItem("user", JSON.stringify(updatedUser));
+          return updatedUser;
         }
         return currentUser;
       });
