@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  useAccount,
-  useDisconnect,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-} from "wagmi";
+import { useAccount, useDisconnect, useWriteContract } from "wagmi";
 import { useUser } from "../context/UserContext";
 import { updateUserAddress } from "../utils/user.util";
 import { Address, decodeEventLog } from "viem";
@@ -18,10 +13,7 @@ export function WagmiConnectWallet() {
   const { disconnect } = useDisconnect();
   const { user, setUser } = useUser();
   const [error, setError] = useState("");
-  const { data: hash, writeContract } = useWriteContract();
-  //const { writeContract } = useWriteContract();
-  //This might be temporary, what I am using to keep the newly deployed institution contract address
-  const { data: receipt, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { writeContract } = useWriteContract();
 
   useEffect(() => {
     const sendAddress = async (email: string, address: Address) => {
@@ -89,85 +81,7 @@ export function WagmiConnectWallet() {
         setError("");
       }
     }
-
-    if (isSuccess && receipt) {
-      console.log("Contract deployed successfully");
-      console.log("Transaction Hash:", receipt.transactionHash);
-      console.log("Block Number:", receipt.blockNumber);
-      console.log("From:", receipt.from);
-      console.log("To:", receipt.to);
-
-      // Log each raw log for inspection
-      receipt.logs.forEach((log, index) => {
-        console.log(`Log ${index}:`, {
-          address: log.address,
-          topics: log.topics,
-          data: log.data,
-          blockNumber: log.blockNumber,
-          transactionHash: log.transactionHash,
-          logIndex: log.logIndex,
-        });
-      });
-
-      console.log(
-        "Log addresses:",
-        receipt.logs.map((log) => log.address)
-      );
-      console.log(
-        "Factory address:",
-        import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS
-      );
-
-      const deployEvent = receipt.logs.find((log) => {
-        try {
-          // First check if this log is from our factory contract
-          if (
-            log.address.toLowerCase() !==
-            import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS.toLowerCase()
-          ) {
-            return false;
-          }
-
-          const decoded = decodeEventLog({
-            abi: credentialFactoryAbi,
-            data: log.data,
-            topics: log.topics,
-          });
-          console.log("Decoded event from factory contract:", decoded);
-          return decoded.eventName === "InstitutionDeployed";
-        } catch (error) {
-          console.error("Error decoding event:", error);
-          return false;
-        }
-      });
-      console.log("Deploy event: ", deployEvent);
-      if (deployEvent) {
-        console.log("Contract deployed at: ", deployEvent.args.contractAddress);
-        setUser((prev) => {
-          if (!prev) return null;
-          return {
-            ...prev,
-            issuer: prev.issuer
-              ? {
-                  ...prev.issuer,
-                  contract_address: deployEvent.args.contractAddress,
-                }
-              : prev.issuer,
-          };
-        });
-      }
-    }
-  }, [
-    isConnected,
-    address,
-    user,
-    error,
-    setUser,
-    disconnect,
-    writeContract,
-    receipt,
-    isSuccess,
-  ]);
+  }, [isConnected, address, user, error, setUser, disconnect, writeContract]);
 
   return (
     <div className="container">
