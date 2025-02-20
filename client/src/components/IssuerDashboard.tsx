@@ -58,7 +58,6 @@ export function IssuerDashboard() {
           </Typography>
         )}
       </div>
-      <Testing />
     </div>
   );
 }

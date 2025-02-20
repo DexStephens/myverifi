@@ -87,8 +87,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     navigate("/login");
   };
 
-  console.log("User data", user);
-
   return (
     <UserContext.Provider value={{ user, setUser, logout: handleLogout }}>
       {children}
