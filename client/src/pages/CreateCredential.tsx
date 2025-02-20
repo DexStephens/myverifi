@@ -13,8 +13,11 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
-import { useWriteContract } from "wagmi";
-import { institutionCredentialAbi } from "../utils/abi.util";
+import { useWriteContract, useReadContract } from "wagmi";
+import {
+  institutionCredentialAbi,
+  credentialFactoryAbi,
+} from "../utils/abi.util";
 // import { Address } from "viem";
 import { CONSTANTS } from "../config/constants";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -64,7 +67,7 @@ export default function CreateCredential() {
 
     const contractAddress =
       user?.issuer?.contract_address ||
-      "0x0000000000000000000000000000000000000000";
+      "0xCa62B7655F46283bC4BC044893DE20C42f848b35";
     if (!contractAddress) {
       alert(
         "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
@@ -91,6 +94,10 @@ export default function CreateCredential() {
         credentialName
         //detailsJson
       );
+      //Display an aesthetic success message to the user and clear the form
+      alert("Credential Created Successfully");
+      setCredentialName("");
+      setCredentialDetails([]);
     } catch (error) {
       console.error("Error Creating Credential:", error);
       alert("An error occurred while creating the credential");
@@ -114,6 +121,13 @@ export default function CreateCredential() {
     newDetails[index][field] = value;
     setCredentialDetails(newDetails);
   };
+
+  const { data: contractAddress } = useReadContract({
+    address: import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS as Address,
+    abi: credentialFactoryAbi,
+    functionName: "getInstitutionContract",
+    args: [user?.address as Address],
+  });
 
   return (
     <>
@@ -202,6 +216,9 @@ export default function CreateCredential() {
           </CardContent>
         </Card>
       </Container>
+      <Typography variant="body1" align="center" sx={{ mt: 2 }}>
+        contract address: {contractAddress}
+      </Typography>
     </>
   );
 }
