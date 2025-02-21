@@ -32,13 +32,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
-          //const updatedUser =
           return {
             ...currentUser,
             issuer: { ...currentUser.issuer, contract_address },
           };
-          // sessionStorage.setItem("user", JSON.stringify(updatedUser));
-          // return updatedUser;
         }
         return currentUser;
       });
@@ -52,15 +49,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser((currentUser) => {
         if (
           currentUser &&
-          currentUser.issuer &&
-          !currentUser.issuer.credential_types.find((ct) => ct.id === id)
+          currentUser.issuer
+          //This validation makes it break on the creation of the first credential type
+          //!currentUser.issuer.credential_types.find((ct) => ct.id === id)
         ) {
           return {
             ...currentUser,
             issuer: {
               ...currentUser.issuer,
               credential_types: [
-                ...currentUser.issuer.credential_types,
+                ...(currentUser.issuer.credential_types || []),
                 { id, name, token_id, issuer_id },
               ],
             },

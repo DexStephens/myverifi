@@ -73,7 +73,7 @@ export default function CreateCredential() {
     // }
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsCreating(true);
 
@@ -82,6 +82,7 @@ export default function CreateCredential() {
       alert(
         "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
       );
+      setIsCreating(false);
       return;
     }
 
@@ -94,12 +95,14 @@ export default function CreateCredential() {
     }, {} as { [key: string]: string });
 
     try {
+      // Wait for the transaction to complete
       onCreateInstitutionCredentialType(
         contractAddress as Address,
         credentialName,
         detailsJson
       );
 
+      // Only clear form after successful transaction
       setCredentialName("");
       setCredentialDetails([]);
     } catch (error) {
