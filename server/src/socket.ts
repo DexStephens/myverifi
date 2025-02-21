@@ -9,6 +9,7 @@ export function setupSocketIO(server: any) {
     cors: {
       origin: "*",
     },
+    transports: ["websocket", "polling"],
   });
 
   const addressWs = io.of(/^\/wallets\/0x[a-zA-z0-9]+$/);

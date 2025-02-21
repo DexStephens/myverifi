@@ -13,11 +13,8 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
-import { useWriteContract, useReadContract } from "wagmi";
-import {
-  institutionCredentialAbi,
-  credentialFactoryAbi,
-} from "../utils/abi.util";
+import { useWriteContract } from "wagmi";
+import { institutionCredentialAbi } from "../utils/abi.util";
 // import { Address } from "viem";
 import { CONSTANTS } from "../config/constants";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -47,30 +44,31 @@ export default function CreateCredential() {
 
   if (!user) return null;
 
-  const onCreateInstitutionCredentialType = async (
+  async function onCreateInstitutionCredentialType(
     contractAddress: Address,
-    title: string
-    //details: { [key: string]: string } When we get the JSON uri I think we will need to pass this in
-  ) => {
+    title: string,
+    jsonData: object
+  ) {
+    console.log(jsonData);
+    //First need to upload jsonData to pinata to get a cid to upload to the contract
+    // const cid = await uploadJsonToPinata(title, jsonData);
+
+    // //If successful, then we can create the credential type on our contract
+    // if (cid !== null) {
+
     if (!title) {
       alert("Please enter a Credential Name");
       return;
     }
 
-    try {
-      await writeContract({
-        address: contractAddress,
-        abi: institutionCredentialAbi,
-        functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-        args: [title], //eventually pass in the JSON uri
-      });
-
-      console.log("Credential Type Created Successfully");
-    } catch (error) {
-      console.error("Error Creating Credential Type:", error);
-      alert("An error occurred while creating the credential type");
-    }
-  };
+    writeContract({
+      address: contractAddress,
+      abi: institutionCredentialAbi,
+      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
+      args: [title, "testCid"],
+    });
+    // }
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -99,8 +97,8 @@ export default function CreateCredential() {
     try {
       onCreateInstitutionCredentialType(
         contractAddress as Address,
-        credentialName
-        //detailsJson
+        credentialName,
+        detailsJson
       );
       //Display an aesthetic success message to the user and clear the form
       alert("Credential Created Successfully");
@@ -218,12 +216,13 @@ export default function CreateCredential() {
         </Card>
       </Container>
       <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-        {user?.issuer?.contract_address},{user.issuer?.credential_types}
+        {user?.issuer?.contract_address}
+        {user?.issuer?.credential_types?.map((type) => type.name).join(", ")}
       </Typography>
     </>
   );
 }
-
+//,{user?.issuer?.credential_types}
 //event CredentialCreated(string name, uint256 tokenId, address institution);
 
 // function createCredentialType(string memory name) external onlyOwner {
