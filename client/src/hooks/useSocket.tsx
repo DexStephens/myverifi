@@ -34,9 +34,7 @@ export const useSocket = (
 
     // Set up event handlers
     Object.entries(eventHandlers).forEach(([event, handler]) => {
-      socketRef.current?.on(event, (data) => {
-        handler(data);
-      });
+      socketRef.current?.on(event, handler);
     });
 
     // Cleanup function

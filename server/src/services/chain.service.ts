@@ -9,7 +9,6 @@ import {
 } from "../types";
 import { eventBus } from "../busHandlers";
 import { SOCKET_EVENTS } from "../config/constants.config";
-import prisma from "../config/db.config";
 
 export class ChainService {
   static async onContractCreated(newContracts: ContractCreationArgs[]) {
@@ -19,14 +18,14 @@ export class ChainService {
       const user = await UserModel.findUserByAddress(institution);
 
       if (user && user.issuer) {
-        await IssuerModel.updateIssuerContractAddress(
+        const updatedIssuer = await IssuerModel.updateIssuerContractAddress(
           user.issuer.id,
           contractAddress
         );
 
         eventBus.emit(SOCKET_EVENTS.CONTRACT_CREATION, {
           address: user.address,
-          contract_address: contractAddress,
+          contract_address: updatedIssuer.contract_address,
         });
         return;
       }
@@ -37,48 +36,33 @@ export class ChainService {
 
   static async onCredentialCreation(newCredentials: CredentialCreationArgs[]) {
     for (const credential of newCredentials) {
-      try {
-        const { name, tokenId, institution } = credential;
+      const { name, tokenId, institution } = credential;
 
-        // Use transaction to ensure atomicity
-        const result = await prisma.$transaction(async (tx) => {
-          const user = await tx.user.findFirst({
-            where: { address: institution },
-            include: { issuer: true },
-          });
+      const user = await UserModel.findUserByAddress(institution);
 
-          if (!user?.issuer) {
-            console.log("No issuer found for address:", institution);
-            return null;
-          }
-
-          const credentialType = await tx.credentialType.create({
-            data: {
-              name,
-              token_id: tokenId,
-              issuer_id: user.issuer.id,
-            },
-          });
-
-          return { credentialType, user };
+      if (
+        user &&
+        user.issuer &&
+        !user.issuer.credential_types.find(
+          (credentialType) => credentialType.token_id === tokenId
+        )
+      ) {
+        const credentialType = await CredentialTypeModel.createCredentialType({
+          name,
+          token_id: tokenId,
+          issuer_id: user.issuer.id,
         });
 
-        if (result) {
-          const { credentialType, user } = result;
-          console.log("Created credential type:", credentialType);
-          eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
-            address: user.address,
-            id: credentialType.id,
-            name: credentialType.name,
-            token_id: credentialType.token_id,
-            issuer_id: credentialType.issuer_id,
-          });
-        }
-        return;
-      } catch (error) {
-        console.error("Error processing credential creation:", error);
+        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
+          address: user.address,
+          id: credentialType.id,
+          name: credentialType.name,
+          token_id: credentialType.token_id,
+          issuer_id: credentialType.issuer_id,
+        });
         return;
       }
+      console.log("Did not process credential creation:", credential);
     }
   }
 

@@ -43,28 +43,30 @@ export function WagmiConnectWallet() {
     if (isConnected && user && address) {
       if (!user?.address && !error) {
         sendAddress(user.email, address); //Update the user address in the database
-        //If the user is an issuer, deploy their smart contract, they will have to sign
-        if (user.issuer) {
-          try {
-            onCreateInstitutionCredentialContract(
-              import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS as Address,
-              user.issuer.name,
-              "http://testing/uri.json" //Just a placeholder uri for now
-            );
-          } catch (error) {
-            console.error(
-              "Error creating institution credential contract:",
-              error
-            );
-          }
-        }
-      } else if (address !== user.address) {
+      } else if (
+        user.address &&
+        address.toLowerCase() !== user.address.toLowerCase()
+      ) {
         disconnect();
         setError(
           `Your account is associated with the address: ${user.address}, please reconnect your wallet to be associated with the correct address.`
         );
       } else if (error) {
         setError("");
+      } else if (user.issuer && !user.issuer.contract_address) {
+        //If the user is an issuer, deploy their smart contract, they will have to sign
+        try {
+          onCreateInstitutionCredentialContract(
+            import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS as Address,
+            user.issuer.name,
+            "http://testing/uri.json" //Just a placeholder uri for now
+          );
+        } catch (error) {
+          console.error(
+            "Error creating institution credential contract:",
+            error
+          );
+        }
       }
     }
   }, [isConnected, address, user, error, setUser, disconnect, writeContract]);

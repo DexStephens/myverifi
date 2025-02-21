@@ -20,7 +20,7 @@ const publicClient = createPublicClient({
   transport: http(),
 });
 
-const contractListeners = new Map<string, () => void>();
+const contractListeners = new Set<Address>();
 
 export async function startBlockchainListener(factoryAddress: Address) {
   publicClient.watchContractEvent({
@@ -45,14 +45,13 @@ export async function startBlockchainListener(factoryAddress: Address) {
 }
 
 export function addNewCredentialContractListeners(contractAddress: Address) {
-  // Remove existing listener if any
   if (contractListeners.has(contractAddress)) {
-    const cleanup = contractListeners.get(contractAddress);
-    cleanup?.();
-    contractListeners.delete(contractAddress);
+    return;
   }
 
-  const unwatch = publicClient.watchContractEvent({
+  contractListeners.add(contractAddress);
+
+  publicClient.watchContractEvent({
     address: contractAddress,
     abi: institutionCredentialAbi,
     eventName: CREDENTIAL_CONTRACT_EVENTS.CREDENTIAL_CREATION,
@@ -61,8 +60,6 @@ export function addNewCredentialContractListeners(contractAddress: Address) {
         parseLogs<CredentialCreationArgs>(logs as never)
       ),
   });
-
-  contractListeners.set(contractAddress, unwatch);
 
   publicClient.watchContractEvent({
     address: contractAddress,

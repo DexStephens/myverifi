@@ -18,6 +18,6 @@ export class IssuanceService {
       );
     }
 
-    await UserModel.updateUser(user.id, { address });
+    await UserModel.updateUserAddress(user.id, address);
   }
 }

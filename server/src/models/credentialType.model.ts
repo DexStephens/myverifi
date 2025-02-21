@@ -1,6 +1,5 @@
 import { CredentialType } from "@prisma/client";
 import prisma from "../config/db.config";
-import { getAddress } from "viem";
 
 export class CredentialTypeModel {
   static async createCredentialType(data: {
@@ -29,7 +28,7 @@ export class CredentialTypeModel {
       where: {
         token_id: Number(token_id.toString()),
         issuer: {
-          contract_address: getAddress(contract_address),
+          contract_address: contract_address.toLowerCase(),
         },
       },
     });

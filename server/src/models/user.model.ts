@@ -49,7 +49,7 @@ export class UserModel {
 
   static async findUserByAddress(address: string) {
     return prisma.user.findFirst({
-      where: { address },
+      where: { address: address.toLowerCase() },
       include: {
         holder: {
           include: {
@@ -65,10 +65,10 @@ export class UserModel {
     });
   }
 
-  static async updateUser(id: number, data: Partial<User>) {
+  static async updateUserAddress(id: number, address: string) {
     return prisma.user.update({
       where: { id },
-      data,
+      data: { address: address.toLowerCase() },
     });
   }
 }

@@ -49,16 +49,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser((currentUser) => {
         if (
           currentUser &&
-          currentUser.issuer
-          //This validation makes it break on the creation of the first credential type
-          //!currentUser.issuer.credential_types.find((ct) => ct.id === id)
+          currentUser.issuer &&
+          !currentUser.issuer.credential_types.find((ct) => ct.id === id)
         ) {
           return {
             ...currentUser,
             issuer: {
               ...currentUser.issuer,
               credential_types: [
-                ...(currentUser.issuer.credential_types || []), //This makes sure it doesn't break on the first credential type creation
+                ...currentUser.issuer.credential_types,
                 { id, name, token_id, issuer_id },
               ],
             },

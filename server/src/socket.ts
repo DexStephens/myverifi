@@ -16,7 +16,7 @@ export function setupSocketIO(server: any) {
 
   addressWs.on(SOCKET_EVENTS.CONNECTION, (socket) => {
     const namespace = socket.nsp.name;
-    const address = namespace.split("/").pop() as Address;
+    const address = namespace.split("/").pop().toLowerCase() as Address;
 
     if (isAddress(address)) {
       addressSockets.set(address, socket);
