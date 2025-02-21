@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import { useWriteContract } from "wagmi";
 import { institutionCredentialAbi } from "../utils/abi.util";
-// import { Address } from "viem";
 import { CONSTANTS } from "../config/constants";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router";
@@ -27,7 +26,9 @@ interface CredentialDetail {
 
 export default function CreateCredential() {
   const [credentialName, setCredentialName] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
+  //I couldn't get this to work, I think it goes too fast through so frontend thinks it's done before the actual transaction goes through
+  //Maybe there's some way to once length of credential_types is increased by 1, then the button goes back to create credential and not submitting
+  //const [isCreating, setIsCreating] = useState(false);
   const [credentialDetails, setCredentialDetails] = useState<
     CredentialDetail[]
   >([]);
@@ -48,9 +49,9 @@ export default function CreateCredential() {
   async function onCreateInstitutionCredentialType(
     contractAddress: Address,
     title: string,
-    jsonData: object
+    jsonData: object // Eventually we will need this, right now it does nothing
   ) {
-    console.log(jsonData);
+    console.log(jsonData); //just have this so error goes away
     //First need to upload jsonData to pinata to get a cid to upload to the contract
     // const cid = await uploadJsonToPinata(title, jsonData);
 
@@ -75,14 +76,14 @@ export default function CreateCredential() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsCreating(true);
+    //setIsCreating(true);
 
     const contractAddress = user?.issuer?.contract_address;
     if (!contractAddress) {
       alert(
         "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
       );
-      setIsCreating(false);
+      //setIsCreating(false);
       return;
     }
 
@@ -109,7 +110,7 @@ export default function CreateCredential() {
       console.error("Error Creating Credential:", error);
       alert("An error occurred while creating the credential");
     } finally {
-      setIsCreating(false);
+      //setIsCreating(false);
     }
   };
 
@@ -199,9 +200,10 @@ export default function CreateCredential() {
                   variant="contained"
                   color="primary"
                   size="large"
-                  disabled={isCreating}
+                  //disabled={isCreating}
                 >
-                  {isCreating ? "Creating Credential..." : "Create Credential"}
+                  {/* {isCreating ? "Creating Credential..." : "Create Credential"} */}
+                  Create Credential
                 </Button>
               </Stack>
             </form>
@@ -220,6 +222,7 @@ export default function CreateCredential() {
         </Card>
       </Container>
       <Typography variant="body1" align="center" sx={{ mt: 2 }}>
+        {/* We can remove this whenever, but makes it super easy to tell if the credentials are created and added back into the user context */}
         {user?.issuer?.contract_address}
         {user?.issuer?.credential_types?.map((type) => type.name).join(", ")}
       </Typography>
