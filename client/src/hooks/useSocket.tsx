@@ -28,7 +28,7 @@ export const useSocket = (
       console.log("Socket connected for address:", address);
     });
 
-    socketRef.current.on("connect_error", (error) => {
+    socketRef.current.on(CONSTANTS.SOCKET_EVENTS.CONNECTION_ERROR, (error) => {
       console.error("Socket connection error:", error);
       console.error("Connection URL:", SOCKET_URL);
     });

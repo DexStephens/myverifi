@@ -61,7 +61,7 @@ export default function CreateCredential() {
       return;
     }
 
-    writeContract({
+    await writeContract({
       address: contractAddress,
       abi: institutionCredentialAbi,
       functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
@@ -100,8 +100,7 @@ export default function CreateCredential() {
         credentialName,
         detailsJson
       );
-      //Display an aesthetic success message to the user and clear the form
-      alert("Credential Created Successfully");
+
       setCredentialName("");
       setCredentialDetails([]);
     } catch (error) {

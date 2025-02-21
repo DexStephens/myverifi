@@ -9,6 +9,7 @@ import {
 } from "../types";
 import { eventBus } from "../busHandlers";
 import { SOCKET_EVENTS } from "../config/constants.config";
+//import prisma from "../config/db.config";
 
 export class ChainService {
   static async onContractCreated(newContracts: ContractCreationArgs[]) {
@@ -40,6 +41,18 @@ export class ChainService {
 
       const user = await UserModel.findUserByAddress(institution);
 
+      // const existingCredential = await prisma.credentialType.findFirst({
+      //   where: {
+      //     token_id: tokenId,
+      //     name: name,
+      //   },
+      // });
+
+      // if (existingCredential) {
+      //   console.error(`Token ID ${tokenId} and name ${name} already exists`);
+      //   return;
+      // }
+
       if (
         user &&
         user.issuer &&
@@ -52,7 +65,7 @@ export class ChainService {
           token_id: tokenId,
           issuer_id: user.issuer.id,
         });
-
+        console.log("Credential Type Created", credentialType);
         eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
           address: user.address,
           id: credentialType.id,
@@ -61,9 +74,11 @@ export class ChainService {
           issuer_id: credentialType.issuer_id,
         });
         return;
+      } else {
+        console.log("Credential Type already exists", credential.name);
       }
 
-      console.log("Unable to create credential type", credential);
+      //console.log("Unable to create credential type", credential);
     }
   }
 
