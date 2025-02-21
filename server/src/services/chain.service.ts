@@ -9,7 +9,7 @@ import {
 } from "../types";
 import { eventBus } from "../busHandlers";
 import { SOCKET_EVENTS } from "../config/constants.config";
-//import prisma from "../config/db.config";
+import prisma from "../config/db.config";
 
 export class ChainService {
   static async onContractCreated(newContracts: ContractCreationArgs[]) {
@@ -37,48 +37,64 @@ export class ChainService {
 
   static async onCredentialCreation(newCredentials: CredentialCreationArgs[]) {
     for (const credential of newCredentials) {
-      const { name, tokenId, institution } = credential;
+      try {
+        const { name, tokenId, institution } = credential;
 
-      const user = await UserModel.findUserByAddress(institution);
+        // Use transaction to ensure atomicity
+        const result = await prisma.$transaction(async (tx) => {
+          const user = await tx.user.findFirst({
+            where: { address: institution },
+            include: { issuer: true },
+          });
 
-      // const existingCredential = await prisma.credentialType.findFirst({
-      //   where: {
-      //     token_id: tokenId,
-      //     name: name,
-      //   },
-      // });
+          if (!user?.issuer) {
+            console.log("No issuer found for address:", institution);
+            return null;
+          }
 
-      // if (existingCredential) {
-      //   console.error(`Token ID ${tokenId} and name ${name} already exists`);
-      //   return;
-      // }
+          // Check for existing credential within transaction
+          const existingCredential = await tx.credentialType.findFirst({
+            where: {
+              token_id: tokenId,
+              issuer_id: user.issuer.id,
+            },
+          });
 
-      if (
-        user &&
-        user.issuer &&
-        !user.issuer.credential_types.find(
-          (credentialType) => credentialType.token_id === tokenId
-        )
-      ) {
-        const credentialType = await CredentialTypeModel.createCredentialType({
-          name,
-          token_id: tokenId,
-          issuer_id: user.issuer.id,
+          if (existingCredential) {
+            console.log("Credential already exists:", {
+              tokenId,
+              issuerId: user.issuer.id,
+            });
+            return null;
+          }
+
+          const credentialType = await tx.credentialType.create({
+            data: {
+              name,
+              token_id: tokenId,
+              issuer_id: user.issuer.id,
+            },
+          });
+
+          return { credentialType, user };
         });
-        console.log("Credential Type Created", credentialType);
-        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
-          address: user.address,
-          id: credentialType.id,
-          name: credentialType.name,
-          token_id: credentialType.token_id,
-          issuer_id: credentialType.issuer_id,
-        });
+
+        if (result) {
+          const { credentialType, user } = result;
+          console.log("Created credential type:", credentialType);
+          eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
+            address: user.address,
+            id: credentialType.id,
+            name: credentialType.name,
+            token_id: credentialType.token_id,
+            issuer_id: credentialType.issuer_id,
+          });
+        }
         return;
-      } else {
-        console.log("Credential Type already exists", credential.name);
+      } catch (error) {
+        console.error("Error processing credential creation:", error);
+        return;
       }
-
-      //console.log("Unable to create credential type", credential);
     }
   }
 

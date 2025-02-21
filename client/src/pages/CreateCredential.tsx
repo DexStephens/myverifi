@@ -27,6 +27,7 @@ interface CredentialDetail {
 
 export default function CreateCredential() {
   const [credentialName, setCredentialName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
   const [credentialDetails, setCredentialDetails] = useState<
     CredentialDetail[]
   >([]);
@@ -67,11 +68,14 @@ export default function CreateCredential() {
       functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
       args: [title, "testCid"],
     });
+
+    return true;
     // }
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsCreating(true);
 
     const contractAddress = user?.issuer?.contract_address;
     if (!contractAddress) {
@@ -89,11 +93,6 @@ export default function CreateCredential() {
       return acc;
     }, {} as { [key: string]: string });
 
-    console.log("Form Data:");
-    console.log("Credential Name:", credentialName);
-    console.log("Credential Details:", detailsJson);
-    console.log("Contract Address:", contractAddress);
-
     try {
       onCreateInstitutionCredentialType(
         contractAddress as Address,
@@ -106,6 +105,8 @@ export default function CreateCredential() {
     } catch (error) {
       console.error("Error Creating Credential:", error);
       alert("An error occurred while creating the credential");
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -195,8 +196,9 @@ export default function CreateCredential() {
                   variant="contained"
                   color="primary"
                   size="large"
+                  disabled={isCreating}
                 >
-                  Create Credential
+                  {isCreating ? "Creating Credential..." : "Create Credential"}
                 </Button>
               </Stack>
             </form>
@@ -221,73 +223,3 @@ export default function CreateCredential() {
     </>
   );
 }
-//,{user?.issuer?.credential_types}
-//event CredentialCreated(string name, uint256 tokenId, address institution);
-
-// function createCredentialType(string memory name) external onlyOwner {
-//   uint256 tokenId = _nextTokenId++;
-//   tokenIds[tokenId] = name;
-//   emit CredentialCreated(name, tokenId, msg.sender);
-// }
-
-// async function onCreateInstitutionCredentialType(
-//   contractAddress: Address,
-//   title: string
-// ) {
-//   writeContract({
-//     address: contractAddress,
-//     abi: institutionCredentialAbi,
-//     functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-//     args: [title],
-//   });
-// }
-
-// model CredentialType {
-//   id              Int              @id @default(autoincrement())
-//   name            String
-//   token_id        BigInt
-//   issuer_id       Int
-//   issuer          Issuer      @relation(fields: [issuer_id], references: [id])
-//   // A credential type can be assigned to many holders via issuance
-//   credential_issues CredentialIssue[]
-// }
-
-// model User {
-//   id                Int                @id @default(autoincrement())
-//   email             String             @unique
-//   password_hash     String
-//   address           String?
-
-//   // One-to-one relation fields with either role
-//   holder            Holder?
-//   issuer            Issuer?
-// }
-
-// model Issuer {
-//   id                Int                @id @default(autoincrement())
-//   userId            Int                @unique
-//   user              User               @relation(fields: [userId], references: [id])
-//   name              String
-//   contract_address  String?
-//   // An institution can issue several credential types
-//   credential_types  CredentialType[]
-// }
-
-// async function onCreateInstitutionCredentialType(
-//   contractAddress: Address,
-//   title: string,
-//   jsonData: object
-// ) {
-//   //First need to upload jsonData to pinata to get a cid to upload to the contract
-//   const cid = await uploadJsonToPinata(title, jsonData);
-
-//   //If successful, then we can create the credential type on our contract
-//   if (cid !== null) {
-//     writeContract({
-//       address: contractAddress,
-//       abi: institutionCredentialAbi,
-//       functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-//       args: [title, cid],
-//     });
-//   }
-// }
