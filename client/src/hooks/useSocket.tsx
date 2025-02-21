@@ -16,7 +16,6 @@ export const useSocket = (
   useEffect(() => {
     if (!address) return;
 
-    console.log("Starting up socket connection for address:", address);
     const SOCKET_URL = `${import.meta.env.VITE_SOCKET_BASE}${address}`;
 
     socketRef.current = io(SOCKET_URL, {
@@ -35,9 +34,7 @@ export const useSocket = (
 
     // Set up event handlers
     Object.entries(eventHandlers).forEach(([event, handler]) => {
-      console.log(`Setting up handler for event: ${event}`);
       socketRef.current?.on(event, (data) => {
-        console.log(`Received ${event} event:`, data);
         handler(data);
       });
     });
@@ -45,7 +42,6 @@ export const useSocket = (
     // Cleanup function
     return () => {
       if (socketRef.current) {
-        console.log("Cleaning up socket connection for address:", address);
         Object.keys(eventHandlers).forEach((event) => {
           socketRef.current?.off(event);
         });

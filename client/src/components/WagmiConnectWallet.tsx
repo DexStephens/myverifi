@@ -26,6 +26,7 @@ export function WagmiConnectWallet() {
       }
     };
 
+    //Function to deploy the Institution Credential Contract
     async function onCreateInstitutionCredentialContract(
       contractAddress: Address,
       institutionName: string,
@@ -41,16 +42,14 @@ export function WagmiConnectWallet() {
 
     if (isConnected && user && address) {
       if (!user?.address && !error) {
-        //Update the user address in the database
-        sendAddress(user.email, address);
+        sendAddress(user.email, address); //Update the user address in the database
         //If the user is an issuer, deploy their smart contract, they will have to sign
         if (user.issuer) {
           try {
             onCreateInstitutionCredentialContract(
               import.meta.env.VITE_CREDENTIAL_FACTORY_ADDRESS as Address,
               user.issuer.name,
-              //Just a placeholder uri for now
-              "http://testing/uri.json"
+              "http://testing/uri.json" //Just a placeholder uri for now
             );
           } catch (error) {
             console.error(

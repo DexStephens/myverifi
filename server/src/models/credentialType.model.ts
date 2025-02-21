@@ -34,16 +34,4 @@ export class CredentialTypeModel {
       },
     });
   }
-
-  static async findCredentialTypeByTokenIdAndIssuerId(
-    token_id: bigint,
-    name: string
-  ): Promise<CredentialType | null> {
-    return prisma.credentialType.findFirst({
-      where: {
-        token_id: Number(token_id.toString()),
-        name: name,
-      },
-    });
-  }
 }

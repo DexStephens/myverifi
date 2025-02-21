@@ -58,7 +58,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             issuer: {
               ...currentUser.issuer,
               credential_types: [
-                ...(currentUser.issuer.credential_types || []),
+                ...(currentUser.issuer.credential_types || []), //This makes sure it doesn't break on the first credential type creation
                 { id, name, token_id, issuer_id },
               ],
             },
