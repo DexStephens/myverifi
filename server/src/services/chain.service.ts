@@ -52,22 +52,6 @@ export class ChainService {
             return null;
           }
 
-          // Check for existing credential within transaction
-          const existingCredential = await tx.credentialType.findFirst({
-            where: {
-              token_id: tokenId,
-              issuer_id: user.issuer.id,
-            },
-          });
-
-          if (existingCredential) {
-            console.log("Credential already exists:", {
-              tokenId,
-              issuerId: user.issuer.id,
-            });
-            return null;
-          }
-
           const credentialType = await tx.credentialType.create({
             data: {
               name,
