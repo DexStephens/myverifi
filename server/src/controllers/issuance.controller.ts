@@ -19,4 +19,23 @@ export class IssuanceController {
       next(err);
     }
   }
+
+  static async verify(req: Request, res: Response, next: NextFunction) {
+    try {
+      SchemaValidationUtil.verifyCredentialsSchema.parse(req.body);
+
+      const { email, credential_types } = req.body;
+
+      const result = await IssuanceService.verify(email, credential_types);
+
+      res.status(200).json({
+        status: "success",
+        data: {
+          valid: result,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

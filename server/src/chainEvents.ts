@@ -15,7 +15,7 @@ import { IssuerModel } from "./models/issuer.model";
 
 //NEEDSWORK EVENTUALLY: load contract addresses according to the environment
 
-const publicClient = createPublicClient({
+export const publicClient = createPublicClient({
   chain: hardhat,
   transport: http(),
 });

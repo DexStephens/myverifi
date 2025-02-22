@@ -13,6 +13,19 @@ export class CredentialTypeModel {
     });
   }
 
+  static async findByIds(ids: number[]) {
+    return prisma.credentialType.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        issuer: true,
+      },
+    });
+  }
+
   static async findIssuerCredentialTypes(
     issuer_id: number
   ): Promise<CredentialType[]> {
