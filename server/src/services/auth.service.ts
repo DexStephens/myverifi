@@ -77,8 +77,18 @@ export class AuthService {
 
     return {
       email,
-      holder: newHolder,
-      issuer: newIssuer,
+      holder: newHolder
+        ? {
+            credential_issues: newHolder?.credential_issues ?? [],
+          }
+        : undefined,
+      issuer: newIssuer
+        ? {
+            name: newIssuer?.name,
+            contract_address: newIssuer?.contract_address,
+            credential_types: newIssuer?.credential_types ?? [],
+          }
+        : undefined,
     };
   }
 }

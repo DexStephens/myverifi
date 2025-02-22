@@ -10,5 +10,6 @@ export const CONSTANTS = {
     CONTRACT_CREATION: "contract_creation",
     CREDENTIAL_CREATION: "credential_creation",
     CREDENTIAL_ISSUANCE: "credential_issued",
+    CONNECTION_ERROR: "connect_error",
   },
 };

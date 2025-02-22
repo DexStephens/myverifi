@@ -18,14 +18,14 @@ export class ChainService {
       const user = await UserModel.findUserByAddress(institution);
 
       if (user && user.issuer) {
-        await IssuerModel.updateIssuerContractAddress(
+        const updatedIssuer = await IssuerModel.updateIssuerContractAddress(
           user.issuer.id,
           contractAddress
         );
 
         eventBus.emit(SOCKET_EVENTS.CONTRACT_CREATION, {
           address: user.address,
-          contract_address: contractAddress,
+          contract_address: updatedIssuer.contract_address,
         });
         return;
       }
@@ -62,8 +62,7 @@ export class ChainService {
         });
         return;
       }
-
-      console.log("Unable to create credential type", credential);
+      console.log("Did not process credential creation:", credential);
     }
   }
 

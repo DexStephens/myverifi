@@ -8,7 +8,12 @@ export class IssuerModel {
     contract_address?: string;
   }) {
     return prisma.issuer.create({
-      data,
+      data: {
+        ...data,
+        contract_address: data.contract_address
+          ? data.contract_address.toLowerCase()
+          : null,
+      },
     });
   }
 
@@ -24,7 +29,7 @@ export class IssuerModel {
   ) {
     return prisma.issuer.update({
       where: { id },
-      data: { contract_address },
+      data: { contract_address: contract_address.toLowerCase() },
     });
   }
 
