@@ -8,7 +8,12 @@ export class IssuerModel {
     contract_address?: string;
   }) {
     return prisma.issuer.create({
-      data,
+      data: {
+        ...data,
+        contract_address: data.contract_address
+          ? data.contract_address.toLowerCase()
+          : null,
+      },
     });
   }
 
@@ -24,7 +29,7 @@ export class IssuerModel {
   ) {
     return prisma.issuer.update({
       where: { id },
-      data: { contract_address },
+      data: { contract_address: contract_address.toLowerCase() },
     });
   }
 
@@ -34,6 +39,22 @@ export class IssuerModel {
         contract_address: {
           not: null,
         },
+      },
+    });
+  }
+
+  static getAllWithCredentialTypes() {
+    return prisma.issuer.findMany({
+      where: {
+        contract_address: {
+          not: null,
+        },
+        credential_types: {
+          some: {},
+        },
+      },
+      include: {
+        credential_types: true,
       },
     });
   }

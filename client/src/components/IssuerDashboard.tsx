@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import { useAccount } from "wagmi";
 import { WagmiConnectWallet } from "./WagmiConnectWallet";
 import { useUser } from "../context/UserContext";
-import Testing from "./Testing";
 
 export function IssuerDashboard() {
   const { isConnected } = useAccount();

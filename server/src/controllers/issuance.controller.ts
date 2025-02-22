@@ -20,6 +20,19 @@ export class IssuanceController {
     }
   }
 
+  static async issuers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await IssuanceService.issuers();
+
+      res.status(200).json({
+        status: "success",
+        data,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async verify(req: Request, res: Response, next: NextFunction) {
     try {
       SchemaValidationUtil.verifyCredentialsSchema.parse(req.body);
@@ -32,7 +45,7 @@ export class IssuanceController {
         status: "success",
         data: {
           valid: result,
-        },
+        }, 
       });
     } catch (err) {
       next(err);

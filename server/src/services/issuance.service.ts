@@ -5,6 +5,8 @@ import { ERROR_TITLES } from "../config/constants.config";
 import { CredentialTypeModel } from "../models/credentialType.model";
 import { publicClient } from "../chainEvents";
 import { institutionCredentialAbi } from "../utils/abi.util";
+import { IssuerModel } from "../models/issuer.model";
+
 export class IssuanceService {
   static async address(email: string, address: Address) {
     const user = await UserModel.findUserByEmail(email);
@@ -21,7 +23,13 @@ export class IssuanceService {
       );
     }
 
-    await UserModel.updateUser(user.id, { address });
+    await UserModel.updateUserAddress(user.id, address);
+  }
+
+  static async issuers() {
+    const issuers = await IssuerModel.getAllWithCredentialTypes();
+
+    return issuers;
   }
 
   static async verify(email: string, credentialTypeIds: number[]) {

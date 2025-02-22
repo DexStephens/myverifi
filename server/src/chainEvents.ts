@@ -20,6 +20,8 @@ export const publicClient = createPublicClient({
   transport: http(),
 });
 
+const contractListeners = new Set<Address>();
+
 export async function startBlockchainListener(factoryAddress: Address) {
   publicClient.watchContractEvent({
     address: factoryAddress,
@@ -43,6 +45,12 @@ export async function startBlockchainListener(factoryAddress: Address) {
 }
 
 export function addNewCredentialContractListeners(contractAddress: Address) {
+  if (contractListeners.has(contractAddress)) {
+    return;
+  }
+
+  contractListeners.add(contractAddress);
+
   publicClient.watchContractEvent({
     address: contractAddress,
     abi: institutionCredentialAbi,
