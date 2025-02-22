@@ -15,7 +15,7 @@ type CredentialType = {
   issuer_id: number;
 };
 
-type CredentialIssue = {
+export type CredentialIssue = {
   id: number;
   holder_id: number;
   credential_type_id: number;
