@@ -42,4 +42,20 @@ export class IssuerModel {
       },
     });
   }
+
+  static getAllWithCredentialTypes() {
+    return prisma.issuer.findMany({
+      where: {
+        contract_address: {
+          not: null,
+        },
+        credential_types: {
+          some: {},
+        },
+      },
+      include: {
+        credential_types: true,
+      },
+    });
+  }
 }

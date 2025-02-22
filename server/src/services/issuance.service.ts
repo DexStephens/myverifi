@@ -2,6 +2,7 @@ import { Address } from "viem";
 import { UserModel } from "../models/user.model";
 import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
+import { IssuerModel } from "../models/issuer.model";
 export class IssuanceService {
   static async address(email: string, address: Address) {
     const user = await UserModel.findUserByEmail(email);
@@ -19,5 +20,11 @@ export class IssuanceService {
     }
 
     await UserModel.updateUserAddress(user.id, address);
+  }
+
+  static async issuers() {
+    const issuers = await IssuerModel.getAllWithCredentialTypes();
+
+    return issuers;
   }
 }
