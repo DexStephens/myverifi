@@ -19,4 +19,17 @@ export class IssuanceController {
       next(err);
     }
   }
+
+  static async issuers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await IssuanceService.issuers();
+
+      res.status(200).json({
+        status: "success",
+        data,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
