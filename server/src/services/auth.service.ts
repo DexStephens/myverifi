@@ -40,6 +40,7 @@ export class AuthService {
                 credential_types: user.issuer?.credential_types ?? [],
               }
             : undefined,
+          token: 'ThisIsAToken',
         }
       : null;
   }
@@ -89,6 +90,7 @@ export class AuthService {
             credential_types: newIssuer?.credential_types ?? [],
           }
         : undefined,
+      token: 'ThisIsAToken',
     };
   }
 }

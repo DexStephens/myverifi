@@ -12,6 +12,7 @@ export interface AuthResponse {
   holder?: {
     credential_issues: CredentialIssue[];
   };
+  token?: string;
 }
 
 export interface NewIssuer {

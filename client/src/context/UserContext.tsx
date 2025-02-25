@@ -97,6 +97,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const handleLogout = () => {
     setUser(null);
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     navigate("/login");
   };
 
