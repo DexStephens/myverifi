@@ -19,4 +19,13 @@ export class SchemaValidationUtil {
     email: emailSchema,
     address: z.string(),
   });
+
+  static verifyCredentialsSchema = z.object({
+    email: emailSchema,
+    credential_types: z.array(
+      z.object({
+        credential_type_id: z.number(),
+      })
+    ),
+  });
 }

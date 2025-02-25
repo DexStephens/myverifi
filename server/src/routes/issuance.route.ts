@@ -3,6 +3,8 @@ import { IssuanceController } from "../controllers/issuance.controller";
 const router = express.Router();
 
 router.put("/address", IssuanceController.address);
+router.post("/verify", IssuanceController.verify);
 router.get("/issuers", IssuanceController.issuers);
+
 
 export default router;
