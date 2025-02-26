@@ -1,4 +1,5 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { Address } from "viem";
+import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import {
   Typography,
   Button,
@@ -13,20 +14,16 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
-
+import { useWriteContract } from "wagmi";
 import HomeHeader from "../components/HomeHeader";
-
+import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router";
+import { CONSTANTS } from "../config/constants";
+import { institutionCredentialAbi } from "../utils/abi.util";
 interface CredentialFormData {
   credentialId: string;
   walletAddress: string;
 }
-
-//Placeholder before we can bring in the actual credentials from the server
-const existingCredentials = [
-  { id: "1", title: "Credential 1" },
-  { id: "2", title: "Credential 2" },
-  { id: "3", title: "Credential 3" },
-];
 
 export default function IssueCredential() {
   const [loading, setLoading] = useState(false);
@@ -35,6 +32,39 @@ export default function IssueCredential() {
     credentialId: "",
     walletAddress: "",
   });
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const { writeContract } = useWriteContract();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (!user.issuer) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  const existingCredentials = user?.issuer?.credential_types || [
+    {
+      token_id: "0",
+      name: "No Credentials, Create a Credential First",
+    },
+  ];
+
+  async function onIssueInstitutionCredential(
+    contractAddress: Address,
+    recipient: Address,
+    tokenId: bigint
+  ) {
+    await writeContract({
+      address: contractAddress,
+      abi: institutionCredentialAbi,
+      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_ISSUE,
+      args: [recipient, tokenId],
+    });
+
+    return true;
+  }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,7 +73,7 @@ export default function IssueCredential() {
       [name]: value,
     }));
   };
-  
+
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -66,8 +96,23 @@ export default function IssueCredential() {
       setLoading(true);
       setError(null);
       try {
-        // TODO: Add your credential issuance logic here
-        console.log("Credential data:", formData);
+        const contractAddress = user?.issuer?.contract_address;
+        if (!contractAddress) {
+          alert(
+            "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
+          );
+          return;
+        }
+        if (formData.credentialId === "0") {
+          alert("Please create a credential first");
+          return;
+        }
+        console.log(formData.credentialId.slice(0, -1));
+        onIssueInstitutionCredential(
+          contractAddress,
+          formData.walletAddress as Address,
+          BigInt(formData.credentialId.slice(0, -1))
+        );
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
@@ -101,8 +146,10 @@ export default function IssueCredential() {
 
               <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
-                <FormControl fullWidth required>
-                    <InputLabel id="credential-select-label">Select Credential</InputLabel>
+                  <FormControl fullWidth required>
+                    <InputLabel id="credential-select-label">
+                      Select Credential
+                    </InputLabel>
                     <Select
                       labelId="credential-select-label"
                       name="credentialId"
@@ -111,8 +158,11 @@ export default function IssueCredential() {
                       label="Select Credential"
                     >
                       {existingCredentials.map((credential) => (
-                        <MenuItem key={credential.id} value={credential.id}>
-                          {credential.title}
+                        <MenuItem
+                          key={credential.token_id}
+                          value={credential.token_id}
+                        >
+                          {credential.name}
                         </MenuItem>
                       ))}
                     </Select>
@@ -129,7 +179,26 @@ export default function IssueCredential() {
                     />
                   </FormControl>
 
-                  <Stack alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      sx={{
+                        minWidth: "200px",
+                        py: 1.5,
+                        "&:hover": {
+                          backgroundColor: "#2c387e",
+                        },
+                      }}
+                      onClick={() => navigate("/createcredential")}
+                    >
+                      Create a Credential
+                    </Button>
                     <Button
                       type="submit"
                       variant="contained"
