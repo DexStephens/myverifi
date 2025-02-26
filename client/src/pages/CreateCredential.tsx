@@ -11,7 +11,6 @@ import {
   Card,
   CardContent,
   IconButton,
-  Box,
 } from "@mui/material";
 import { useWriteContract } from "wagmi";
 import { institutionCredentialAbi } from "../utils/abi.util";
@@ -135,7 +134,7 @@ export default function CreateCredential() {
   return (
     <>
       <HomeHeader showBackButton={true} />
-      <Container sx={{ py: 4 }}>
+      <Container sx={{ py: 4 }} maxWidth="sm">
         <Card>
           <CardContent>
             <Typography variant="h4" component="h1" align="center" gutterBottom>
@@ -208,7 +207,15 @@ export default function CreateCredential() {
               </Stack>
             </form>
 
-            <Box sx={{ mt: 3 }}>
+            <Stack sx={{ mt: 3 }} direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/issuecredential")}
+                fullWidth
+              >
+                Issue Credentials
+              </Button>
               <Button
                 variant="outlined"
                 color="secondary"
@@ -217,7 +224,7 @@ export default function CreateCredential() {
               >
                 View Created Credentials
               </Button>
-            </Box>
+            </Stack>
           </CardContent>
         </Card>
       </Container>
