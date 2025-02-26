@@ -45,7 +45,7 @@ export class IssuanceController {
         status: "success",
         data: {
           valid: result,
-        }, 
+        },
       });
     } catch (err) {
       next(err);
