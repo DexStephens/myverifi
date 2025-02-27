@@ -30,9 +30,11 @@ export async function startBlockchainListener(factoryAddress: Address) {
     onLogs: (logs) => {
       const contractsCreated = parseLogs<ContractCreationArgs>(logs as never);
       ChainService.onContractCreated(contractsCreated);
-      contractsCreated.forEach((contract) =>
-        addNewCredentialContractListeners(contract.contractAddress)
-      );
+      contractsCreated.forEach((contract) => {
+        addNewCredentialContractListeners(
+          contract.contractAddress.toLowerCase() as Address
+        );
+      });
     },
   });
 

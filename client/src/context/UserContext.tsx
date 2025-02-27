@@ -29,13 +29,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    const sessionUser = sessionStorage.getItem("user");
+    if (!user) {
+      const sessionUser = sessionStorage.getItem("user");
 
-    if (sessionUser !== null) {
-      setUser(JSON.parse(sessionUser));
-      // navigate("/dashboard");
+      if (sessionUser !== null) {
+        setUser(JSON.parse(sessionUser));
+        navigate("/dashboard");
+      }
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   useSocket(user?.address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
