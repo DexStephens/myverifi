@@ -1,16 +1,13 @@
-version: "3.9"
-
 services:
-  nginx-react:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: myverifi
     ports:
-      - 3000:80
-
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    ports:
-      - "5005:5000"
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
