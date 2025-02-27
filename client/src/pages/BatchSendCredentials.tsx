@@ -62,7 +62,7 @@ export default function BatchSendCredentials() {
     try {
         const extractedEmails = await parseCSV(file);
         if (extractedEmails instanceof Error) {
-          throw "Error parsing CSV: " + extractedEmails.message;
+          throw new Error("Error parsing CSV: " + extractedEmails.message);
         }
         console.log("Extracted emails:", extractedEmails);
         setEmails(extractedEmails);
