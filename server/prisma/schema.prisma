@@ -18,7 +18,7 @@ model User {
   id                Int                @id @default(autoincrement())
   email             String             @unique
   password_hash     String
-  address           String?
+  address           String?            @unique
   
   // One-to-one relation fields with either role
   holder            Holder?
@@ -37,7 +37,7 @@ model Issuer {
   userId            Int                @unique
   user              User               @relation(fields: [userId], references: [id])
   name              String
-  contract_address  String?
+  contract_address  String?            @unique
   // An institution can issue several credential types
   credential_types  CredentialType[]
 }

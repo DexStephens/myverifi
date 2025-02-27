@@ -48,7 +48,7 @@ export class UserModel {
   }
 
   static async findUserByAddress(address: string) {
-    return prisma.user.findFirst({
+    return prisma.user.findUnique({
       where: { address: address.toLowerCase() },
       include: {
         holder: {
