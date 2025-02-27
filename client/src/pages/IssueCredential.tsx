@@ -26,6 +26,7 @@ interface CredentialFormData {
 }
 
 export default function IssueCredential() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
@@ -33,7 +34,6 @@ export default function IssueCredential() {
     walletAddress: "",
   });
   const { user } = useUser();
-  const navigate = useNavigate();
   const { writeContract } = useWriteContract();
 
   useEffect(() => {
@@ -217,6 +217,13 @@ export default function IssueCredential() {
                   </Stack>
                 </Stack>
               </form>
+
+              {/* Navigate to Batch Send Page */}
+              <Stack alignItems="center">
+                <Button variant="outlined" color="secondary" onClick={() => navigate("/batchsend")} sx={{ minWidth: "200px", py: 1.5 }}>
+                  Batch Send Credentials
+                </Button>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
