@@ -60,24 +60,26 @@ export default function BatchSendCredentials() {
     setError(null);
 
     try {
-        const extractedEmails = await parseCSV(file);
-        if (extractedEmails instanceof Error) {
-          throw new Error("Error parsing CSV: " + extractedEmails.message);
-        }
-        console.log("Extracted emails:", extractedEmails);
-        setEmails(extractedEmails);
-        setError(null);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred.");
-        }
+      const extractedEmails = await parseCSV(file);
+      if (extractedEmails instanceof Error) {
+        throw new Error("Error parsing CSV: " + extractedEmails.message);
       }
-    finally {
-        setLoading(false);
+      console.log("Extracted emails:", extractedEmails);
+      setEmails(extractedEmails);
+      setError(null);
+      //NEEDSWORK: 1. validate the emails first with the backend to get their wallet addresses 2. Write credentials to the blockchain
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  //NEEDSWORK: Update to use the issuer's credential types instead of the hard coded ones, offering a redirect to create a credential if they do not have any yet
 
   return (
     <>
@@ -90,12 +92,18 @@ export default function BatchSendCredentials() {
                 Batch Send Credentials
               </Typography>
 
-              {error && <Typography color="error" align="center">{error}</Typography>}
+              {error && (
+                <Typography color="error" align="center">
+                  {error}
+                </Typography>
+              )}
 
               <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
                   <FormControl fullWidth required>
-                    <InputLabel id="credential-select-label">Select Credential</InputLabel>
+                    <InputLabel id="credential-select-label">
+                      Select Credential
+                    </InputLabel>
                     <Select
                       labelId="credential-select-label"
                       value={selectedCredential}
@@ -110,9 +118,18 @@ export default function BatchSendCredentials() {
                     </Select>
                   </FormControl>
 
-                  <input type="file" accept=".csv" onChange={handleFileChange} />
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                  />
 
-                  <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                  >
                     {loading ? "Sending..." : "Submit"}
                   </Button>
                 </Stack>
