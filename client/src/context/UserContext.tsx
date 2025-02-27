@@ -33,7 +33,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (sessionUser !== null) {
       setUser(JSON.parse(sessionUser));
-      navigate("/dashboard");
+      // navigate("/dashboard");
     }
   }, [navigate]);
 

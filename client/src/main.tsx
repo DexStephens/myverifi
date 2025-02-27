@@ -14,6 +14,7 @@ import { config } from "./components/WagmiConfig.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./context/UserContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import BatchSendCredentials from "./pages/BatchSendCredentials.tsx";
 
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
@@ -39,6 +40,14 @@ createRoot(document.getElementById("root")!).render(
                 element={
                   <ProtectedRoute>
                     <IssueCredential />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/batchsend"
+                element={
+                  <ProtectedRoute>
+                    <BatchSendCredentials />
                   </ProtectedRoute>
                 }
               />

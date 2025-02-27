@@ -13,6 +13,7 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import HomeHeader from "../components/HomeHeader";
 
@@ -21,7 +22,6 @@ interface CredentialFormData {
   walletAddress: string;
 }
 
-//Placeholder before we can bring in the actual credentials from the server
 const existingCredentials = [
   { id: "1", title: "Credential 1" },
   { id: "2", title: "Credential 2" },
@@ -29,6 +29,7 @@ const existingCredentials = [
 ];
 
 export default function IssueCredential() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
@@ -43,7 +44,7 @@ export default function IssueCredential() {
       [name]: value,
     }));
   };
-  
+
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -101,7 +102,7 @@ export default function IssueCredential() {
 
               <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
-                <FormControl fullWidth required>
+                  <FormControl fullWidth required>
                     <InputLabel id="credential-select-label">Select Credential</InputLabel>
                     <Select
                       labelId="credential-select-label"
@@ -130,24 +131,19 @@ export default function IssueCredential() {
                   </FormControl>
 
                   <Stack alignItems="center">
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                      sx={{
-                        minWidth: "200px",
-                        py: 1.5,
-                        "&:hover": {
-                          backgroundColor: "#2c387e",
-                        },
-                      }}
-                    >
+                    <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ minWidth: "200px", py: 1.5 }}>
                       {loading ? "Issuing..." : "Issue Credential"}
                     </Button>
                   </Stack>
                 </Stack>
               </form>
+
+              {/* Navigate to Batch Send Page */}
+              <Stack alignItems="center">
+                <Button variant="outlined" color="secondary" onClick={() => navigate("/batchsend")} sx={{ minWidth: "200px", py: 1.5 }}>
+                  Batch Send Credentials
+                </Button>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
