@@ -32,6 +32,7 @@ export default function Login() {
       console.log("Login response:", response);
 
       if (response.status) {
+        sessionStorage.setItem("token", response.user.token);
         sessionStorage.setItem("user", JSON.stringify(response.user));
         navigate("/dashboard");
       } else {

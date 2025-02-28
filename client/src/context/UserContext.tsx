@@ -28,6 +28,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!user) {
+      const sessionUser = sessionStorage.getItem("user");
+
+      if (sessionUser !== null) {
+        setUser(JSON.parse(sessionUser));
+        navigate("/dashboard");
+      }
+    }
+  }, [navigate, user]);
+
   useSocket(user?.address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
@@ -97,8 +108,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const handleLogout = () => {
     setUser(null);
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     navigate("/login");
   };
+
+  console.log("user", user);
 
   return (
     <UserContext.Provider value={{ user, setUser, logout: handleLogout }}>

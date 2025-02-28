@@ -44,6 +44,7 @@ export async function updateUserAddress(
   setUser: React.Dispatch<React.SetStateAction<User | null>>
 ) {
   try {
+    const token = sessionStorage.getItem("token");
     const response = await fetch("http://localhost:3000/issuances/address", {
       method: "PUT",
       body: JSON.stringify({
@@ -52,6 +53,7 @@ export async function updateUserAddress(
       }),
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       },
     });
 
