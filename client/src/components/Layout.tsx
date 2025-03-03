@@ -4,7 +4,7 @@ import HomeHeader from "./HomeHeader";
 const Layout = () => {
   return (
     <>
-      <HomeHeader showBackButton={true} />
+      <HomeHeader />
       <Outlet />
     </>
   );
