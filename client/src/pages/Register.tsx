@@ -10,10 +10,9 @@ import {
   Box,
   Container,
   FormControlLabel,
-  Checkbox
+  Checkbox,
 } from "@mui/material";
 import "./Home.scss";
-import HomeHeader from "../components/HomeHeader";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
 
@@ -111,105 +110,116 @@ export default function Register() {
   });
 
   return (
-    <>
-      <HomeHeader showBackButton={true} />
-      <div className="home-wrapper">
-        <Container
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-          }}
-        >
-          <Box sx={{ width: { xs: "100%", md: "50%" } }}>
-            <Card>
-              <CardContent>
-                <Typography
-                  variant="h4"
-                  component="h1"
-                  align="center"
-                  gutterBottom
-                >
-                  {formData.isOrganization? "Organization Registration" : "Registration"}
+    <div className="home-wrapper">
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+          <Card>
+            <CardContent>
+              <Typography
+                variant="h4"
+                component="h1"
+                align="center"
+                gutterBottom
+              >
+                {formData.isOrganization
+                  ? "Organization Registration"
+                  : "Registration"}
+              </Typography>
+              {error && (
+                <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+                  {error}
                 </Typography>
-                {error && (
-                  <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
-                    {error}
-                  </Typography>
-                )}
-                <FormControl fullWidth margin="normal">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        name="isOrganization"
-                        checked={formData.isOrganization}
-                        onChange={(e) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            isOrganization: e.target.checked,
-                            title: e.target.checked ? "" : undefined,
-                          }))
-                        }
-                      />
-                    }
-                    label="I am an organization that would like to issue credentials"
+              )}
+              <FormControl fullWidth margin="normal">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="isOrganization"
+                      checked={formData.isOrganization}
+                      onChange={(e) =>
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          isOrganization: e.target.checked,
+                          title: e.target.checked ? "" : undefined,
+                        }))
+                      }
+                    />
+                  }
+                  label="I am an organization that would like to issue credentials"
+                />
+              </FormControl>
+              <form onSubmit={handleSubmit}>
+                <FormControl fullWidth margin="normal" error={errors.email}>
+                  <TextField
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    fullWidth
                   />
                 </FormControl>
-                <form onSubmit={handleSubmit}>
-                  <FormControl fullWidth margin="normal" error={errors.email}>
+                <FormControl fullWidth margin="normal" error={errors.password}>
+                  <TextField
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                    fullWidth
+                  />
+                </FormControl>
+                {formData.isOrganization && (
+                  <FormControl fullWidth margin="normal" error={errors.title}>
                     <TextField
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
+                      label="Organization Name"
+                      name="title"
+                      type="text"
+                      value={formData.title}
                       onChange={handleInputChange}
-                      required
+                      required={formData.isOrganization}
                       fullWidth
                     />
                   </FormControl>
-                  <FormControl fullWidth margin="normal" error={errors.password}>
-                    <TextField
-                      label="Password"
-                      name="password"
-                      type="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                      fullWidth
-                    />
-                  </FormControl>
-                  {formData.isOrganization && (
-                    <FormControl fullWidth margin="normal" error={errors.title}>
-                      <TextField
-                        label="Organization Name"
-                        name="title"
-                        type="text"
-                        value={formData.title}
-                        onChange={handleInputChange}
-                        required={formData.isOrganization}
-                        fullWidth
-                      />
-                    </FormControl>
-                  )}
-                  <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
-                    <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                      {loading ? "Registering..." : "Register"}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleExistingUser}
-                    >
-                      Already have an account? Login
-                    </Button>
-                  </Box>
-                </form>
-              </CardContent>
-            </Card>
-          </Box>
-        </Container>
-      </div>
-    </>
+                )}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 2,
+                    mt: 4,
+                  }}
+                >
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                  >
+                    {loading ? "Registering..." : "Register"}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleExistingUser}
+                  >
+                    Already have an account? Login
+                  </Button>
+                </Box>
+              </form>
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
+    </div>
   );
 }
