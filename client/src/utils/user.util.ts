@@ -53,7 +53,7 @@ export async function updateUserAddress(
       }),
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
 
@@ -78,14 +78,36 @@ export async function updateUserAddress(
 }
 
 export async function getUserAddress(email: string) {
-  try{
+  try {
     const token = sessionStorage.getItem("token");
-    const response = await fetch(`http:localhost:3000/issuances/user/${email}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    const response = await fetch(
+      `http:localhost:3000/issuances/user/${email}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      return {
+        status: true,
+        address: data.data.address,
+      };
+    } else {
+      return {
+        status: false,
+        message: parseApiError(data),
+      };
+    }
+  } catch (error) {
+    return {
+      status: false,
+      message: "Failed to fetch user address from email: " + error,
+    };
   }
 }
