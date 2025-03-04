@@ -1,7 +1,6 @@
 import { Typography, Button, Grid2, Card, CardContent } from "@mui/material";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import HomeSection from "../components/HomeSection";
-import HomeHeader from "../components/HomeHeader";
 import "./Home.scss";
 import { useUser } from "../context/UserContext";
 export default function Home() {
@@ -18,7 +17,6 @@ export default function Home() {
 
   return (
     <div className="home-wrapper">
-      <HomeHeader showBackButton={false} />
       {/* Call to Action Section */}
       <HomeSection>
         <Grid2
@@ -42,6 +40,16 @@ export default function Home() {
             onClick={handleGetVerified}
           >
             Get Verified
+          </Button>
+          <Button
+            component={Link}
+            to="/verify"
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleGetVerified}
+          >
+            Verify Credentials
           </Button>
         </Grid2>
       </HomeSection>

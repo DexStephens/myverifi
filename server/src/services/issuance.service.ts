@@ -50,6 +50,8 @@ export class IssuanceService {
       throw new ControllerError(ERROR_TITLES.DNE, "Not all id's are valid");
     }
 
+    const response = [];
+
     for (const credentialType of credentialTypes) {
       const valid = await publicClient.readContract({
         address: credentialType.issuer.contract_address as Address,
@@ -58,11 +60,12 @@ export class IssuanceService {
         args: [user.address, credentialType.token_id],
       });
 
-      if (!valid) {
-        return false;
-      }
+      response.push({
+        credential_type_id: credentialType.id,
+        valid,
+      });
     }
 
-    return true;
+    return response;
   }
 }

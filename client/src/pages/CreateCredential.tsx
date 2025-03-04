@@ -1,5 +1,4 @@
 import { Address } from "viem";
-import HomeHeader from "../components/HomeHeader";
 import { useUser } from "../context/UserContext";
 import { useState, FormEvent, useEffect } from "react";
 import {
@@ -133,7 +132,6 @@ export default function CreateCredential() {
 
   return (
     <>
-      <HomeHeader showBackButton={true} />
       <Container sx={{ py: 4 }} maxWidth="sm">
         <Card>
           <CardContent>

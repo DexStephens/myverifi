@@ -22,10 +22,6 @@ export class SchemaValidationUtil {
 
   static verifyCredentialsSchema = z.object({
     email: emailSchema,
-    credential_types: z.array(
-      z.object({
-        credential_type_id: z.number(),
-      })
-    ),
+    credential_types: z.array(z.number()),
   });
 }

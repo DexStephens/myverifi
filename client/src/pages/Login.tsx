@@ -1,7 +1,6 @@
 import { useState, FormEvent } from "react";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router";
-import HomeHeader from "../components/HomeHeader";
 import { loginUser } from "../utils/login.util";
 import { useUser } from "../context/UserContext";
 
@@ -51,7 +50,6 @@ export default function Login() {
 
   return (
     <>
-      <HomeHeader showBackButton={true} />
       <Container maxWidth="xs">
         <Box
           sx={{

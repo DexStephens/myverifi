@@ -26,7 +26,8 @@ type Holder = {
   credential_issues: CredentialIssue[];
 };
 
-type Issuer = {
+export type Issuer = {
+  id: number;
   name: string;
   contract_address?: Address;
   credential_types: CredentialType[];
@@ -53,7 +54,7 @@ export async function updateUserAddress(
       }),
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
 
