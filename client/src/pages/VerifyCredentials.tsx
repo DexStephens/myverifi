@@ -103,7 +103,7 @@ export default function VerifyCredentials() {
           <CardContent>
             <Stack spacing={3}>
               <Typography variant="h4" align="center" sx={{ color: "#333" }}>
-                Batch Send Credentials
+                Verify Credentials
               </Typography>
               {error && (
                 <Typography color="error" align="center">
