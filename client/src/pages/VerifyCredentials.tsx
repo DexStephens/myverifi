@@ -4,6 +4,7 @@ import AdditionIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   CardContent,
@@ -20,14 +21,17 @@ import {
 import { Issuer } from "../utils/user.util";
 
 export default function VerifyCredentials() {
-  //NEEDSWORK: List of Insitutions and credentials, with one email
   const [issuers, setIssuers] = useState<Issuer[] | null>(null);
   const [email, setEmail] = useState("");
   const [credentials, setCredentials] = useState<CredentialRequest[]>([
     { issuerId: -1, tokenId: "" },
   ]);
+  const [displayMessage, setDisplayMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const credentialTypes =
+    issuers?.flatMap((issuer) => issuer.credential_types) ?? [];
 
   useEffect(() => {
     const fetchIssuers = async () => {
@@ -54,7 +58,6 @@ export default function VerifyCredentials() {
       setError("Email is required");
       return;
     }
-    console.log(credentials);
 
     if (
       credentials.filter((c) => c.issuerId === -1 || c.tokenId === "").length >
@@ -64,6 +67,8 @@ export default function VerifyCredentials() {
       return;
     }
 
+    setError(null);
+    setDisplayMessage(null);
     setSubmitting(true);
 
     const response = await verifyCredentials(
@@ -77,13 +82,41 @@ export default function VerifyCredentials() {
       )
     );
 
-    if (response.status) {
-      if (response.valid) {
-        setError("Credentials verified");
+    if (response.status && response.valid) {
+      if (!response.valid.find((v) => !v.valid)) {
+        setDisplayMessage(
+          `${response.valid.length > 1 ? "All " : ""}Credentials verified`
+        );
       } else {
-        setError("Credentials not verified");
+        const successful = response.valid
+          .filter((v) => v.valid)
+          .map((v) => {
+            const credential = credentialTypes.find(
+              (ct) => ct.id === v.credential_type_id
+            );
+
+            return credential?.name;
+          });
+        const failed = response.valid
+          .filter((v) => !v.valid)
+          .map((v) => {
+            const credential = credentialTypes.find(
+              (ct) => ct.id === v.credential_type_id
+            );
+
+            return credential?.name;
+          });
+
+        if (successful.length > 0) {
+          setDisplayMessage(
+            `${successful.length} Credential(s) verified: ${successful.join(
+              ", "
+            )}`
+          );
+        }
+        setError(`${failed.length} Credential(s) failed: ${failed.join(", ")}`);
       }
-    } else {
+    } else if (response.error) {
       setError(response.error);
     }
 
@@ -94,8 +127,6 @@ export default function VerifyCredentials() {
     return <h4>Loading...</h4>;
   }
 
-  //NEEDSWORK: handle submitting state
-
   return (
     <>
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
@@ -105,11 +136,10 @@ export default function VerifyCredentials() {
               <Typography variant="h4" align="center" sx={{ color: "#333" }}>
                 Verify Credentials
               </Typography>
-              {error && (
-                <Typography color="error" align="center">
-                  {error}
-                </Typography>
+              {displayMessage && (
+                <Alert severity="success">{displayMessage}</Alert>
               )}
+              {error && <Alert severity="error">{error}</Alert>}
 
               <form onSubmit={onSubmit}>
                 {credentials.map((credential, idx) => (
@@ -174,19 +204,6 @@ export default function VerifyCredentials() {
                             )?.name || null
                         }
                         onChange={(_, newValue) => {
-                          console.log(
-                            newValue,
-
-                            issuers
-                              .find(
-                                (issuer) =>
-                                  issuer.id === credentials[0].issuerId
-                              )
-                              ?.credential_types.find(
-                                (ct) => ct.name == newValue
-                              )
-                              ?.token_id.toString()
-                          );
                           setCredentials((current) =>
                             current.map((c, i) =>
                               i === idx
@@ -241,7 +258,7 @@ export default function VerifyCredentials() {
                   required
                   sx={{ backgroundColor: "white", borderRadius: 2 }}
                 />
-                <Button type="submit" variant="contained">
+                <Button type="submit" variant="contained" loading={submitting}>
                   Verify
                 </Button>
               </form>

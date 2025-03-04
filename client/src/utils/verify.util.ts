@@ -43,16 +43,29 @@ export async function verifyCredentials(
       body: JSON.stringify({ email, credential_types }),
     });
 
-    const data = await response.json();
-    console.log("Verify response:", data);
+    const data:
+      | {
+          status: string;
+          data: {
+            result: { valid: boolean; credential_type_id: number }[];
+          };
+        }
+      | { status: string; error: string[] | string } = await response.json();
 
-    if (data.status === "success") {
-      return { status: true, valid: data.data.valid };
+    if (
+      data.status === "success" &&
+      "data" in data &&
+      typeof data.data === "object" &&
+      "result" in data.data
+    ) {
+      return { status: true, valid: data.data.result };
     } else {
       return {
         status: false,
         error:
-          typeof data.error === "string" ? data.error : "Invalid credentials",
+          "error" in data && typeof data.error === "string"
+            ? data.error
+            : "Invalid credentials",
       };
     }
   } catch (error) {
