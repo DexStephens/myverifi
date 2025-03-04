@@ -15,7 +15,6 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useWriteContract } from "wagmi";
-import HomeHeader from "../components/HomeHeader";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import { CONSTANTS } from "../config/constants";
@@ -123,111 +122,113 @@ export default function IssueCredential() {
   };
 
   return (
-    <>
-      <HomeHeader showBackButton={true} />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Card sx={{ backgroundColor: "#f5f5f5" }}>
-          <CardContent>
-            <Stack spacing={3}>
-              <Typography
-                variant="h4"
-                component="h1"
-                align="center"
-                sx={{ color: "#333" }}
-              >
-                Issue New Credential
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Card sx={{ backgroundColor: "#f5f5f5" }}>
+        <CardContent>
+          <Stack spacing={3}>
+            <Typography
+              variant="h4"
+              component="h1"
+              align="center"
+              sx={{ color: "#333" }}
+            >
+              Issue New Credential
+            </Typography>
+
+            {error && (
+              <Typography color="error" align="center">
+                {error}
               </Typography>
+            )}
 
-              {error && (
-                <Typography color="error" align="center">
-                  {error}
-                </Typography>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={3}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="credential-select-label">
-                      Select Credential
-                    </InputLabel>
-                    <Select
-                      labelId="credential-select-label"
-                      name="credentialId"
-                      value={formData.credentialId}
-                      onChange={handleSelectChange}
-                      label="Select Credential"
-                    >
-                      {existingCredentials.map((credential) => (
-                        <MenuItem
-                          key={credential.token_id}
-                          value={credential.token_id}
-                        >
-                          {credential.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <FormControl fullWidth required>
-                    <TextField
-                      label="Wallet Address"
-                      name="walletAddress"
-                      value={formData.walletAddress}
-                      onChange={handleInputChange}
-                      required
-                      fullWidth
-                    />
-                  </FormControl>
-
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                    justifyContent="center"
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <FormControl fullWidth required>
+                  <InputLabel id="credential-select-label">
+                    Select Credential
+                  </InputLabel>
+                  <Select
+                    labelId="credential-select-label"
+                    name="credentialId"
+                    value={formData.credentialId}
+                    onChange={handleSelectChange}
+                    label="Select Credential"
                   >
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{
-                        minWidth: "200px",
-                        py: 1.5,
-                        "&:hover": {
-                          backgroundColor: "#2c387e",
-                        },
-                      }}
-                      onClick={() => navigate("/createcredential")}
-                    >
-                      Create a Credential
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                      sx={{
-                        minWidth: "200px",
-                        py: 1.5,
-                        "&:hover": {
-                          backgroundColor: "#2c387e",
-                        },
-                      }}
-                    >
-                      {loading ? "Issuing..." : "Issue Credential"}
-                    </Button>
-                  </Stack>
-                </Stack>
-              </form>
+                    {existingCredentials.map((credential) => (
+                      <MenuItem
+                        key={credential.token_id}
+                        value={credential.token_id}
+                      >
+                        {credential.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
 
-              {/* Navigate to Batch Send Page */}
-              <Stack alignItems="center">
-                <Button variant="outlined" color="secondary" onClick={() => navigate("/batchsend")} sx={{ minWidth: "200px", py: 1.5 }}>
-                  Batch Send Credentials
-                </Button>
+                <FormControl fullWidth required>
+                  <TextField
+                    label="Wallet Address"
+                    name="walletAddress"
+                    value={formData.walletAddress}
+                    onChange={handleInputChange}
+                    required
+                    fullWidth
+                  />
+                </FormControl>
+
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{
+                      minWidth: "200px",
+                      py: 1.5,
+                      "&:hover": {
+                        backgroundColor: "#2c387e",
+                      },
+                    }}
+                    onClick={() => navigate("/createcredential")}
+                  >
+                    Create a Credential
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                    sx={{
+                      minWidth: "200px",
+                      py: 1.5,
+                      "&:hover": {
+                        backgroundColor: "#2c387e",
+                      },
+                    }}
+                  >
+                    {loading ? "Issuing..." : "Issue Credential"}
+                  </Button>
+                </Stack>
               </Stack>
+            </form>
+
+            {/* Navigate to Batch Send Page */}
+            <Stack alignItems="center">
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/batchsend")}
+                sx={{ minWidth: "200px", py: 1.5 }}
+              >
+                Batch Send Credentials
+              </Button>
             </Stack>
-          </CardContent>
-        </Card>
-      </Container>
-    </>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Container>
   );
 }

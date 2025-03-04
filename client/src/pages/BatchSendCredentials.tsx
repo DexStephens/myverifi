@@ -12,7 +12,6 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
-import HomeHeader from "../components/HomeHeader";
 import { parseCSV } from "../utils/csv.util";
 
 const existingCredentials = [
@@ -82,62 +81,55 @@ export default function BatchSendCredentials() {
   //NEEDSWORK: Update to use the issuer's credential types instead of the hard coded ones, offering a redirect to create a credential if they do not have any yet
 
   return (
-    <>
-      <HomeHeader showBackButton={true} />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Card sx={{ backgroundColor: "#f5f5f5" }}>
-          <CardContent>
-            <Stack spacing={3}>
-              <Typography variant="h4" align="center" sx={{ color: "#333" }}>
-                Batch Send Credentials
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Card sx={{ backgroundColor: "#f5f5f5" }}>
+        <CardContent>
+          <Stack spacing={3}>
+            <Typography variant="h4" align="center" sx={{ color: "#333" }}>
+              Batch Send Credentials
+            </Typography>
+
+            {error && (
+              <Typography color="error" align="center">
+                {error}
               </Typography>
+            )}
 
-              {error && (
-                <Typography color="error" align="center">
-                  {error}
-                </Typography>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={3}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="credential-select-label">
-                      Select Credential
-                    </InputLabel>
-                    <Select
-                      labelId="credential-select-label"
-                      value={selectedCredential}
-                      onChange={handleSelectChange}
-                      label="Select Credential"
-                    >
-                      {existingCredentials.map((credential) => (
-                        <MenuItem key={credential.id} value={credential.id}>
-                          {credential.title}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleFileChange}
-                  />
-
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <FormControl fullWidth required>
+                  <InputLabel id="credential-select-label">
+                    Select Credential
+                  </InputLabel>
+                  <Select
+                    labelId="credential-select-label"
+                    value={selectedCredential}
+                    onChange={handleSelectChange}
+                    label="Select Credential"
                   >
-                    {loading ? "Sending..." : "Submit"}
-                  </Button>
-                </Stack>
-              </form>
-            </Stack>
-          </CardContent>
-        </Card>
-      </Container>
-    </>
+                    {existingCredentials.map((credential) => (
+                      <MenuItem key={credential.id} value={credential.id}>
+                        {credential.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <input type="file" accept=".csv" onChange={handleFileChange} />
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Submit"}
+                </Button>
+              </Stack>
+            </form>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Container>
   );
 }

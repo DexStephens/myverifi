@@ -26,7 +26,8 @@ type Holder = {
   credential_issues: CredentialIssue[];
 };
 
-type Issuer = {
+export type Issuer = {
+  id: number;
   name: string;
   contract_address?: Address;
   credential_types: CredentialType[];

@@ -44,8 +44,8 @@ export class IssuanceController {
       res.status(200).json({
         status: "success",
         data: {
-          valid: result,
-        }, 
+          result,
+        },
       });
     } catch (err) {
       next(err);
