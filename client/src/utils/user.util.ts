@@ -76,3 +76,16 @@ export async function updateUserAddress(
     return { status: false };
   }
 }
+
+export async function getUserAddress(email: string) {
+  try{
+    const token = sessionStorage.getItem("token");
+    const response = await fetch(`http:localhost:3000/issuances/user/${email}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+  }
+}
