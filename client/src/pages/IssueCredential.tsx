@@ -118,7 +118,6 @@ export default function IssueCredential() {
         if (!userAddress) {
           return;
         }
-        console.log(userAddress);
 
         const credID = BigInt(formData.credentialId.slice(0, -1));
         onIssueInstitutionCredential(
