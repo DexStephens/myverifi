@@ -92,6 +92,9 @@ export default function IssueCredential() {
     if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address");
       return false;
+    } else if (formData.email === user?.email) {
+      setError("You cannot issue a credential to yourself");
+      return false;
     }
     return true;
   };
