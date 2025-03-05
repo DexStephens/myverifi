@@ -16,9 +16,10 @@ import {
 } from "@mui/material";
 import { useWriteContract } from "wagmi";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { CONSTANTS } from "../config/constants";
 import { institutionCredentialAbi } from "../utils/abi.util";
+
 interface CredentialFormData {
   credentialId: string;
   walletAddress: string;
@@ -26,16 +27,21 @@ interface CredentialFormData {
 
 export default function IssueCredential() {
   const navigate = useNavigate();
+  const { credentialType } = useParams<{ credentialType: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
-    credentialId: "",
+    credentialId: credentialType || "",
     walletAddress: "",
   });
   const { user } = useUser();
   const { writeContract } = useWriteContract();
 
   useEffect(() => {
+    console.log("credentialType:", credentialType); // Add logging
+    if (!credentialType) {
+      setError("Credential type is missing from the URL");
+    }
     if (!user) {
       navigate("/login");
     } else if (!user.issuer) {
