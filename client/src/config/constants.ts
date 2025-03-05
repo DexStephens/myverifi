@@ -12,14 +12,4 @@ export const CONSTANTS = {
     CREDENTIAL_ISSUANCE: "credential_issued",
     CONNECTION_ERROR: "connect_error",
   },
-  THEME: {
-    PRIMARY: "#1C4670",
-    SECONDARY: "#278AB0",
-    TERTIARY: "#EAEAE0",
-    ACCENT: "#1DC690",
-    ERROR: "#D1435B",
-    FONT_FAMILY: ["Montserrat", "Lora", "Hind Madurai"],
-    FONT_SIZE: 18,
-    SPACING: 8,
-  },
 };

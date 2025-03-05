@@ -1,0 +1,44 @@
+// theme constants
+$primary: #1c4670;
+$secondary: #278ab0;
+$tertiary: #eaeae0;
+$accent: #1dc690;
+$error: #d1435b;
+
+// Font settings
+$font-family: "Montserrat", "Lora", "Hind Madurai";
+$font-size: 16px;
+$spacing: 8px;
+
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: $tertiary;
+  font-family: $font-family;
+  font-size: $font-size;
+}
+
+.card {
+  background-color: $primary;
+  color: $primary;
+  transition: transform 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.05);
+    background-color: $secondary;
+  }
+}
+
+.home-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

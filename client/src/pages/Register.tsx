@@ -12,7 +12,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import "./Home.scss";
+import "../styles/style.scss";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
 
