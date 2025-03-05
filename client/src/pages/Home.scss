@@ -1,26 +1,26 @@
-.home-wrapper {
-  display: flex;
-  flex-direction: column;
-}
+// .home-wrapper {
+//   display: flex;
+//   flex-direction: column;
+// }
 
-.card {
-  transition: transform 0.3s ease-in-out;
-  &:hover {
-    transform: scale(1.05);
-  }
-}
+// .card {
+//   transition: transform 0.3s ease-in-out;
+//   &:hover {
+//     transform: scale(1.05);
+//   }
+// }
 
-.home-section {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 100vh;
-  opacity: 0;
-  transform: translateY(50px);
-  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+// .home-section {
+//   display: flex;
+//   justify-content: space-around;
+//   align-items: center;
+//   height: 100vh;
+//   opacity: 0;
+//   transform: translateY(50px);
+//   transition: opacity 1.2s ease-out, transform 1.2s ease-out;
 
-  &.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+//   &.visible {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
