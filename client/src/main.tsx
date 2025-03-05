@@ -40,7 +40,7 @@ createRoot(document.getElementById("root")!).render(
                   }
                 />
                 <Route
-                  path="issuecredential/:credentialType"
+                  path="issuecredential/:credentialType?"
                   element={
                     <ProtectedRoute>
                       <IssueCredential />

@@ -38,10 +38,6 @@ export default function IssueCredential() {
   const { writeContract } = useWriteContract();
 
   useEffect(() => {
-    console.log("credentialType:", credentialType); // Add logging
-    if (!credentialType) {
-      setError("Credential type is missing from the URL");
-    }
     if (!user) {
       navigate("/login");
     } else if (!user.issuer) {

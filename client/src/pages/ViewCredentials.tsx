@@ -1,6 +1,4 @@
-import { Address } from "viem";
 import { useUser } from "../context/UserContext";
-import { useState, FormEvent, useEffect } from "react";
 import {
   Typography,
   Container,
@@ -14,7 +12,6 @@ import {
   Button,
 } from "@mui/material";
 import { useNavigate } from "react-router";
-import { CONSTANTS } from "../config/constants";
 
 export default function ViewCredentials() {
   const { user } = useUser();
