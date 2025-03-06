@@ -16,10 +16,11 @@ import {
 } from "@mui/material";
 import { useWriteContract } from "wagmi";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { CONSTANTS } from "../config/constants";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { retrieveUserAddress } from "../utils/user.util";
+
 interface CredentialFormData {
   credentialId: string;
   email: string;
@@ -27,10 +28,11 @@ interface CredentialFormData {
 
 export default function IssueCredential() {
   const navigate = useNavigate();
+  const { credentialType } = useParams<{ credentialType: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
-    credentialId: "",
+    credentialId: credentialType || "",
     email: "",
   });
   const { user } = useUser();
