@@ -1,4 +1,3 @@
-import { Address } from "viem";
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import {
   Typography,
@@ -16,7 +15,7 @@ import {
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router";
-import { retrieveUserAddress } from "../utils/user.util";
+import { issueCredentialType } from "../utils/credential.util";
 
 interface CredentialFormData {
   credentialId: string;
@@ -50,18 +49,11 @@ export default function IssueCredential() {
   ];
 
   async function onIssueInstitutionCredential(
-    contractAddress: Address,
-    recipient: Address,
-    tokenId: bigint
+    emails: string[],
+    credential_id: number
   ) {
-    // NEEDSWORK: Need to call API to issue credential here
-    console.log(contractAddress, recipient, tokenId);
-    // await writeContract({
-    //   address: contractAddress,
-    //   abi: institutionCredentialAbi,
-    //   functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_ISSUE,
-    //   args: [recipient, tokenId],
-    // });
+    //NEEDSWORK: This does return a list of emails that were successful, but we can handle this at a later date
+    await issueCredentialType(emails, credential_id);
 
     return true;
   }
@@ -105,28 +97,14 @@ export default function IssueCredential() {
       setLoading(true);
       setError(null);
       try {
-        const contractAddress = user?.issuer?.contract_address;
-        if (!contractAddress) {
-          alert(
-            "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
-          );
-          return;
-        }
         if (formData.credentialId === "0") {
           alert("Please create a credential first");
           return;
         }
 
-        const userAddress = await handleGetUserAddress(formData.email);
-        if (!userAddress) {
-          return;
-        }
-
-        const credID = BigInt(formData.credentialId.slice(0, -1));
-        onIssueInstitutionCredential(
-          contractAddress,
-          userAddress as Address,
-          credID
+        await onIssueInstitutionCredential(
+          [formData.email],
+          Number(formData.credentialId)
         );
       } catch (error) {
         console.error("Failed to issue credential:", error);
@@ -134,16 +112,6 @@ export default function IssueCredential() {
       } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const handleGetUserAddress = async (email: string) => {
-    const res = await retrieveUserAddress(email);
-    if (res.status) {
-      const userAddress = res.address;
-      return userAddress;
-    } else {
-      setError(res.message);
     }
   };
 
@@ -227,6 +195,7 @@ export default function IssueCredential() {
                     variant="contained"
                     color="primary"
                     disabled={loading}
+                    loading={loading}
                     sx={{
                       minWidth: "200px",
                       py: 1.5,
@@ -234,9 +203,7 @@ export default function IssueCredential() {
                         backgroundColor: "#2c387e",
                       },
                     }}
-                  >
-                    {loading ? "Issuing..." : "Issue Credential"}
-                  </Button>
+                  ></Button>
                 </Stack>
               </Stack>
             </form>

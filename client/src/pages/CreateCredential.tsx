@@ -1,4 +1,3 @@
-import { Address } from "viem";
 import { useUser } from "../context/UserContext";
 import { useState, FormEvent, useEffect } from "react";
 import {
@@ -13,6 +12,7 @@ import {
 } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router";
+import { createCredentialType } from "../utils/credential.util";
 
 interface CredentialDetail {
   descriptor: string;
@@ -23,7 +23,7 @@ export default function CreateCredential() {
   const [credentialName, setCredentialName] = useState("");
   //I couldn't get this to work, I think it goes too fast through so frontend thinks it's done before the actual transaction goes through
   //Maybe there's some way to once length of credential_types is increased by 1, then the button goes back to create credential and not submitting
-  //const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [credentialDetails, setCredentialDetails] = useState<
     CredentialDetail[]
   >([]);
@@ -41,47 +41,32 @@ export default function CreateCredential() {
   if (!user) return null;
 
   async function onCreateInstitutionCredentialType(
-    contractAddress: Address,
     title: string,
     jsonData: object // Eventually we will need this, right now it does nothing
   ) {
-    console.log(jsonData); //just have this so error goes away
-    //First need to upload jsonData to pinata to get a cid to upload to the contract
-    // const cid = await uploadJsonToPinata(title, jsonData);
+    if (user) {
+      console.log(jsonData); //just have this so error goes away
+      //First need to upload jsonData to pinata to get a cid to upload to the contract
+      // const cid = await uploadJsonToPinata(title, jsonData);
 
-    // //If successful, then we can create the credential type on our contract
-    // if (cid !== null) {
+      // //If successful, then we can create the credential type on our contract
+      // if (cid !== null) {
 
-    if (!title) {
-      alert("Please enter a Credential Name");
-      return;
+      if (!title) {
+        alert("Please enter a Credential Name");
+        return;
+      }
+
+      await createCredentialType(user.email, title, "default cid for now");
+
+      return true;
+      // }
     }
-
-    // NEEDSWORK: call api to create credential type here
-    console.log(contractAddress, title);
-    // await writeContract({
-    //   address: contractAddress,
-    //   abi: institutionCredentialAbi,
-    //   functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-    //   args: [title, "testCid"],
-    // });
-
-    return true;
-    // }
   }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //setIsCreating(true);
-
-    const contractAddress = user?.issuer?.contract_address;
-    if (!contractAddress) {
-      alert(
-        "No contract address found for the issuer, if you recently registered, please retry in a few minutes to allow time for your smart contract to deploy"
-      );
-      //setIsCreating(false);
-      return;
-    }
+    setIsCreating(true);
 
     // Create JSON object from credential details
     const detailsJson = credentialDetails.reduce((acc, detail) => {
@@ -93,11 +78,7 @@ export default function CreateCredential() {
 
     try {
       // Wait for the transaction to complete
-      onCreateInstitutionCredentialType(
-        contractAddress as Address,
-        credentialName,
-        detailsJson
-      );
+      await onCreateInstitutionCredentialType(credentialName, detailsJson);
 
       // Only clear form after successful transaction
       setCredentialName("");
@@ -106,7 +87,7 @@ export default function CreateCredential() {
       console.error("Error Creating Credential:", error);
       alert("An error occurred while creating the credential");
     } finally {
-      //setIsCreating(false);
+      setIsCreating(false);
     }
   };
 
@@ -195,9 +176,9 @@ export default function CreateCredential() {
                   variant="contained"
                   color="primary"
                   size="large"
-                  //disabled={isCreating}
+                  loading={isCreating}
+                  disabled={isCreating}
                 >
-                  {/* {isCreating ? "Creating Credential..." : "Create Credential"} */}
                   Create Credential
                 </Button>
               </Stack>
