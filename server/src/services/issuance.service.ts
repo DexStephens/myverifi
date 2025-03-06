@@ -26,6 +26,24 @@ export class IssuanceService {
     await UserModel.updateUserAddress(user.id, address);
   }
 
+  static async retrieveAddress(email: string) {
+    const user = await UserModel.findUserByEmail(email);
+
+    if (!user) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No user exists for the email: ${email}`
+      );
+    } else if (!user.address) {
+      throw new ControllerError(
+        ERROR_TITLES.DATA,
+        `User has not connected their wallet yet`
+      );
+    }
+
+    return user.address;
+  }
+
   static async issuers() {
     const issuers = await IssuerModel.getAllWithCredentialTypes();
 

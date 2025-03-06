@@ -19,10 +19,11 @@ import { useUser } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router";
 import { CONSTANTS } from "../config/constants";
 import { institutionCredentialAbi } from "../utils/abi.util";
+import { retrieveUserAddress } from "../utils/user.util";
 
 interface CredentialFormData {
   credentialId: string;
-  walletAddress: string;
+  email: string;
 }
 
 export default function IssueCredential() {
@@ -32,7 +33,7 @@ export default function IssueCredential() {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
     credentialId: credentialType || "",
-    walletAddress: "",
+    email: "",
   });
   const { user } = useUser();
   const { writeContract } = useWriteContract();
@@ -84,8 +85,17 @@ export default function IssueCredential() {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.credentialId || !formData.walletAddress) {
+    if (!formData.credentialId || !formData.email) {
       setError("Please fill in all required fields");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    } else if (formData.email === user?.email) {
+      setError("You cannot issue a credential to yourself");
       return false;
     }
     return true;
@@ -108,11 +118,17 @@ export default function IssueCredential() {
           alert("Please create a credential first");
           return;
         }
-        console.log(formData.credentialId.slice(0, -1));
+
+        const userAddress = await handleGetUserAddress(formData.email);
+        if (!userAddress) {
+          return;
+        }
+
+        const credID = BigInt(formData.credentialId.slice(0, -1));
         onIssueInstitutionCredential(
           contractAddress,
-          formData.walletAddress as Address,
-          BigInt(formData.credentialId.slice(0, -1))
+          userAddress as Address,
+          credID
         );
       } catch (error) {
         console.error("Failed to issue credential:", error);
@@ -120,6 +136,16 @@ export default function IssueCredential() {
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleGetUserAddress = async (email: string) => {
+    const res = await retrieveUserAddress(email);
+    if (res.status) {
+      const userAddress = res.address;
+      return userAddress;
+    } else {
+      setError(res.message);
     }
   };
 
@@ -169,9 +195,9 @@ export default function IssueCredential() {
 
                 <FormControl fullWidth required>
                   <TextField
-                    label="Wallet Address"
-                    name="walletAddress"
-                    value={formData.walletAddress}
+                    label="User Email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleInputChange}
                     required
                     fullWidth
