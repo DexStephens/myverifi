@@ -18,11 +18,18 @@ model User {
   id                Int                @id @default(autoincrement())
   email             String             @unique
   password_hash     String
-  address           String?            @unique
-  
-  // One-to-one relation fields with either role
+  walletId          Int                @unique
+  wallet            Wallet             @relation(fields: [walletId], references: [id])
   holder            Holder?
   issuer            Issuer?
+}
+
+model Wallet {
+  id                Int                 @id @default(autoincrement())
+  address           String              @unique
+  publicKey         String              @unique
+  privateKey        String              @unique
+  user              User?               
 }
 
 model Holder {
@@ -37,7 +44,7 @@ model Issuer {
   userId            Int                @unique
   user              User               @relation(fields: [userId], references: [id])
   name              String
-  contract_address  String?            @unique
+  contract_address  String            @unique
   // An institution can issue several credential types
   credential_types  CredentialType[]
 }
