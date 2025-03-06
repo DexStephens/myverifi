@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import { IssuerDashboard } from "../components/IssuerDashboard";
 import { HolderDashboard } from "../components/HolderDashboard";
@@ -17,7 +17,11 @@ export default function Dashboard() {
   if (!user) {
     return null;
   } else if (user.issuer) {
-    return <IssuerDashboard />;
+    return (
+      <>
+        <IssuerDashboard />
+      </>
+    );
   } else {
     return <HolderDashboard />;
   }
