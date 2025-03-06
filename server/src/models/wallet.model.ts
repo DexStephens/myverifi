@@ -8,7 +8,11 @@ export class WalletModel {
     privateKey: string;
   }): Promise<Wallet> {
     return prisma.wallet.create({
-      data,
+      data: {
+        address: data.address.toLowerCase(),
+        publicKey: data.publicKey.toLowerCase(),
+        privateKey: data.privateKey.toLowerCase(),
+      },
     });
   }
 

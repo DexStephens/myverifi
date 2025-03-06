@@ -58,6 +58,7 @@ export class UserModel {
         },
       },
       include: {
+        wallet: true,
         holder: {
           include: {
             credential_issues: true,

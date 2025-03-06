@@ -39,15 +39,8 @@ export class AuthController {
     try {
       SchemaValidationUtil.RegisterSchema.parse(req.body);
       const { email, password, name } = req.body;
-      let issuer;
-      if (name) {
-        issuer = {
-          name,
-          contract_address: null,
-        };
-      }
 
-      const data = await AuthService.registerUser(email, password, issuer);
+      const data = await AuthService.registerUser(email, password, name);
 
       res.status(201).json({
         status: "success",
