@@ -43,6 +43,8 @@ export default function IssueCredential() {
 
   const existingCredentials = user?.issuer?.credential_types || [
     {
+      id: 0,
+      issuer_id: 0,
       token_id: "0",
       name: "No Credentials, Create a Credential First",
     },
@@ -106,6 +108,11 @@ export default function IssueCredential() {
           [formData.email],
           Number(formData.credentialId)
         );
+
+        setFormData({
+          credentialId: "",
+          email: "",
+        });
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
@@ -149,10 +156,7 @@ export default function IssueCredential() {
                     label="Select Credential"
                   >
                     {existingCredentials.map((credential) => (
-                      <MenuItem
-                        key={credential.token_id}
-                        value={credential.token_id}
-                      >
+                      <MenuItem key={credential.id} value={credential.id}>
                         {credential.name}
                       </MenuItem>
                     ))}
@@ -203,7 +207,9 @@ export default function IssueCredential() {
                         backgroundColor: "#2c387e",
                       },
                     }}
-                  ></Button>
+                  >
+                    Issue Credential
+                  </Button>
                 </Stack>
               </Stack>
             </form>
