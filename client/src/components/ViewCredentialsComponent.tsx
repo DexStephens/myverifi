@@ -24,7 +24,7 @@ export default function ViewCredentials() {
 
   const handleIssue = (credentialType: string) => {
     // Navigate to the issue credential page
-    navigate(`/issuecredential/${credentialType}`);
+    console.log(`Issue credential type: ${credentialType}`);
   };
 
   return (
