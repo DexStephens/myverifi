@@ -24,13 +24,13 @@ export default function ViewCredentials() {
 
   const handleIssue = (credentialType: string) => {
     // Navigate to the issue credential page
-    navigate(`/issuecredential/${credentialType}`);
+    console.log(`Issue credential type: ${credentialType}`);
   };
 
   return (
     <Container sx={{ py: 4 }} maxWidth="md">
       <Typography variant="h4" component="h1" align="center" gutterBottom>
-        View Credentials
+        Saved Credentials
       </Typography>
 
       <TableContainer component={Paper} sx={{ mt: 3 }}>

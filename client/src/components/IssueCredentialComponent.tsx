@@ -211,20 +211,6 @@ export default function IssueCredential() {
                   justifyContent="center"
                 >
                   <Button
-                    variant="outlined"
-                    color="secondary"
-                    sx={{
-                      minWidth: "200px",
-                      py: 1.5,
-                      "&:hover": {
-                        backgroundColor: "#2c387e",
-                      },
-                    }}
-                    onClick={() => navigate("/createcredential")}
-                  >
-                    Create a Credential
-                  </Button>
-                  <Button
                     type="submit"
                     variant="contained"
                     color="primary"
