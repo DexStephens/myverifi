@@ -11,7 +11,6 @@ import {
   CardContent,
   IconButton,
 } from "@mui/material";
-import { useWriteContract } from "wagmi";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { CONSTANTS } from "../config/constants";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -32,7 +31,6 @@ export default function CreateCredential() {
   >([]);
   const navigate = useNavigate();
   const { user } = useUser();
-  const { writeContract } = useWriteContract();
 
   useEffect(() => {
     if (!user) {
@@ -61,12 +59,14 @@ export default function CreateCredential() {
       return;
     }
 
-    await writeContract({
-      address: contractAddress,
-      abi: institutionCredentialAbi,
-      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
-      args: [title, "testCid"],
-    });
+    // NEEDSWORK: call api to create credential type here
+    console.log(contractAddress, title);
+    // await writeContract({
+    //   address: contractAddress,
+    //   abi: institutionCredentialAbi,
+    //   functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_TYPE_CREATION,
+    //   args: [title, "testCid"],
+    // });
 
     return true;
     // }

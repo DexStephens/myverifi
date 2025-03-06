@@ -14,7 +14,6 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
-import { useWriteContract } from "wagmi";
 import { useUser } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router";
 import { CONSTANTS } from "../config/constants";
@@ -36,7 +35,6 @@ export default function IssueCredential() {
     email: "",
   });
   const { user } = useUser();
-  const { writeContract } = useWriteContract();
 
   useEffect(() => {
     if (!user) {
@@ -58,12 +56,14 @@ export default function IssueCredential() {
     recipient: Address,
     tokenId: bigint
   ) {
-    await writeContract({
-      address: contractAddress,
-      abi: institutionCredentialAbi,
-      functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_ISSUE,
-      args: [recipient, tokenId],
-    });
+    // NEEDSWORK: Need to call API to issue credential here
+    console.log(contractAddress, recipient, tokenId);
+    // await writeContract({
+    //   address: contractAddress,
+    //   abi: institutionCredentialAbi,
+    //   functionName: CONSTANTS.CONTRACT_FUNCTIONS.CREDENTIAL_ISSUE,
+    //   args: [recipient, tokenId],
+    // });
 
     return true;
   }
