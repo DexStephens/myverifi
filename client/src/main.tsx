@@ -15,6 +15,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./context/UserContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import BatchSendCredentials from "./pages/BatchSendCredentials.tsx";
+import VerifyCredentials from "./pages/VerifyCredentials.tsx";
+import Layout from "./components/Layout.tsx";
 
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
@@ -24,35 +26,38 @@ createRoot(document.getElementById("root")!).render(
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/issuecredential"
-                element={
-                  <ProtectedRoute>
-                    <IssueCredential />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/batchsend"
-                element={
-                  <ProtectedRoute>
-                    <BatchSendCredentials />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/createcredential" element={<CreateCredential />} />
-              <Route path="/viewcredentials" element={<ViewCredentials />} />
+              <Route path="/" element={<Layout />}>
+                <Route index element={<App />} />
+                <Route path="verify" element={<VerifyCredentials />} />
+                <Route path="login" element={<Login />} />
+                <Route path="register" element={<Register />} />
+                <Route
+                  path="dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="issuecredential/:credentialType?"
+                  element={
+                    <ProtectedRoute>
+                      <IssueCredential />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="batchsend"
+                  element={
+                    <ProtectedRoute>
+                      <BatchSendCredentials />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="createcredential" element={<CreateCredential />} />
+                <Route path="viewcredentials" element={<ViewCredentials />} />
+              </Route>
             </Routes>
           </QueryClientProvider>
         </WagmiProvider>

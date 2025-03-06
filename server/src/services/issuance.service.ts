@@ -11,6 +11,19 @@ import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
 
 export class IssuanceService {
+  static async retrieveAddress(email: string) {
+    const user = await UserModel.findUserByEmail(email);
+
+    if (!user) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No user exists for the email: ${email}`
+      );
+    }
+
+    return user.wallet.address;
+  }
+
   static async issuers() {
     const issuers = await IssuerModel.getAllWithCredentialTypes();
 
@@ -35,6 +48,8 @@ export class IssuanceService {
       throw new ControllerError(ERROR_TITLES.DNE, "Not all id's are valid");
     }
 
+    const response = [];
+
     const publicClient = ChainUtils.getPublicClient();
 
     for (const credentialType of credentialTypes) {
@@ -45,11 +60,12 @@ export class IssuanceService {
         args: [user.wallet.address, credentialType.token_id],
       });
 
-      if (!valid) {
-        return false;
-      }
+      response.push({
+        credential_type_id: credentialType.id,
+        valid,
+      });
     }
 
-    return true;
+    return response;
   }
 }

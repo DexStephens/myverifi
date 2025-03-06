@@ -20,12 +20,12 @@ export class SchemaValidationUtil {
     address: z.string(),
   });
 
+  static retrieveAddressSchema = z.object({
+    email: emailSchema,
+  });
+
   static verifyCredentialsSchema = z.object({
     email: emailSchema,
-    credential_types: z.array(
-      z.object({
-        credential_type_id: z.number(),
-      })
-    ),
+    credential_types: z.array(z.number()),
   });
 }

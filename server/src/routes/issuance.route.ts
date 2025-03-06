@@ -3,10 +3,11 @@ import { IssuanceController } from "../controllers/issuance.controller";
 import { authenticateToken } from "../middleware/auth";
 const router = express.Router();
 
+router.post("/address/user", authenticateToken, IssuanceController.retrieve);
 router.post("/verify", IssuanceController.verify);
 router.get("/issuers", IssuanceController.issuers);
 router.post(
-  "/credentia_types",
+  "/credential_types",
   authenticateToken,
   IssuanceController.credentialTypes
 );

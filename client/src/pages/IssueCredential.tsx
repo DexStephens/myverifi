@@ -15,23 +15,25 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useWriteContract } from "wagmi";
-import HomeHeader from "../components/HomeHeader";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { CONSTANTS } from "../config/constants";
 import { institutionCredentialAbi } from "../utils/abi.util";
+import { retrieveUserAddress } from "../utils/user.util";
+
 interface CredentialFormData {
   credentialId: string;
-  walletAddress: string;
+  email: string;
 }
 
 export default function IssueCredential() {
   const navigate = useNavigate();
+  const { credentialType } = useParams<{ credentialType: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
-    credentialId: "",
-    walletAddress: "",
+    credentialId: credentialType || "",
+    email: "",
   });
   const { user } = useUser();
   const { writeContract } = useWriteContract();
@@ -83,8 +85,17 @@ export default function IssueCredential() {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.credentialId || !formData.walletAddress) {
+    if (!formData.credentialId || !formData.email) {
       setError("Please fill in all required fields");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    } else if (formData.email === user?.email) {
+      setError("You cannot issue a credential to yourself");
       return false;
     }
     return true;
@@ -107,11 +118,17 @@ export default function IssueCredential() {
           alert("Please create a credential first");
           return;
         }
-        console.log(formData.credentialId.slice(0, -1));
+
+        const userAddress = await handleGetUserAddress(formData.email);
+        if (!userAddress) {
+          return;
+        }
+
+        const credID = BigInt(formData.credentialId.slice(0, -1));
         onIssueInstitutionCredential(
           contractAddress,
-          formData.walletAddress as Address,
-          BigInt(formData.credentialId.slice(0, -1))
+          userAddress as Address,
+          credID
         );
       } catch (error) {
         console.error("Failed to issue credential:", error);
@@ -122,112 +139,124 @@ export default function IssueCredential() {
     }
   };
 
+  const handleGetUserAddress = async (email: string) => {
+    const res = await retrieveUserAddress(email);
+    if (res.status) {
+      const userAddress = res.address;
+      return userAddress;
+    } else {
+      setError(res.message);
+    }
+  };
+
   return (
-    <>
-      <HomeHeader showBackButton={true} />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Card sx={{ backgroundColor: "#f5f5f5" }}>
-          <CardContent>
-            <Stack spacing={3}>
-              <Typography
-                variant="h4"
-                component="h1"
-                align="center"
-                sx={{ color: "#333" }}
-              >
-                Issue New Credential
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Card sx={{ backgroundColor: "#f5f5f5" }}>
+        <CardContent>
+          <Stack spacing={3}>
+            <Typography
+              variant="h4"
+              component="h1"
+              align="center"
+              sx={{ color: "#333" }}
+            >
+              Issue New Credential
+            </Typography>
+
+            {error && (
+              <Typography color="error" align="center">
+                {error}
               </Typography>
+            )}
 
-              {error && (
-                <Typography color="error" align="center">
-                  {error}
-                </Typography>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={3}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="credential-select-label">
-                      Select Credential
-                    </InputLabel>
-                    <Select
-                      labelId="credential-select-label"
-                      name="credentialId"
-                      value={formData.credentialId}
-                      onChange={handleSelectChange}
-                      label="Select Credential"
-                    >
-                      {existingCredentials.map((credential) => (
-                        <MenuItem
-                          key={credential.token_id}
-                          value={credential.token_id}
-                        >
-                          {credential.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <FormControl fullWidth required>
-                    <TextField
-                      label="Wallet Address"
-                      name="walletAddress"
-                      value={formData.walletAddress}
-                      onChange={handleInputChange}
-                      required
-                      fullWidth
-                    />
-                  </FormControl>
-
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                    justifyContent="center"
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <FormControl fullWidth required>
+                  <InputLabel id="credential-select-label">
+                    Select Credential
+                  </InputLabel>
+                  <Select
+                    labelId="credential-select-label"
+                    name="credentialId"
+                    value={formData.credentialId}
+                    onChange={handleSelectChange}
+                    label="Select Credential"
                   >
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{
-                        minWidth: "200px",
-                        py: 1.5,
-                        "&:hover": {
-                          backgroundColor: "#2c387e",
-                        },
-                      }}
-                      onClick={() => navigate("/createcredential")}
-                    >
-                      Create a Credential
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                      sx={{
-                        minWidth: "200px",
-                        py: 1.5,
-                        "&:hover": {
-                          backgroundColor: "#2c387e",
-                        },
-                      }}
-                    >
-                      {loading ? "Issuing..." : "Issue Credential"}
-                    </Button>
-                  </Stack>
-                </Stack>
-              </form>
+                    {existingCredentials.map((credential) => (
+                      <MenuItem
+                        key={credential.token_id}
+                        value={credential.token_id}
+                      >
+                        {credential.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
 
-              {/* Navigate to Batch Send Page */}
-              <Stack alignItems="center">
-                <Button variant="outlined" color="secondary" onClick={() => navigate("/batchsend")} sx={{ minWidth: "200px", py: 1.5 }}>
-                  Batch Send Credentials
-                </Button>
+                <FormControl fullWidth required>
+                  <TextField
+                    label="User Email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    fullWidth
+                  />
+                </FormControl>
+
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{
+                      minWidth: "200px",
+                      py: 1.5,
+                      "&:hover": {
+                        backgroundColor: "#2c387e",
+                      },
+                    }}
+                    onClick={() => navigate("/createcredential")}
+                  >
+                    Create a Credential
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                    sx={{
+                      minWidth: "200px",
+                      py: 1.5,
+                      "&:hover": {
+                        backgroundColor: "#2c387e",
+                      },
+                    }}
+                  >
+                    {loading ? "Issuing..." : "Issue Credential"}
+                  </Button>
+                </Stack>
               </Stack>
+            </form>
+
+            {/* Navigate to Batch Send Page */}
+            <Stack alignItems="center">
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/batchsend")}
+                sx={{ minWidth: "200px", py: 1.5 }}
+              >
+                Batch Send Credentials
+              </Button>
             </Stack>
-          </CardContent>
-        </Card>
-      </Container>
-    </>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Container>
   );
 }

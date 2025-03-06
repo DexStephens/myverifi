@@ -27,7 +27,26 @@ export class IssuanceController {
       res.status(200).json({
         status: "success",
         data: {
-          valid: result,
+          result,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async retrieve(req: Request, res: Response, next: NextFunction) {
+    try {
+      SchemaValidationUtil.retrieveAddressSchema.parse(req.body);
+
+      const { email } = req.body;
+
+      const address = await IssuanceService.retrieveAddress(email);
+
+      res.status(200).json({
+        status: "success",
+        data: {
+          address,
         },
       });
     } catch (err) {

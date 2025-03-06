@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
-import HomeHeader from "../components/HomeHeader";
 import { useUser } from "../context/UserContext";
 import { IssuerDashboard } from "../components/IssuerDashboard";
 import { HolderDashboard } from "../components/HolderDashboard";
@@ -15,12 +14,11 @@ export default function Dashboard() {
     }
   }, [user, navigate]);
 
-  if (!user) return null;
-
-  return (
-    <>
-      <HomeHeader showBackButton={false} />
-      {user.issuer ? <IssuerDashboard /> : <HolderDashboard />}
-    </>
-  );
+  if (!user) {
+    return null;
+  } else if (user.issuer) {
+    return <IssuerDashboard />;
+  } else {
+    return <HolderDashboard />;
+  }
 }

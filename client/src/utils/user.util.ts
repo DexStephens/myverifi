@@ -26,7 +26,8 @@ type Holder = {
   credential_issues: CredentialIssue[];
 };
 
-type Issuer = {
+export type Issuer = {
+  id: number;
   name: string;
   contract_address?: Address;
   credential_types: CredentialType[];
@@ -53,7 +54,7 @@ export async function updateUserAddress(
       }),
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
 
@@ -74,5 +75,41 @@ export async function updateUserAddress(
     }
   } catch {
     return { status: false };
+  }
+}
+
+export async function retrieveUserAddress(email: string) {
+  try {
+    const token = sessionStorage.getItem("token");
+    const response = await fetch(
+      `http://localhost:3000/issuances/address/user`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ email }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      return {
+        status: true,
+        address: data.data.address,
+      };
+    } else {
+      return {
+        status: false,
+        message: parseApiError(data),
+      };
+    }
+  } catch (error) {
+    return {
+      status: false,
+      message: "Failed to fetch user address from email: " + error,
+    };
   }
 }
