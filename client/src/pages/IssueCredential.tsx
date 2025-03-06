@@ -16,8 +16,6 @@ import {
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router";
-import { CONSTANTS } from "../config/constants";
-import { institutionCredentialAbi } from "../utils/abi.util";
 import { retrieveUserAddress } from "../utils/user.util";
 
 interface CredentialFormData {

@@ -11,8 +11,6 @@ import {
   CardContent,
   IconButton,
 } from "@mui/material";
-import { institutionCredentialAbi } from "../utils/abi.util";
-import { CONSTANTS } from "../config/constants";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router";
 
