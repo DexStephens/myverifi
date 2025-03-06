@@ -15,7 +15,7 @@ import {
 } from "@alchemy/aa-core";
 import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 import { WalletModel } from "../models/wallet.model";
-import { credentialFactoryAbi } from "./abi.util";
+import { credentialFactoryAbi, institutionCredentialAbi } from "./abi.util";
 import {
   CREDENTIAL_CONTRACT_METHODS,
   DEFAULT_JSON_URI,
@@ -79,6 +79,36 @@ export class ChainUtils {
     });
 
     return data as string;
+  }
+
+  static async createCredentialType(
+    privateKey: Address,
+    contractAddress: Address,
+    title: string,
+    cid: string
+  ) {
+    await this.#callContract(
+      institutionCredentialAbi as Abi,
+      contractAddress,
+      CREDENTIAL_CONTRACT_METHODS.CREATE_CREDENTIAL_TYPE,
+      [title, cid],
+      privateKey
+    );
+  }
+
+  static async issueCredential(
+    privateKey: Address,
+    contractAddress: Address,
+    recipient: Address,
+    tokenId: bigint
+  ) {
+    await this.#callContract(
+      institutionCredentialAbi as Abi,
+      contractAddress,
+      CREDENTIAL_CONTRACT_METHODS.ISSUE_CREDENTIAL,
+      [recipient, tokenId],
+      privateKey
+    );
   }
 
   static async #callContract(

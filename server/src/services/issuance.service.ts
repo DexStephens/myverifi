@@ -9,6 +9,7 @@ import { CredentialTypeModel } from "../models/credentialType.model";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
+import { HolderModel } from "../models/holder.model";
 
 export class IssuanceService {
   static async retrieveAddress(email: string) {
@@ -28,6 +29,52 @@ export class IssuanceService {
     const issuers = await IssuerModel.getAllWithCredentialTypes();
 
     return issuers;
+  }
+
+  static async createCredentialType(email: string, title: string, cid: string) {
+    const user = await UserModel.findUserByEmail(email);
+
+    if (!user || !user.issuer) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No user exists for the email: ${email}`
+      );
+    }
+
+    await ChainUtils.createCredentialType(
+      user.wallet.privateKey as Address,
+      user.issuer.contract_address as Address,
+      title,
+      cid
+    );
+  }
+
+  static async issueCredential(emails: string[], credential_id: number) {
+    const credentialType = await CredentialTypeModel.findById(credential_id);
+
+    if (!credentialType) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credential exists for the id: ${credential_id}`
+      );
+    }
+
+    const holders = await HolderModel.findByEmails(emails);
+
+    const issuees = [];
+
+    for (const holder of holders) {
+      await ChainUtils.issueCredential(
+        credentialType.issuer.user.wallet.privateKey as Address,
+        credentialType.issuer.contract_address as Address,
+        holder.user.wallet.address as Address,
+        credentialType.token_id
+      );
+
+      issuees.push(holder.user.email);
+    }
+
+    return issuees;
   }
 
   static async verify(email: string, credentialTypeIds: number[]) {

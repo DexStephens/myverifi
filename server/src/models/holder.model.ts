@@ -13,4 +13,23 @@ export class HolderModel {
       where: { userId },
     });
   }
+
+  static findByEmails(emails: string[]) {
+    return prisma.holder.findMany({
+      where: {
+        user: {
+          email: {
+            in: emails,
+          },
+        },
+      },
+      include: {
+        user: {
+          include: {
+            wallet: true,
+          },
+        },
+      },
+    });
+  }
 }

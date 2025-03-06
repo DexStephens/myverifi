@@ -60,11 +60,14 @@ export class IssuanceController {
     next: NextFunction
   ) {
     try {
-      //NEEDSWORK: this is where we will create a credential type with the gas manager
+      SchemaValidationUtil.createCredentialSchema.parse(req.body);
 
-      res.status(200).json({
+      const { email, title, cid } = req.body;
+
+      await IssuanceService.createCredentialType(email, title, cid);
+
+      res.status(201).json({
         status: "success",
-        data: {},
       });
     } catch (err) {
       next(err);
@@ -73,11 +76,20 @@ export class IssuanceController {
 
   static async credentials(req: Request, res: Response, next: NextFunction) {
     try {
-      //NEEDSWORK: this is where we will issue credentials with the gas manager
+      SchemaValidationUtil.issueCredentialSchema.parse(req.body);
 
-      res.status(200).json({
+      const { emails, credential_id } = req.body;
+
+      const issued = await IssuanceService.issueCredential(
+        emails,
+        credential_id
+      );
+
+      res.status(201).json({
         status: "success",
-        data: {},
+        data: {
+          issued,
+        },
       });
     } catch (err) {
       next(err);
