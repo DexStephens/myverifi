@@ -1,11 +1,17 @@
 import { Address } from "viem";
-import { parseApiError } from "./api.util";
 
 export interface User {
   email: string;
-  address?: Address;
+  wallet: Wallet;
   issuer?: Issuer;
   holder?: Holder;
+}
+
+interface Wallet {
+  id: number;
+  publicKey: string;
+  privateKey: string;
+  address: string;
 }
 
 type CredentialType = {
@@ -29,7 +35,7 @@ type Holder = {
 export type Issuer = {
   id: number;
   name: string;
-  contract_address?: Address;
+  contract_address: Address;
   credential_types: CredentialType[];
 };
 
@@ -37,79 +43,4 @@ export interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   logout: () => void;
-}
-
-export async function updateUserAddress(
-  email: string,
-  address: Address,
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
-) {
-  try {
-    const token = sessionStorage.getItem("token");
-    const response = await fetch("http://localhost:3000/issuances/address", {
-      method: "PUT",
-      body: JSON.stringify({
-        email,
-        address,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
-
-    const data = await response.json();
-
-    if (data.status === "success") {
-      setUser((currentUser) => {
-        return currentUser ? { ...currentUser, address } : null;
-      });
-      return {
-        status: true,
-      };
-    } else {
-      return {
-        status: false,
-        message: parseApiError(data),
-      };
-    }
-  } catch {
-    return { status: false };
-  }
-}
-
-export async function retrieveUserAddress(email: string) {
-  try {
-    const token = sessionStorage.getItem("token");
-    const response = await fetch(
-      `http://localhost:3000/issuances/address/user`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ email }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.status === "success") {
-      return {
-        status: true,
-        address: data.data.address,
-      };
-    } else {
-      return {
-        status: false,
-        message: parseApiError(data),
-      };
-    }
-  } catch (error) {
-    return {
-      status: false,
-      message: "Failed to fetch user address from email: " + error,
-    };
-  }
 }

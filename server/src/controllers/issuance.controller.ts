@@ -3,23 +3,6 @@ import { IssuanceService } from "../services/issuance.service";
 import { SchemaValidationUtil } from "../utils/schema_validation.util";
 
 export class IssuanceController {
-  static async address(req: Request, res: Response, next: NextFunction) {
-    try {
-      SchemaValidationUtil.updateAddressSchema.parse(req.body);
-
-      const { email, address } = req.body;
-
-      await IssuanceService.address(email, address);
-
-      res.status(200).json({
-        status: "success",
-        data: {},
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
-
   static async issuers(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await IssuanceService.issuers();
@@ -64,6 +47,48 @@ export class IssuanceController {
         status: "success",
         data: {
           address,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async credentialTypes(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      SchemaValidationUtil.createCredentialSchema.parse(req.body);
+
+      const { email, title, cid } = req.body;
+
+      await IssuanceService.createCredentialType(email, title, cid);
+
+      res.status(201).json({
+        status: "success",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async credentials(req: Request, res: Response, next: NextFunction) {
+    try {
+      SchemaValidationUtil.issueCredentialSchema.parse(req.body);
+
+      const { emails, credential_id } = req.body;
+
+      const issued = await IssuanceService.issueCredential(
+        emails,
+        credential_id
+      );
+
+      res.status(201).json({
+        status: "success",
+        data: {
+          issued,
         },
       });
     } catch (err) {

@@ -25,6 +25,25 @@ export class CredentialTypeModel {
     });
   }
 
+  static async findById(id: number) {
+    return prisma.credentialType.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        issuer: {
+          include: {
+            user: {
+              include: {
+                wallet: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   static async findIssuerCredentialTypes(
     issuer_id: number
   ): Promise<CredentialType[]> {

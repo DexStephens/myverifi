@@ -204,8 +204,9 @@ export default function Register() {
                     variant="contained"
                     color="primary"
                     disabled={loading}
+                    loading={loading}
                   >
-                    {loading ? "Registering..." : "Register"}
+                    Register
                   </Button>
                   <Button
                     variant="contained"

@@ -1,5 +1,4 @@
-import { Address, createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
+import { Address } from "viem";
 import {
   credentialFactoryAbi,
   institutionCredentialAbi,
@@ -12,24 +11,19 @@ import {
 } from "./types";
 import { CREDENTIAL_CONTRACT_EVENTS } from "./config/constants.config";
 import { IssuerModel } from "./models/issuer.model";
-
-//NEEDSWORK EVENTUALLY: load contract addresses according to the environment
-
-export const publicClient = createPublicClient({
-  chain: hardhat,
-  transport: http(),
-});
+import { ChainUtils } from "./utils/chain.util";
 
 const contractListeners = new Set<Address>();
 
 export async function startBlockchainListener(factoryAddress: Address) {
+  const publicClient = ChainUtils.getPublicClient();
+
   publicClient.watchContractEvent({
     address: factoryAddress,
     abi: credentialFactoryAbi,
     eventName: CREDENTIAL_CONTRACT_EVENTS.INSTITUTION_DEPLOYED,
     onLogs: (logs) => {
       const contractsCreated = parseLogs<ContractCreationArgs>(logs as never);
-      ChainService.onContractCreated(contractsCreated);
       contractsCreated.forEach((contract) => {
         addNewCredentialContractListeners(
           contract.contractAddress.toLowerCase() as Address
@@ -38,7 +32,7 @@ export async function startBlockchainListener(factoryAddress: Address) {
     },
   });
 
-  const issuers = await IssuerModel.getAllWithContracts();
+  const issuers = await IssuerModel.getAll();
   issuers.forEach((issuer) => {
     const { contract_address } = issuer;
 
@@ -52,6 +46,8 @@ export function addNewCredentialContractListeners(contractAddress: Address) {
   }
 
   contractListeners.add(contractAddress);
+
+  const publicClient = ChainUtils.getPublicClient();
 
   publicClient.watchContractEvent({
     address: contractAddress,

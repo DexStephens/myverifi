@@ -1,18 +1,12 @@
 import { AppBar, Toolbar, Button, Box, Typography, Stack } from "@mui/material";
 import { Link, useNavigate } from "react-router";
-import { useAccount, useDisconnect } from "wagmi";
 import { useUser } from "../context/UserContext";
 
 export default function HomeHeader() {
-  const { disconnect } = useDisconnect();
-  const { isConnected } = useAccount();
   const { user, logout } = useUser();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    if (isConnected) {
-      disconnect();
-    }
     logout();
   };
 
