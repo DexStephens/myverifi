@@ -11,20 +11,12 @@ import {
   Paper,
   Button,
 } from "@mui/material";
-import { useNavigate } from "react-router";
 
-export default function ViewCredentials() {
+export default function ViewCredentials({ onIssue }: { onIssue: (credentialType: string) => void }) {
   const { user } = useUser();
-  const navigate = useNavigate();
 
   const handleEdit = (credentialType: string) => {
-    // Implement the logic to edit the credential type
     console.log(`Edit credential type: ${credentialType}`);
-  };
-
-  const handleIssue = (credentialType: string) => {
-    // Navigate to the issue credential page
-    console.log(`Issue credential type: ${credentialType}`);
   };
 
   return (
@@ -52,7 +44,7 @@ export default function ViewCredentials() {
                   </Button>
                 </TableCell>
                 <TableCell>
-                  <Button variant="contained" color="secondary" onClick={() =>handleIssue(`${index + 1}n`)}>
+                  <Button variant="contained" color="secondary" onClick={() => onIssue(type.id.toString())}>
                     Issue
                   </Button>
                 </TableCell>

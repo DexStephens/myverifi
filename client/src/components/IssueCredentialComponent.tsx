@@ -14,7 +14,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
 import { issueCredentialType } from "../utils/credential.util";
 
 interface CredentialFormData {
@@ -22,9 +22,8 @@ interface CredentialFormData {
   email: string;
 }
 
-export default function IssueCredential() {
+export default function IssueCredential({ credentialType }: { credentialType: string | null }) {
   const navigate = useNavigate();
-  const { credentialType } = useParams<{ credentialType: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CredentialFormData>({
