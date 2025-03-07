@@ -40,7 +40,6 @@ export default function ViewCredentials() {
               <TableCell>Credential Name</TableCell>
               <TableCell>Edit</TableCell>
               <TableCell>Issue</TableCell>
-              {/* Add more table headers if needed */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -57,7 +56,6 @@ export default function ViewCredentials() {
                     Issue
                   </Button>
                 </TableCell>
-                {/* Add more table cells if needed */}
               </TableRow>
             ))}
           </TableBody>

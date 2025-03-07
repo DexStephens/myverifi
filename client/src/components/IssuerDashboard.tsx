@@ -1,5 +1,6 @@
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Modal, Box } from "@mui/material";
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
@@ -61,11 +62,6 @@ export function IssuerDashboard() {
               </Box>
             </Modal>
           </>
-         : (
-          <Typography variant="h6">
-            Connect your wallet to issue credentials
-          </Typography>
-        )
       </div>
     </div>
   );

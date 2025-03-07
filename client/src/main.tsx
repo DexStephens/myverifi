@@ -16,30 +16,30 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <UserProvider>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<App />} />
-                <Route path="verify" element={<VerifyCredentials />} />
-                <Route path="login" element={<Login />} />
-                <Route path="register" element={<Register />} />
-                <Route
-                  path="dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="batchsend"
-                  element={
-                    <ProtectedRoute>
-                      <BatchSendCredentials />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
-            </Routes>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<App />} />
+            <Route path="verify" element={<VerifyCredentials />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="batchsend"
+              element={
+                <ProtectedRoute>
+                  <BatchSendCredentials />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
       </UserProvider>
     </BrowserRouter>
   </StrictMode>
