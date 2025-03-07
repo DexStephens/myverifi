@@ -11,7 +11,6 @@ import CreateCredential from "./pages/CreateCredential.tsx";
 import ViewCredentials from "./pages/ViewCredentials.tsx";
 import { UserProvider } from "./context/UserContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
-import BatchSendCredentials from "./pages/BatchSendCredentials.tsx";
 import VerifyCredentials from "./pages/VerifyCredentials.tsx";
 import Layout from "./components/Layout.tsx";
 
