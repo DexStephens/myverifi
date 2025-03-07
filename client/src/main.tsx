@@ -41,14 +41,6 @@ createRoot(document.getElementById("root")!).render(
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="batchsend"
-              element={
-                <ProtectedRoute>
-                  <BatchSendCredentials />
-                </ProtectedRoute>
-              }
-            />
             <Route path="createcredential" element={<CreateCredential />} />
             <Route path="viewcredentials" element={<ViewCredentials />} />
           </Route>

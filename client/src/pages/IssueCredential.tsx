@@ -260,18 +260,6 @@ export default function IssueCredential() {
                 </Stack>
               </Stack>
             </form>
-
-            {/* Navigate to Batch Send Page */}
-            <Stack alignItems="center">
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/batchsend")}
-                sx={{ minWidth: "200px", py: 1.5 }}
-              >
-                Batch Send Credentials
-              </Button>
-            </Stack>
           </Stack>
         </CardContent>
       </Card>
