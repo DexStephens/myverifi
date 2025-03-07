@@ -27,6 +27,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
   } catch (error) {
     // Invalid token, clear it and redirect
+    console.log("Invalid token", error);
     sessionStorage.removeItem("token");
     return <Navigate to="/login" replace />;
   }
