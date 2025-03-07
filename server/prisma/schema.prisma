@@ -52,11 +52,12 @@ model Issuer {
 model CredentialType {
   id              Int              @id @default(autoincrement())
   name            String
-  token_id        BigInt
-  issuer_id       Int
+  token_id        BigInt           
+  issuer_id       Int              
   issuer          Issuer      @relation(fields: [issuer_id], references: [id])
   // A credential type can be assigned to many holders via issuance
   credential_issues CredentialIssue[]
+  @@unique([issuer_id, token_id])
 }
 
 model CredentialIssue {
@@ -65,4 +66,5 @@ model CredentialIssue {
   credential_type_id  Int
   holder              Holder           @relation(fields: [holder_id], references: [id])
   credential_type     CredentialType   @relation(fields: [credential_type_id], references: [id])
+  @@unique([holder_id, credential_type_id])
 }
