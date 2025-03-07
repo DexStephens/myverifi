@@ -25,6 +25,8 @@
     "typescript-eslint": "^8.20.0"
   },
   "dependencies": {
+    "@alchemy/aa-alchemy": "^3.2.1",
+    "@alchemy/aa-core": "^3.2.1",
     "@prisma/client": "^6.3.1",
     "bcrypt": "^5.1.1",
     "bigint-json": "^1.1.5",

@@ -5,14 +5,12 @@ export class IssuerModel {
   static async createIssuer(data: {
     userId: number;
     name: string;
-    contract_address?: string;
+    contract_address: string;
   }) {
     return prisma.issuer.create({
       data: {
         ...data,
-        contract_address: data.contract_address
-          ? data.contract_address.toLowerCase()
-          : null,
+        contract_address: data.contract_address.toLowerCase(),
       },
     });
   }
@@ -23,32 +21,13 @@ export class IssuerModel {
     });
   }
 
-  static async updateIssuerContractAddress(
-    id: number,
-    contract_address: string
-  ) {
-    return prisma.issuer.update({
-      where: { id },
-      data: { contract_address: contract_address.toLowerCase() },
-    });
-  }
-
-  static async getAllWithContracts() {
-    return prisma.issuer.findMany({
-      where: {
-        contract_address: {
-          not: null,
-        },
-      },
-    });
+  static async getAll() {
+    return prisma.issuer.findMany();
   }
 
   static getAllWithCredentialTypes() {
     return prisma.issuer.findMany({
       where: {
-        contract_address: {
-          not: null,
-        },
         credential_types: {
           some: {},
         },

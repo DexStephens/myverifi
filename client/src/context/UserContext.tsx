@@ -9,6 +9,7 @@ import { User } from "../utils/user.util";
 import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
 import { CONSTANTS } from "../config/constants";
+import { Address } from "viem";
 
 interface UserContextType {
   user: User | null;
@@ -39,7 +40,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [navigate, user]);
 
-  useSocket(user?.address, {
+  useSocket(user?.wallet.address as Address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {

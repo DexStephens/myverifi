@@ -1,7 +1,5 @@
-import { Button, Modal, Box, Typography } from "@mui/material";
-import { useState } from "react";
-import { useAccount } from "wagmi";
-import { WagmiConnectWallet } from "./WagmiConnectWallet";
+import { Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
@@ -20,7 +18,7 @@ const modalStyle = {
 };
 
 export function IssuerDashboard() {
-  const { isConnected } = useAccount();
+  const navigate = useNavigate();
   const { user } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
@@ -30,9 +28,7 @@ export function IssuerDashboard() {
     <div>
       <Typography variant="h6">Welcome, {user?.issuer?.name}</Typography>
       <h1>Issuer Dashboard</h1>
-      <WagmiConnectWallet />
       <div>
-        {isConnected ? (
           <>
             <Button variant="contained" color="primary" onClick={() => setOpenCreateModal(true)}>
               Create Credential
@@ -65,11 +61,11 @@ export function IssuerDashboard() {
               </Box>
             </Modal>
           </>
-        ) : (
+         : (
           <Typography variant="h6">
             Connect your wallet to issue credentials
           </Typography>
-        )}
+        )
       </div>
     </div>
   );

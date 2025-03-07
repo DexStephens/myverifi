@@ -1,5 +1,4 @@
 import { Grid, Typography } from "@mui/material";
-import { WagmiConnectWallet } from "./WagmiConnectWallet";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import { CredentialIssueCard } from "./CredentialIssueCard";
@@ -17,7 +16,6 @@ export function HolderDashboard() {
     <div>
       <Typography variant="h6">Welcome, {user.email}</Typography>
       <h1>Holder Dashboard</h1>
-      {!user?.address && <WagmiConnectWallet />}
       {user.holder.credential_issues.length && (
         <Typography variant="h6" sx={{ p: 1, mt: 2 }}>
           Your Credentials

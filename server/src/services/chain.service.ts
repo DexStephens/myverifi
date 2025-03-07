@@ -1,39 +1,11 @@
 import { CredentialIssueModel } from "../models/credentialIssue.model";
 import { CredentialTypeModel } from "../models/credentialType.model";
-import { IssuerModel } from "../models/issuer.model";
 import { UserModel } from "../models/user.model";
-import {
-  ContractCreationArgs,
-  CredentialCreationArgs,
-  CredentialIssuanceArgs,
-} from "../types";
+import { CredentialCreationArgs, CredentialIssuanceArgs } from "../types";
 import { eventBus } from "../busHandlers";
 import { SOCKET_EVENTS } from "../config/constants.config";
 
 export class ChainService {
-  static async onContractCreated(newContracts: ContractCreationArgs[]) {
-    for (const contract of newContracts) {
-      const { contractAddress, institution } = contract;
-
-      const user = await UserModel.findUserByAddress(institution);
-
-      if (user && user.issuer) {
-        const updatedIssuer = await IssuerModel.updateIssuerContractAddress(
-          user.issuer.id,
-          contractAddress
-        );
-
-        eventBus.emit(SOCKET_EVENTS.CONTRACT_CREATION, {
-          address: user.address,
-          contract_address: updatedIssuer.contract_address,
-        });
-        return;
-      }
-
-      console.log("No user found for contract creation", contract);
-    }
-  }
-
   static async onCredentialCreation(newCredentials: CredentialCreationArgs[]) {
     for (const credential of newCredentials) {
       const { name, tokenId, institution } = credential;
@@ -54,7 +26,7 @@ export class ChainService {
         });
 
         eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
-          address: user.address,
+          address: user.wallet.address,
           id: credentialType.id,
           name: credentialType.name,
           token_id: credentialType.token_id,
