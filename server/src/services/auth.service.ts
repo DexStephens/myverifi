@@ -87,7 +87,7 @@ export class AuthService {
     let newIssuer;
     let newHolder;
 
-    if (name !== undefined) {
+    if (name) {
       const contract_address = await ChainUtils.createCredentialFactory(
         wallet.privateKey as Address,
         name
