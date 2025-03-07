@@ -13,11 +13,17 @@ import { publicClient } from "../utils/client";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { getJsonDataFromPinata } from "../utils/pinata.util";
 
+interface CredentialIssueCardProps {
+  credentialIssue: CredentialIssue;
+  onAction: () => void;
+  actionLabel: string;
+}
+
 export function CredentialIssueCard({
   credentialIssue,
-}: {
-  credentialIssue: CredentialIssue;
-}) {
+  onAction,
+  actionLabel,
+}: CredentialIssueCardProps) {
   const [viewMoreDetails, setViewMoreDetails] = useState(false);
   const [moreDetails, setMoreDetails] = useState<JSON | object | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(true);
@@ -90,6 +96,14 @@ export function CredentialIssueCard({
             size="small"
           >
             More Details
+          </Button>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button
+            onClick={onAction}
+            size="small"
+            color="secondary"
+          >
+            {actionLabel}
           </Button>
         </CardActions>
       </Card>
