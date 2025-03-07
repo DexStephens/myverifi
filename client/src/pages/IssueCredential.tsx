@@ -1,4 +1,4 @@
-import { useState, FormEvent, ChangeEvent, useEffect } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 import {
   Typography,
   Button,
@@ -12,107 +12,132 @@ import {
   MenuItem,
   InputLabel,
   SelectChangeEvent,
+  ButtonGroup,
+  Alert,
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
 import { issueCredentialType } from "../utils/credential.util";
-
-interface CredentialFormData {
-  credentialId: string;
-  email: string;
-}
+import { parseCSV } from "../utils/csv.util";
 
 export default function IssueCredential() {
   const navigate = useNavigate();
-  const { credentialType } = useParams<{ credentialType: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<CredentialFormData>({
-    credentialId: credentialType || "",
-    email: "",
-  });
+  const [displayMessage, setDisplayMessage] = useState<string | null>(null);
   const { user } = useUser();
+  const [email, setEmail] = useState<string | null>(null);
+  const [selectedCredentialId, setSelectedCredentialId] = useState<number>(0);
+  const [file, setFile] = useState<File | null>(null);
+  const [batch, setBatch] = useState(false);
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    } else if (!user.issuer) {
-      navigate("/dashboard");
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    setSelectedCredentialId(Number(e.target.value));
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const uploadedFile = e.target.files[0];
+      if (uploadedFile.type !== "text/csv") {
+        setError("Please upload a valid CSV file.");
+        setFile(null);
+      } else {
+        setError(null);
+        setFile(uploadedFile);
+      }
     }
-  }, [user, navigate]);
-
-  const existingCredentials = user?.issuer?.credential_types || [
-    {
-      id: 0,
-      issuer_id: 0,
-      token_id: "0",
-      name: "No Credentials, Create a Credential First",
-    },
-  ];
+  };
 
   async function onIssueInstitutionCredential(
     emails: string[],
     credential_id: number
   ) {
-    //NEEDSWORK: This does return a list of emails that were successful, but we can handle this at a later date
-    await issueCredentialType(emails, credential_id);
+    const data = await issueCredentialType(emails, credential_id);
 
-    return true;
+    if (data.status && Array.isArray(data.issued)) {
+      const successful: string[] = data.issued;
+      const failed = emails.filter((e) => !data.issued.includes(e));
+
+      if (successful.length > 0) {
+        setDisplayMessage(
+          `${
+            successful.length > 1 ? successful.length + " " : ""
+          }Credential(s) Issued`
+        );
+      }
+      if (failed.length > 0) {
+        setError(
+          `${
+            failed.length > 1 ? failed.length + " " : ""
+          }Credential(s) Failed: ${failed.join(", ")}`
+        );
+      }
+    }
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.credentialId || !formData.email) {
+  const validateForm = (emails: string[]): boolean => {
+    if (selectedCredentialId === 0 || emails.length === 0) {
       setError("Please fill in all required fields");
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address");
-      return false;
-    } else if (formData.email === user?.email) {
-      setError("You cannot issue a credential to yourself");
-      return false;
+    for (const email of emails) {
+      if (!emailRegex.test(email)) {
+        setError("Please enter a valid email address");
+        return false;
+      } else if (email === user?.email) {
+        setError("You cannot issue a credential to yourself");
+        return false;
+      }
     }
+
     return true;
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validateForm()) {
+    setError(null);
+    setDisplayMessage(null);
+
+    const extractedEmails = [];
+
+    if (file) {
+      try {
+        const extracted = await parseCSV(file);
+
+        if (Array.isArray(extracted)) {
+          extractedEmails.push(...extracted);
+        }
+      } catch (error: any) {
+        setError("Error parsing CSV: " + error.message);
+        return;
+      }
+    } else if (email !== null) {
+      extractedEmails.push(email);
+    }
+
+    if (extractedEmails.length === 0) {
+      setError("Please input valid emails");
+      return;
+    }
+
+    if (validateForm(extractedEmails)) {
       setLoading(true);
       setError(null);
       try {
-        if (formData.credentialId === "0") {
-          alert("Please create a credential first");
-          return;
-        }
-
         await onIssueInstitutionCredential(
-          [formData.email],
-          Number(formData.credentialId)
+          extractedEmails,
+          selectedCredentialId
         );
 
-        setFormData({
-          credentialId: "",
-          email: "",
-        });
+        setEmail(null);
+        setFile(null);
+        setSelectedCredentialId(0);
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
@@ -136,11 +161,10 @@ export default function IssueCredential() {
               Issue New Credential
             </Typography>
 
-            {error && (
-              <Typography color="error" align="center">
-                {error}
-              </Typography>
+            {displayMessage && (
+              <Alert severity="success">{displayMessage}</Alert>
             )}
+            {error && <Alert severity="error">{error}</Alert>}
 
             <form onSubmit={handleSubmit}>
               <Stack spacing={3}>
@@ -151,11 +175,11 @@ export default function IssueCredential() {
                   <Select
                     labelId="credential-select-label"
                     name="credentialId"
-                    value={formData.credentialId}
+                    value={selectedCredentialId.toString()}
                     onChange={handleSelectChange}
                     label="Select Credential"
                   >
-                    {existingCredentials.map((credential) => (
+                    {user?.issuer?.credential_types.map((credential) => (
                       <MenuItem key={credential.id} value={credential.id}>
                         {credential.name}
                       </MenuItem>
@@ -163,16 +187,39 @@ export default function IssueCredential() {
                   </Select>
                 </FormControl>
 
-                <FormControl fullWidth required>
-                  <TextField
-                    label="User Email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    fullWidth
+                <ButtonGroup variant="contained">
+                  <Button
+                    variant={batch ? "contained" : "outlined"}
+                    onClick={() => setBatch(false)}
+                  >
+                    Single
+                  </Button>
+                  <Button
+                    variant={batch ? "outlined" : "contained"}
+                    onClick={() => setBatch(true)}
+                  >
+                    Import CSV
+                  </Button>
+                </ButtonGroup>
+
+                {batch ? (
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
                   />
-                </FormControl>
+                ) : (
+                  <FormControl fullWidth required>
+                    <TextField
+                      label="User Email"
+                      name="email"
+                      value={email}
+                      onChange={handleEmailChange}
+                      required
+                      fullWidth
+                    />
+                  </FormControl>
+                )}
 
                 <Stack
                   direction="row"
