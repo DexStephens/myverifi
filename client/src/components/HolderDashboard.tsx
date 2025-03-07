@@ -13,7 +13,7 @@ const modalStyle = {
   width: '80%',
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
+  p: 0,
 };
 
 export function HolderDashboard() {
