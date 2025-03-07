@@ -11,26 +11,18 @@ import {
   Paper,
   Button,
 } from "@mui/material";
-import { useNavigate } from "react-router";
 
-export default function ViewCredentials() {
+export default function ViewCredentials({ onIssue }: { onIssue: (credentialType: string) => void }) {
   const { user } = useUser();
-  const navigate = useNavigate();
 
   const handleEdit = (credentialType: string) => {
-    // Implement the logic to edit the credential type
     console.log(`Edit credential type: ${credentialType}`);
-  };
-
-  const handleIssue = (credentialType: string) => {
-    // Navigate to the issue credential page
-    navigate(`/issuecredential/${credentialType}`);
   };
 
   return (
     <Container sx={{ py: 4 }} maxWidth="md">
       <Typography variant="h4" component="h1" align="center" gutterBottom>
-        View Credentials
+        Saved Credentials
       </Typography>
 
       <TableContainer component={Paper} sx={{ mt: 3 }}>
@@ -40,7 +32,6 @@ export default function ViewCredentials() {
               <TableCell>Credential Name</TableCell>
               <TableCell>Edit</TableCell>
               <TableCell>Issue</TableCell>
-              {/* Add more table headers if needed */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -53,11 +44,10 @@ export default function ViewCredentials() {
                   </Button>
                 </TableCell>
                 <TableCell>
-                  <Button variant="contained" color="secondary" onClick={() =>handleIssue(`${index + 1}n`)}>
+                  <Button variant="contained" color="secondary" onClick={() => onIssue(type.id.toString())}>
                     Issue
                   </Button>
                 </TableCell>
-                {/* Add more table cells if needed */}
               </TableRow>
             ))}
           </TableBody>

@@ -184,24 +184,6 @@ export default function CreateCredential() {
               </Stack>
             </form>
 
-            <Stack sx={{ mt: 3 }} direction="row" spacing={2}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/issuecredential")}
-                fullWidth
-              >
-                Issue Credentials
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/viewcredentials")}
-                fullWidth
-              >
-                View Created Credentials
-              </Button>
-            </Stack>
           </CardContent>
         </Card>
       </Container>
