@@ -1,8 +1,18 @@
 import { useState, FormEvent } from "react";
-import { Container, TextField, Button, Box, Typography } from "@mui/material";
+import {
+  CardContent,
+  Container,
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Card,
+  FormControl,
+} from "@mui/material";
 import { Link, useNavigate } from "react-router";
 import { loginUser } from "../utils/login.util";
 import { useUser } from "../context/UserContext";
+import "../styles/style.scss";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -49,72 +59,113 @@ export default function Login() {
   };
 
   return (
-    <>
-      <Container maxWidth="xs">
+    <div className="home-wrapper">
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
+      >
         <Box
+          className="fade-in"
           sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            width: { xs: "100%", md: "50%" },
           }}
         >
-          <Typography variant="h4" gutterBottom>
-            Login
-          </Typography>
-          {error && (
-            <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
-              {error}
-            </Typography>
-          )}
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Email"
-              value={email}
-              onChange={handleEmailChange}
-              required
-              InputProps={{
-                sx: {
-                  backgroundColor: "#E6E6FA", // Light lavender background
-                  borderRadius: 2,
-                },
-              }}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              type="password"
-              label="Password"
-              value={password}
-              onChange={handlePasswordChange}
-              required
-              InputProps={{
-                sx: {
-                  backgroundColor: "#E6E6FA", // Light lavender background
-                  borderRadius: 2,
-                },
-              }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ mt: 2 }}
-              disabled={loading}
-            >
-              {loading ? "Logging in..." : "Log In"}
-            </Button>
-          </Box>
+          <Card>
+            <CardContent>
+              <Typography
+                variant="h4"
+                component="h1"
+                gutterBottom
+                align="center"
+                color="white"
+              >
+                Login
+              </Typography>
+              {error && (
+                <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+                  {error}
+                </Typography>
+              )}
+              <form onSubmit={handleSubmit}>
+                <FormControl fullWidth>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    type="password"
+                    label="Password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                </FormControl>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 2,
+                    mt: 3,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="white"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    Don't have an account?
+                  </Typography>
+                  <Button
+                    component={Link}
+                    to="/register"
+                    sx={{
+                      textTransform: "none",
+                      color: "white",
+                      minWidth: "auto",
+                      textDecoration: "underline",
+                      marginLeft: -2,
+                      marginRight: 4,
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        color: "success.main",
+                        textDecoration: "underline",
+                      },
+                    }}
+                  >
+                    Register
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    sx={{ "&:hover": { backgroundColor: "success.main" } }}
+                    disabled={loading}
+                  >
+                    {loading ? "Logging in..." : "Log In"}
+                  </Button>
+                </Box>
+              </form>
+            </CardContent>
+          </Card>
         </Box>
       </Container>
-      <Container>
-        <Link to="/register" color="inherit">
-          Don't have an account? Register Here!
-        </Link>
-      </Container>
-    </>
+    </div>
   );
 }

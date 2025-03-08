@@ -11,10 +11,14 @@ import {
   Container,
   FormControlLabel,
   Checkbox,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
-import "./Home.scss";
+import "../styles/style.scss";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
+import "../styles/style.scss";
 
 interface RegistrationFormData {
   isOrganization: boolean;
@@ -116,10 +120,10 @@ export default function Register() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "100vh",
+          minHeight: "80vh",
         }}
       >
-        <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+        <Box className="fade-in" sx={{ width: { xs: "100%", md: "55%" } }}>
           <Card>
             <CardContent>
               <Typography
@@ -127,11 +131,25 @@ export default function Register() {
                 component="h1"
                 align="center"
                 gutterBottom
+                color="white"
               >
                 {formData.isOrganization
-                  ? "Organization Registration"
-                  : "Registration"}
+                  ? "Register as an Organization"
+                  : "Register as a Holder"}
+                <Tooltip
+                  title={
+                    formData.isOrganization
+                      ? "An organization is an entity that issues credentials, such as universities granting degrees or online courses awarding badges for completion."
+                      : "A holder is the recipient of a credential, like a student receiving a degree or a professional earning a certification."
+                  }
+                  arrow
+                >
+                  <IconButton size="small" color="success">
+                    <HelpOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Typography>
+
               {error && (
                 <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
                   {error}
@@ -142,6 +160,12 @@ export default function Register() {
                   control={
                     <Checkbox
                       name="isOrganization"
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                      }}
                       checked={formData.isOrganization}
                       onChange={(e) =>
                         setFormData((prevData) => ({
@@ -152,7 +176,10 @@ export default function Register() {
                       }
                     />
                   }
-                  label="I am an organization that would like to issue credentials"
+                  sx={{
+                    color: "white",
+                  }}
+                  label="I want to Issue Credentials"
                 />
               </FormControl>
               <form onSubmit={handleSubmit}>
@@ -199,21 +226,49 @@ export default function Register() {
                     mt: 4,
                   }}
                 >
+                  <Typography
+                    variant="body2"
+                    color="white"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    Already have an account?
+                  </Typography>
+                  <Button
+                    onClick={handleExistingUser}
+                    sx={{
+                      textTransform: "none",
+                      color: "white",
+                      minWidth: "auto",
+                      textDecoration: "underline",
+                      marginLeft: -2,
+                      marginRight: 4,
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        color: "success.main",
+                        textDecoration: "underline",
+                      },
+                    }}
+                  >
+                    Log in
+                  </Button>
+
                   <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     disabled={loading}
                     loading={loading}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "success.main",
+                      },
+                    }}
                   >
                     Register
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleExistingUser}
-                  >
-                    Already have an account? Login
                   </Button>
                 </Box>
               </form>
