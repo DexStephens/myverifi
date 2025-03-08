@@ -74,13 +74,10 @@ export function CredentialIssueCard({
       </Modal>
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
-          <Typography
-            gutterBottom
-            sx={{ color: "text.secondary", fontSize: 14 }}
-          >
+          <Typography gutterBottom sx={{ color: "white" }}>
             {credentialIssue.credential_type.issuer.name}
           </Typography>
-          <Typography variant="h5" component="div">
+          <Typography variant="h5" component="div" sx={{ color: "white" }}>
             {credentialIssue.credential_type.name}
           </Typography>
         </CardContent>

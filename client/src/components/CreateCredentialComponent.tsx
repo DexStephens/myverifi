@@ -247,11 +247,6 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
           </CardContent>
         </Card>
       </Container>
-      <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-        {/* We can remove this whenever, but makes it super easy to tell if the credentials are created and added back into the user context */}
-        {user?.issuer?.contract_address}
-        {user?.issuer?.credential_types?.map((type) => type.name).join(", ")}
-      </Typography>
     </>
   );
 }
