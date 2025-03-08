@@ -196,16 +196,16 @@ export default function IssueCredential({
                   ))}
                 </Select>
               </FormControl>
-
-              <TextField
-                label="User Email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                fullWidth
-              />
-
+              <FormControl fullWidth required>
+                <TextField
+                  label="User Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  fullWidth
+                />
+              </FormControl>
               <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
                 <Button
                   variant="outlined"
