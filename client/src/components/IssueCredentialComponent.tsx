@@ -225,6 +225,7 @@ export default function IssueCredential({
                   color="secondary"
                   size="large"
                   disabled={loading}
+                  loading={loading}
                   sx={{
                     "&:hover": { backgroundColor: "success.main" },
                   }}

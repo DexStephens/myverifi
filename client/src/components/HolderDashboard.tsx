@@ -111,6 +111,16 @@ export function HolderDashboard() {
             spacing={2}
             useFlexGap
             flexWrap="wrap"
+            sx={{
+              "& > *": {
+                flexBasis: {
+                  xs: "100%",
+                  sm: "calc(50% - 8px)",
+                  md: "calc(33.333% - 10.667px)",
+                },
+                minWidth: 0,
+              },
+            }}
           >
             {filteredCredentials.map((credIssue) => (
               <CredentialIssueCard
