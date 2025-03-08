@@ -1,9 +1,9 @@
-import { CredentialIssue, CredentialType } from "@prisma/client";
+import { CredentialIssue, CredentialType, Wallet } from "@prisma/client";
 import { Address } from "viem";
 
 export interface AuthResponse {
   email: string;
-  address?: string;
+  wallet: Wallet;
   issuer?: {
     name: string;
     contract_address: string;

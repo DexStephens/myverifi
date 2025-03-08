@@ -4,6 +4,10 @@ import { startBlockchainListener } from "./chainEvents";
 import prisma from "./config/db.config";
 import { setupSocketIO } from "./socket";
 import { setupEventBusHandlers } from "./busHandlers";
+import { Address } from "viem";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const startServer = async () => {
   try {
@@ -20,8 +24,10 @@ const startServer = async () => {
         console.log("Server running on port 3000");
       });
 
-      //NEEDSWORK: load in the initial contract factory address here
-      startBlockchainListener("0xd0f350b13465b5251bb03e4bbf9fa1dbc4a378f3");
+      //Start listening to blockchain events
+      startBlockchainListener(
+        process.env.SEPOLIA_CREDENTIAL_FACTORY_ADDRESS as Address
+      );
     });
   } catch (e) {
     console.error("Failed to start server: ", e);

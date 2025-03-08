@@ -1,14 +1,18 @@
 import { Address } from "viem";
 import { UserModel } from "../models/user.model";
 import { ControllerError } from "../utils/error.util";
-import { ERROR_TITLES } from "../config/constants.config";
+import {
+  CREDENTIAL_CONTRACT_METHODS,
+  ERROR_TITLES,
+} from "../config/constants.config";
 import { CredentialTypeModel } from "../models/credentialType.model";
-import { publicClient } from "../chainEvents";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { IssuerModel } from "../models/issuer.model";
+import { ChainUtils } from "../utils/chain.util";
+import { HolderModel } from "../models/holder.model";
 
 export class IssuanceService {
-  static async address(email: string, address: Address) {
+  static async retrieveAddress(email: string) {
     const user = await UserModel.findUserByEmail(email);
 
     if (!user) {
@@ -16,14 +20,9 @@ export class IssuanceService {
         ERROR_TITLES.DNE,
         `No user exists for the email: ${email}`
       );
-    } else if (user.address) {
-      throw new ControllerError(
-        ERROR_TITLES.DATA,
-        `Use initial address of: ${user.address}`
-      );
     }
 
-    await UserModel.updateUserAddress(user.id, address);
+    return user.wallet.address;
   }
 
   static async issuers() {
@@ -32,10 +31,56 @@ export class IssuanceService {
     return issuers;
   }
 
+  static async createCredentialType(email: string, title: string, cid: string) {
+    const user = await UserModel.findUserByEmail(email);
+
+    if (!user || !user.issuer) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No user exists for the email: ${email}`
+      );
+    }
+
+    await ChainUtils.createCredentialType(
+      user.wallet.privateKey as Address,
+      user.issuer.contract_address as Address,
+      title,
+      cid
+    );
+  }
+
+  static async issueCredential(emails: string[], credential_id: number) {
+    const credentialType = await CredentialTypeModel.findById(credential_id);
+
+    if (!credentialType) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credential exists for the id: ${credential_id}`
+      );
+    }
+
+    const holders = await HolderModel.findByEmails(emails);
+
+    const issuees = [];
+
+    for (const holder of holders) {
+      await ChainUtils.issueCredential(
+        credentialType.issuer.user.wallet.privateKey as Address,
+        credentialType.issuer.contract_address as Address,
+        holder.user.wallet.address as Address,
+        credentialType.token_id
+      );
+
+      issuees.push(holder.user.email);
+    }
+
+    return issuees;
+  }
+
   static async verify(email: string, credentialTypeIds: number[]) {
     const user = await UserModel.findUserByEmail(email);
 
-    if (!user || !user.address) {
+    if (!user) {
       throw new ControllerError(
         ERROR_TITLES.DNE,
         `No user exists for the email: ${email}`
@@ -52,12 +97,14 @@ export class IssuanceService {
 
     const response = [];
 
+    const publicClient = ChainUtils.getPublicClient();
+
     for (const credentialType of credentialTypes) {
       const valid = await publicClient.readContract({
         address: credentialType.issuer.contract_address as Address,
         abi: institutionCredentialAbi,
-        functionName: "verifyCredential",
-        args: [user.address, credentialType.token_id],
+        functionName: CREDENTIAL_CONTRACT_METHODS.VERIFY_CREDENTIAL,
+        args: [user.wallet.address, credentialType.token_id],
       });
 
       response.push({

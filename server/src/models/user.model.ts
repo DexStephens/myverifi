@@ -5,6 +5,7 @@ export class UserModel {
   static async createUser(data: {
     email: string;
     password_hash: string;
+    walletId: number;
   }): Promise<User> {
     return prisma.user.create({
       data,
@@ -15,6 +16,7 @@ export class UserModel {
     return prisma.user.findUnique({
       where: { id },
       include: {
+        wallet: true,
         holder: true,
         issuer: true,
       },
@@ -25,6 +27,7 @@ export class UserModel {
     return prisma.user.findUnique({
       where: { email },
       include: {
+        wallet: true,
         holder: {
           include: {
             credential_issues: {
@@ -48,9 +51,14 @@ export class UserModel {
   }
 
   static async findUserByAddress(address: string) {
-    return prisma.user.findUnique({
-      where: { address: address.toLowerCase() },
+    return prisma.user.findFirst({
+      where: {
+        wallet: {
+          address: address.toLowerCase(),
+        },
+      },
       include: {
+        wallet: true,
         holder: {
           include: {
             credential_issues: true,
@@ -62,13 +70,6 @@ export class UserModel {
           },
         },
       },
-    });
-  }
-
-  static async updateUserAddress(id: number, address: string) {
-    return prisma.user.update({
-      where: { id },
-      data: { address: address.toLowerCase() },
     });
   }
 }

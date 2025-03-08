@@ -4,12 +4,9 @@ import issuanceRoutes from "./routes/issuance.route";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import { stringify } from "bigint-json";
 import { ControllerError, ErrorUtil } from "./utils/error.util";
 import { ZodError } from "zod";
-
-dotenv.config();
 
 const app = express();
 

@@ -1,11 +1,13 @@
 import { AuthUtils } from "../utils/auth.utils";
-import { AuthResponse, NewIssuer } from "../types";
+import { AuthResponse } from "../types";
 import { UserModel } from "../models/user.model";
 import { IssuerModel } from "../models/issuer.model";
 import { HolderModel } from "../models/holder.model";
 import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
-import * as jwt from "jsonwebtoken"; // Import jsonwebtoken
+import * as jwt from "jsonwebtoken";
+import { ChainUtils } from "../utils/chain.util";
+import { Address } from "viem";
 
 // Define a secret key (store this in an environment variable in production)
 const JWT_SECRET = process.env.JWT_SECRET; // Replace with a strong secret in production
@@ -36,7 +38,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       email: user.email,
-      address: user.address,
+      wallet: user.wallet,
       // Add more fields if needed, but avoid sensitive data
     };
 
@@ -45,7 +47,7 @@ export class AuthService {
 
     return {
       email: user.email,
-      address: user.address,
+      wallet: user.wallet,
       holder: user.holder
         ? {
             credential_issues: user.holder?.credential_issues ?? [],
@@ -65,7 +67,7 @@ export class AuthService {
   static async registerUser(
     email: string,
     password: string,
-    issuer: NewIssuer
+    name?: string
   ): Promise<AuthResponse> {
     const user = await UserModel.findUserByEmail(email);
     if (user) {
@@ -74,16 +76,23 @@ export class AuthService {
 
     const hashedPassword = await AuthUtils.hashPassword(password);
 
+    const wallet = await ChainUtils.createWalletAccount();
+
     const newUser = await UserModel.createUser({
       email,
       password_hash: hashedPassword,
+      walletId: wallet.id,
     });
 
     let newIssuer;
     let newHolder;
 
-    if (issuer) {
-      const { name, contract_address } = issuer;
+    if (name) {
+      const contract_address = await ChainUtils.createCredentialFactory(
+        wallet.privateKey as Address,
+        name
+      );
+
       newIssuer = await IssuerModel.createIssuer({
         userId: newUser.id,
         contract_address,
@@ -105,6 +114,7 @@ export class AuthService {
 
     return {
       email,
+      wallet,
       holder: newHolder
         ? {
             credential_issues: newHolder?.credential_issues ?? [],
