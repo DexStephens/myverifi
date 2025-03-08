@@ -180,7 +180,7 @@ export default function Home() {
           gutterBottom
           color="primary"
         >
-          Contact Us for free gas
+          Contact Us to do liquidity provisioning or to purchase KASPA
         </Typography>
       </Stack>
     </div>
