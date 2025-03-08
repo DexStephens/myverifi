@@ -119,7 +119,7 @@ export default function Register() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "100vh",
+          minHeight: "80vh",
         }}
       >
         <Box sx={{ width: { xs: "100%", md: "55%" } }}>
@@ -243,6 +243,8 @@ export default function Register() {
                       color: "white",
                       minWidth: "auto",
                       textDecoration: "underline",
+                      marginLeft: -2,
+                      marginRight: 4,
                       "&:hover": {
                         backgroundColor: "transparent",
                         color: "success.main",
