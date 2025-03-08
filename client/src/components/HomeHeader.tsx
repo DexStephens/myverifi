@@ -34,14 +34,19 @@ export default function HomeHeader() {
         </Link>
         <Box>
           {user ? (
-            <Stack direction="row" spacing={2} alignItems="end">
-              <Typography variant="subtitle1" sx={{ color: "white" }}>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "primary.main",
+                }}
+              >
                 Welcome, {user.issuer?.name || user.email}
               </Typography>
               <Button
                 onClick={() => navigate("/dashboard")}
                 variant="contained"
-                color="primary"
+                color="secondary"
                 sx={{
                   "&:hover": { backgroundColor: "#4CAF50", color: "white" },
                 }}
@@ -51,10 +56,10 @@ export default function HomeHeader() {
               <Button
                 onClick={handleLogout}
                 variant="contained"
+                color="secondary"
                 sx={{
                   "&:hover": {
                     backgroundColor: "error.main",
-                    color: "error.main",
                   },
                 }}
               >

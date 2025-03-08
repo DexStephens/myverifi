@@ -12,7 +12,11 @@ import {
   Button,
 } from "@mui/material";
 
-export default function ViewCredentials({ onIssue }: { onIssue: (credentialType: string) => void }) {
+export default function ViewCredentials({
+  onIssue,
+}: {
+  onIssue: (credentialType: string) => void;
+}) {
   const { user } = useUser();
 
   const handleEdit = (credentialType: string) => {
@@ -22,7 +26,7 @@ export default function ViewCredentials({ onIssue }: { onIssue: (credentialType:
   return (
     <Container sx={{ py: 4 }} maxWidth="md">
       <Typography variant="h4" component="h1" align="center" gutterBottom>
-        Saved Credentials
+        Credentials
       </Typography>
 
       <TableContainer component={Paper} sx={{ mt: 3 }}>
@@ -39,12 +43,20 @@ export default function ViewCredentials({ onIssue }: { onIssue: (credentialType:
               <TableRow key={index}>
                 <TableCell>{type.name}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" onClick={() => handleEdit(type.name)}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleEdit(type.name)}
+                  >
                     Edit
                   </Button>
                 </TableCell>
                 <TableCell>
-                  <Button variant="contained" color="secondary" onClick={() => onIssue(type.id.toString())}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => onIssue(type.id.toString())}
+                  >
                     Issue
                   </Button>
                 </TableCell>

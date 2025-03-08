@@ -18,6 +18,7 @@ import "../styles/style.scss";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
+import "../styles/style.scss";
 
 interface RegistrationFormData {
   isOrganization: boolean;
@@ -122,7 +123,7 @@ export default function Register() {
           minHeight: "80vh",
         }}
       >
-        <Box sx={{ width: { xs: "100%", md: "55%" } }}>
+        <Box className="fade-in" sx={{ width: { xs: "100%", md: "55%" } }}>
           <Card>
             <CardContent>
               <Typography

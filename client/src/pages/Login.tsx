@@ -12,6 +12,7 @@ import {
 import { Link, useNavigate } from "react-router";
 import { loginUser } from "../utils/login.util";
 import { useUser } from "../context/UserContext";
+import "../styles/style.scss";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ export default function Login() {
         }}
       >
         <Box
+          className="fade-in"
           sx={{
             width: { xs: "100%", md: "50%" },
           }}

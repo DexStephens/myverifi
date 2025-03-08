@@ -6,13 +6,13 @@ import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import ViewCredentialsComponent from "../components/ViewCredentialsComponent";
 
 const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 'auto',
-  bgcolor: 'transparent',
-  boxShadow: 'none',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "auto",
+  bgcolor: "transparent",
+  boxShadow: "none",
   p: 0,
 };
 
@@ -20,7 +20,9 @@ export function IssuerDashboard() {
   const { user } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
-  const [selectedCredentialType, setSelectedCredentialType] = useState<string | null>(null);
+  const [selectedCredentialType, setSelectedCredentialType] = useState<
+    string | null
+  >(null);
 
   const handleIssueCredential = (credentialType: string) => {
     setSelectedCredentialType(credentialType);
@@ -30,15 +32,22 @@ export function IssuerDashboard() {
   return (
     <div>
       <Typography variant="h6">Welcome, {user?.issuer?.name}</Typography>
-      <h1>Issuer Dashboard</h1>
       <div>
-        <Button variant="contained" color="primary" onClick={() => setOpenCreateModal(true)}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenCreateModal(true)}
+        >
           Create Credential
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => handleIssueCredential("")}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => handleIssueCredential("")}
+        >
           Issue Credential
         </Button>
-        
+
         <ViewCredentialsComponent onIssue={handleIssueCredential} />
 
         <Modal
