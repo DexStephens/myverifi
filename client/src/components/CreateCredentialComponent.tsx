@@ -33,6 +33,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
   >([]);
   const navigate = useNavigate();
   const { user } = useUser();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -57,7 +58,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
       // if (cid !== null) {
 
       if (!title) {
-        alert("Please enter a Credential Name");
+        setError("Please enter a Credential Name");
         return;
       }
 
@@ -71,6 +72,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsCreating(true);
+    setError(null);
 
     // Create JSON object from credential details
     const detailsJson = credentialDetails.reduce((acc, detail) => {
@@ -160,13 +162,22 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
               </Tooltip>
             </Typography>
 
+            {error && (
+              <Typography color="error" align="center" sx={{ mb: 2 }}>
+                {error}
+              </Typography>
+            )}
+
             <form onSubmit={handleSubmit} noValidate>
               <Stack spacing={3}>
                 <TextField
                   label="Credential Name"
                   variant="outlined"
                   value={credentialName}
-                  onChange={(e) => setCredentialName(e.target.value)}
+                  onChange={(e) => {
+                    setCredentialName(e.target.value);
+                    if (error) setError(null);
+                  }}
                   required
                 />
 
@@ -206,29 +217,31 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
                     </IconButton>
                   </Stack>
                 ))}
-                <Button
-                  type="button"
-                  variant="outlined"
-                  color="secondary"
-                  onClick={addCredentialDetail}
-                  sx={{
-                    "&:hover": { color: "success.main" },
-                    fontWeight: "bold",
-                  }}
-                >
-                  + Add Credential Detail
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="secondary"
-                  size="large"
-                  loading={isCreating}
-                  disabled={isCreating}
-                  sx={{ "&:hover": { backgroundColor: "success.main" } }}
-                >
-                  Create Credential
-                </Button>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    color="secondary"
+                    onClick={addCredentialDetail}
+                    sx={{
+                      "&:hover": { color: "success.main" },
+                      fontWeight: "bold",
+                    }}
+                  >
+                    + Add Credential Detail
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    loading={isCreating}
+                    disabled={isCreating}
+                    sx={{ "&:hover": { backgroundColor: "success.main" } }}
+                  >
+                    Create Credential
+                  </Button>
+                </Stack>
               </Stack>
             </form>
           </CardContent>

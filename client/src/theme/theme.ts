@@ -95,6 +95,35 @@ const themeOptions: ThemeOptions = {
         },
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "white",
+          "&.Mui-focused": {
+            color: "white",
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          color: "white",
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "white",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "white",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "white",
+          },
+          "& .MuiSvgIcon-root": {
+            color: "white",
+          },
+        },
+      },
+    },
   },
 };
 

@@ -165,7 +165,10 @@ export function IssuerDashboard() {
         aria-describedby="issue-credential-modal-description"
       >
         <Box sx={modalStyle}>
-          <IssueCredentialComponent credentialType={selectedCredentialType} />
+          <IssueCredentialComponent
+            credentialType={selectedCredentialType}
+            onClose={() => setOpenIssueModal(false)}
+          />
         </Box>
       </Modal>
     </Container>

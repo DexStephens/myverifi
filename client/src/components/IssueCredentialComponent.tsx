@@ -12,17 +12,26 @@ import {
   MenuItem,
   InputLabel,
   SelectChangeEvent,
+  IconButton,
+  Box,
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import { issueCredentialType } from "../utils/credential.util";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface CredentialFormData {
   credentialId: string;
   email: string;
 }
 
-export default function IssueCredential({ credentialType }: { credentialType: string | null }) {
+export default function IssueCredential({
+  credentialType,
+  onClose,
+}: {
+  credentialType: string | null;
+  onClose: () => void;
+}) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,95 +131,109 @@ export default function IssueCredential({ credentialType }: { credentialType: st
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Card sx={{ backgroundColor: "#f5f5f5" }}>
-        <CardContent>
-          <Stack spacing={3}>
-            <Typography
-              variant="h4"
-              component="h1"
-              align="center"
-              sx={{ color: "#333" }}
+    <Container sx={{ py: 4 }} maxWidth="sm">
+      <Card>
+        <CardContent sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              zIndex: 1,
+            }}
+          >
+            <IconButton
+              onClick={onClose}
+              size="small"
+              sx={{
+                color: "white",
+                "&:hover": {
+                  color: "error.main",
+                },
+              }}
             >
-              Issue New Credential
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <Typography
+            variant="h4"
+            component="h1"
+            align="center"
+            gutterBottom
+            color="white"
+            sx={{ ml: 2 }}
+          >
+            Issue Credential
+          </Typography>
+
+          {error && (
+            <Typography color="error" align="center" sx={{ mb: 2 }}>
+              {error}
             </Typography>
+          )}
 
-            {error && (
-              <Typography color="error" align="center">
-                {error}
-              </Typography>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <Stack spacing={3}>
-                <FormControl fullWidth required>
-                  <InputLabel id="credential-select-label">
-                    Select Credential
-                  </InputLabel>
-                  <Select
-                    labelId="credential-select-label"
-                    name="credentialId"
-                    value={formData.credentialId}
-                    onChange={handleSelectChange}
-                    label="Select Credential"
-                  >
-                    {existingCredentials.map((credential) => (
-                      <MenuItem key={credential.id} value={credential.id}>
-                        {credential.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl fullWidth required>
-                  <TextField
-                    label="User Email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    fullWidth
-                  />
-                </FormControl>
-
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                  justifyContent="center"
+          <form onSubmit={handleSubmit} noValidate>
+            <Stack spacing={3}>
+              <FormControl fullWidth required>
+                <InputLabel id="credential-select-label">
+                  Select Credential
+                </InputLabel>
+                <Select
+                  labelId="credential-select-label"
+                  name="credentialId"
+                  value={formData.credentialId}
+                  onChange={handleSelectChange}
+                  label="Select Credential"
                 >
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                    loading={loading}
-                    sx={{
-                      minWidth: "200px",
-                      py: 1.5,
-                      "&:hover": {
-                        backgroundColor: "#2c387e",
-                      },
-                    }}
-                  >
-                    Issue Credential
-                  </Button>
-                </Stack>
-              </Stack>
-            </form>
+                  {existingCredentials.map((credential) => (
+                    <MenuItem
+                      key={credential.id}
+                      value={credential.id}
+                      sx={{ color: "white" }}
+                    >
+                      {credential.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-            {/* Navigate to Batch Send Page */}
-            <Stack alignItems="center">
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/batchsend")}
-                sx={{ minWidth: "200px", py: 1.5 }}
-              >
-                Batch Send Credentials
-              </Button>
+              <TextField
+                label="User Email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                fullWidth
+              />
+
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => navigate("/batchsend")}
+                  size="large"
+                  sx={{
+                    "&:hover": { color: "success.main" },
+                    fontWeight: "bold",
+                  }}
+                >
+                  Batch Issue
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  size="large"
+                  disabled={loading}
+                  sx={{
+                    "&:hover": { backgroundColor: "success.main" },
+                  }}
+                >
+                  Issue Credential
+                </Button>
+              </Box>
             </Stack>
-          </Stack>
+          </form>
         </CardContent>
       </Card>
     </Container>
