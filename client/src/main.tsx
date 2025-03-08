@@ -11,36 +11,42 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import BatchSendCredentials from "./pages/BatchSendCredentials.tsx";
 import VerifyCredentials from "./pages/VerifyCredentials.tsx";
 import Layout from "./components/Layout.tsx";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme/theme.ts";
+import { CssBaseline } from "@mui/material";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <UserProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<App />} />
-            <Route path="verify" element={<VerifyCredentials />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="batchsend"
-              element={
-                <ProtectedRoute>
-                  <BatchSendCredentials />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-        </Routes>
-      </UserProvider>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <UserProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<App />} />
+              <Route path="verify" element={<VerifyCredentials />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="batchsend"
+                element={
+                  <ProtectedRoute>
+                    <BatchSendCredentials />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+          </Routes>
+        </UserProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>
 );

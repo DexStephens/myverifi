@@ -127,10 +127,11 @@ export default function Register() {
                 component="h1"
                 align="center"
                 gutterBottom
+                color="white"
               >
                 {formData.isOrganization
-                  ? "Organization Registration"
-                  : "Registration"}
+                  ? "Register as an Organization"
+                  : "Register as a Holder"}
               </Typography>
               {error && (
                 <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
@@ -142,6 +143,12 @@ export default function Register() {
                   control={
                     <Checkbox
                       name="isOrganization"
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                      }}
                       checked={formData.isOrganization}
                       onChange={(e) =>
                         setFormData((prevData) => ({
@@ -152,7 +159,10 @@ export default function Register() {
                       }
                     />
                   }
-                  label="I am an organization that would like to issue credentials"
+                  sx={{
+                    color: "white",
+                  }}
+                  label="I want to Issue Credentials"
                 />
               </FormControl>
               <form onSubmit={handleSubmit}>
@@ -199,21 +209,47 @@ export default function Register() {
                     mt: 4,
                   }}
                 >
+                  <Typography
+                    variant="body2"
+                    color="white"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    Already have an account?
+                  </Typography>
+                  <Button
+                    onClick={handleExistingUser}
+                    sx={{
+                      textTransform: "none",
+                      color: "white",
+                      minWidth: "auto",
+                      textDecoration: "underline",
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        color: "success.main",
+                        textDecoration: "underline",
+                      },
+                    }}
+                  >
+                    Log in
+                  </Button>
+
                   <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     disabled={loading}
                     loading={loading}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "success.main",
+                      },
+                    }}
                   >
                     Register
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleExistingUser}
-                  >
-                    Already have an account? Login
                   </Button>
                 </Box>
               </form>
