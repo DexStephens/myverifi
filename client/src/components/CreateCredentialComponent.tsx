@@ -9,17 +9,21 @@ import {
   Card,
   CardContent,
   IconButton,
+  Tooltip,
+  Box,
 } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router";
 import { createCredentialType } from "../utils/credential.util";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface CredentialDetail {
   descriptor: string;
   value: string;
 }
 
-export default function CreateCredential() {
+export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const [credentialName, setCredentialName] = useState("");
   //I couldn't get this to work, I think it goes too fast through so frontend thinks it's done before the actual transaction goes through
   //Maybe there's some way to once length of credential_types is increased by 1, then the button goes back to create credential and not submitting
@@ -113,9 +117,47 @@ export default function CreateCredential() {
     <>
       <Container sx={{ py: 4 }} maxWidth="sm">
         <Card>
-          <CardContent>
-            <Typography variant="h4" component="h1" align="center" gutterBottom>
+          <CardContent sx={{ position: "relative" }}>
+            <Box
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                zIndex: 1,
+              }}
+            >
+              <IconButton
+                onClick={onClose}
+                size="small"
+                sx={{
+                  color: "white",
+                  "&:hover": {
+                    color: "error.main",
+                  },
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <Typography
+              variant="h4"
+              component="h1"
+              align="center"
+              gutterBottom
+              color="white"
+              sx={{ ml: 2 }}
+            >
               Create Credential
+              <Tooltip
+                title={
+                  "Enter the name of the credential and add any details to describe the attributes of this credential"
+                }
+                arrow
+              >
+                <IconButton size="small" color="success" sx={{ mt: -1 }}>
+                  <HelpOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Typography>
 
             <form onSubmit={handleSubmit} noValidate>
@@ -167,23 +209,28 @@ export default function CreateCredential() {
                 <Button
                   type="button"
                   variant="outlined"
+                  color="secondary"
                   onClick={addCredentialDetail}
+                  sx={{
+                    "&:hover": { color: "success.main" },
+                    fontWeight: "bold",
+                  }}
                 >
                   + Add Credential Detail
                 </Button>
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
+                  color="secondary"
                   size="large"
                   loading={isCreating}
                   disabled={isCreating}
+                  sx={{ "&:hover": { backgroundColor: "success.main" } }}
                 >
                   Create Credential
                 </Button>
               </Stack>
             </form>
-
           </CardContent>
         </Card>
       </Container>

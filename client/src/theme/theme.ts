@@ -8,6 +8,7 @@ const themeOptions: ThemeOptions = {
     },
     secondary: {
       main: "#278AB0",
+      light: "#31aede",
     },
     success: {
       main: "#1DC690",
