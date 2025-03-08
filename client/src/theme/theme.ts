@@ -50,28 +50,54 @@ const themeOptions: ThemeOptions = {
   components: {
     MuiTextField: {
       styleOverrides: {
-        root: {
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "white",
+        root: ({ theme, ownerState }) => ({
+          ...(ownerState.className?.includes("search-field") && {
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "white",
+              "& fieldset": {
+                borderColor: theme.palette.secondary.main,
+              },
+              "&:hover fieldset": {
+                borderColor: theme.palette.success.main,
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: theme.palette.success.main,
+              },
             },
-            "&:hover fieldset": {
-              borderColor: "white",
+            "& .MuiInputBase-input::placeholder": {
+              color: theme.palette.secondary.main,
+              opacity: 1,
             },
-            "&.Mui-focused fieldset": {
-              borderColor: "white",
+            "& .MuiIconButton-root": {
+              color: theme.palette.secondary.main,
+              "&:hover": {
+                color: theme.palette.success.main,
+              },
             },
-          },
-          "& .MuiInputLabel-root": {
-            color: "white",
-          },
-          "& .MuiOutlinedInput-input": {
-            color: "white",
-          },
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: "white",
-          },
-        },
+          }),
+          ...(!ownerState.className?.includes("search-field") && {
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "white",
+              },
+              "&:hover fieldset": {
+                borderColor: theme.palette.success.main,
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: theme.palette.success.main,
+              },
+            },
+            "& .MuiInputLabel-root": {
+              color: "white",
+              "&.Mui-focused": {
+                color: theme.palette.success.main,
+              },
+            },
+            "& .MuiOutlinedInput-input": {
+              color: "white",
+            },
+          }),
+        }),
       },
     },
     MuiCheckbox: {

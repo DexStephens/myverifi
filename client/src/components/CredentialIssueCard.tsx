@@ -85,8 +85,15 @@ export function CredentialIssueCard({
           <Button
             onClick={() => setViewMoreDetails((current) => !current)}
             size="small"
+            sx={{
+              color: "white",
+              "&:hover": {
+                color: "success.main",
+              },
+              textDecoration: "underline",
+            }}
           >
-            More Details
+            View Details
           </Button>
         </CardActions>
       </Card>
