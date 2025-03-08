@@ -124,6 +124,27 @@ const themeOptions: ThemeOptions = {
         },
       },
     },
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          "& .MuiSvgIcon-root": {
+            color: "white",
+          },
+        },
+        paper: {
+          backgroundColor: "primary.main",
+          "& .MuiAutocomplete-option": {
+            color: "white",
+          },
+          "& .MuiAutocomplete-option[aria-selected='true']": {
+            backgroundColor: "secondary.main",
+          },
+          "& .MuiAutocomplete-option.Mui-focused": {
+            backgroundColor: "secondary.main",
+          },
+        },
+      },
+    },
   },
 };
 
