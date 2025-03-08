@@ -98,6 +98,9 @@ export default function IssueCredential({
       setError("You cannot issue a credential to yourself");
       return false;
     }
+
+    //TODO: Check if the email is associated with a registered user (holder)
+
     return true;
   };
 
