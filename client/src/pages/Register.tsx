@@ -11,8 +11,11 @@ import {
   Container,
   FormControlLabel,
   Checkbox,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import "../styles/style.scss";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
 
@@ -119,7 +122,7 @@ export default function Register() {
           minHeight: "100vh",
         }}
       >
-        <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+        <Box sx={{ width: { xs: "100%", md: "55%" } }}>
           <Card>
             <CardContent>
               <Typography
@@ -132,7 +135,20 @@ export default function Register() {
                 {formData.isOrganization
                   ? "Register as an Organization"
                   : "Register as a Holder"}
+                <Tooltip
+                  title={
+                    formData.isOrganization
+                      ? "An organization is an entity that issues credentials, such as universities granting degrees or online courses awarding badges for completion."
+                      : "A holder is the recipient of a credential, like a student receiving a degree or a professional earning a certification."
+                  }
+                  arrow
+                >
+                  <IconButton size="small" color="success">
+                    <HelpOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Typography>
+
               {error && (
                 <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
                   {error}
