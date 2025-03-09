@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import {
   CredentialRequest,
@@ -127,7 +128,18 @@ export default function VerifyCredentials() {
   };
 
   if (issuers === null) {
-    return <h4>Loading...</h4>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
