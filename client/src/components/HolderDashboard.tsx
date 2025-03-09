@@ -108,7 +108,7 @@ export function HolderDashboard() {
         {filteredCredentials.length > 0 ? (
           <Stack
             direction={{ xs: "column", sm: "row" }}
-            spacing={1.85}
+            spacing={1.68}
             useFlexGap
             flexWrap="wrap"
             sx={{
