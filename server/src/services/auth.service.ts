@@ -46,6 +46,7 @@ export class AuthService {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 
     return {
+      id: user.id,
       email: user.email,
       wallet: user.wallet,
       holder: user.holder
@@ -113,6 +114,7 @@ export class AuthService {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 
     return {
+      id: newUser.id,
       email,
       wallet,
       holder: newHolder
@@ -145,8 +147,9 @@ export class AuthService {
       if (!user) {
         throw new ControllerError(ERROR_TITLES.DNE, "User not found");
       }
-  
+
       return {
+        id: user.id,
         email: user.email,
         wallet: user.wallet,
         holder: user.holder

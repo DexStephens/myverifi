@@ -124,7 +124,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               ...currentUser.holder,
               credential_issues: [
                 ...currentUser.holder.credential_issues,
-                { id, holder_id, credential_type_id, credential_type },
+                { id, holder_id, credential_type_id, credential_type, hidden: false },
               ],
             },
           };
