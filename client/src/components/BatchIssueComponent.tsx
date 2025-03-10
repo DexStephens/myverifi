@@ -20,12 +20,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { parseCSV } from "../utils/csv.util";
 import "../styles/style.scss";
-
-const existingCredentials = [
-  { id: "1", title: "Credential 1" },
-  { id: "2", title: "Credential 2" },
-  { id: "3", title: "Credential 3" },
-];
+import { useUser } from "../context/UserContext";
 
 export default function BatchSendCredentials({
   onClose,
@@ -38,10 +33,20 @@ export default function BatchSendCredentials({
   const [loading, setLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
   const [fileName, setFileName] = useState<string>("");
+  const { user } = useUser();
 
   useEffect(() => {
     console.log("Updated emails state:", emails);
   }, [emails]);
+
+  const existingCredentials = user?.issuer?.credential_types || [
+    {
+      id: 0,
+      issuer_id: 0,
+      token_id: "0",
+      name: "No Credentials, Create a Credential First",
+    },
+  ];
 
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
     setSelectedCredential(e.target.value);
@@ -149,8 +154,12 @@ export default function BatchSendCredentials({
                   label="Select Credential"
                 >
                   {existingCredentials.map((credential) => (
-                    <MenuItem key={credential.id} value={credential.id}>
-                      {credential.title}
+                    <MenuItem
+                      key={credential.id}
+                      value={credential.id}
+                      sx={{ color: "white" }}
+                    >
+                      {credential.name}
                     </MenuItem>
                   ))}
                 </Select>
