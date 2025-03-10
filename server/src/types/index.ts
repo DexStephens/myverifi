@@ -2,6 +2,7 @@ import { CredentialIssue, CredentialType, Wallet } from "@prisma/client";
 import { Address } from "viem";
 
 export interface AuthResponse {
+  id: number;
   email: string;
   wallet: Wallet;
   issuer?: {

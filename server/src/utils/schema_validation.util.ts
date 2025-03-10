@@ -39,4 +39,8 @@ export class SchemaValidationUtil {
     emails: z.array(emailSchema),
     credential_id: z.number(),
   });
+
+  static updateCredentialSchema = z.object({
+    hidden: z.boolean(),
+  });
 }

@@ -12,5 +12,6 @@ router.post(
   IssuanceController.credentialTypes
 );
 router.post("/credentials", authenticateToken, IssuanceController.credentials);
+router.patch("/credentials/:id", authenticateToken, IssuanceController.update);
 
 export default router;
