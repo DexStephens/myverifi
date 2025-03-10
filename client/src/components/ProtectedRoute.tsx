@@ -23,12 +23,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     if (decoded.exp < currentTime) {
       // Token is expired, clear it and redirect
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
       return <Navigate to="/login" replace />;
     }
   } catch (error) {
     // Invalid token, clear it and redirect
     console.log("Invalid token", error);
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     return <Navigate to="/login" replace />;
   }
 
