@@ -20,7 +20,11 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = sessionStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  
   const navigate = useNavigate();
 
   // Function to fetch user data from API
@@ -29,7 +33,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const token = sessionStorage.getItem("token");
       if (!token) {
         setUser(null);
-        navigate("/login");
+        // navigate("/login");
         return;
       }
       const response = await fetch(
@@ -47,6 +51,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       console.log("Polled user data:", data);
 
       if (data.status === "success") {
+        sessionStorage.setItem("user", JSON.stringify(data.data));
         setUser(data.data);
         return { status: true, user: data.data };
       } else {
@@ -138,6 +143,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const handleLogout = () => {
     setUser(null);
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     navigate("/login");
   };
 
