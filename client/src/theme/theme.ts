@@ -126,7 +126,7 @@ const themeOptions: ThemeOptions = {
         root: {
           color: "white",
           "&.Mui-focused": {
-            color: "white",
+            color: "#1DC690",
           },
         },
       },
@@ -139,13 +139,40 @@ const themeOptions: ThemeOptions = {
             borderColor: "white",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "white",
+            borderColor: "#1DC690",
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "white",
+            borderColor: "#1DC690",
           },
           "& .MuiSvgIcon-root": {
             color: "white",
+          },
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "#278AB0",
+          border: "2px solid white",
+          "& .MuiMenu-list": {
+            padding: 0,
+          },
+          "& .MuiMenuItem-root": {
+            color: "white",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.3)",
+            "&:last-child": {
+              borderBottom: "none",
+            },
+            "&.Mui-selected": {
+              backgroundColor: "#1DC690",
+            },
+            "&.Mui-selected:hover": {
+              backgroundColor: "#1DC690",
+            },
+            "&:hover": {
+              backgroundColor: "#1DC690",
+            },
           },
         },
       },
@@ -157,16 +184,49 @@ const themeOptions: ThemeOptions = {
             color: "white",
           },
         },
-        paper: {
-          backgroundColor: "primary.main",
-          "& .MuiAutocomplete-option": {
-            color: "white",
+        popper: {
+          "& .MuiPaper-root": {
+            backgroundColor: "#278AB0",
+            border: "2px solid white",
+            "& .MuiAutocomplete-listbox": {
+              padding: 0,
+              "& .MuiAutocomplete-option": {
+                color: "white",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.3)",
+                "&:last-child": {
+                  borderBottom: "none",
+                },
+              },
+              "& .MuiAutocomplete-option[aria-selected='true']": {
+                backgroundColor: "#1DC690",
+              },
+              "& .MuiAutocomplete-option.Mui-focused": {
+                backgroundColor: "#1DC690",
+              },
+              "& .MuiAutocomplete-option:hover": {
+                backgroundColor: "#1DC690",
+              },
+            },
           },
-          "& .MuiAutocomplete-option[aria-selected='true']": {
-            backgroundColor: "secondary.main",
-          },
-          "& .MuiAutocomplete-option.Mui-focused": {
-            backgroundColor: "secondary.main",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          "&.MuiAutocomplete-paper": {
+            backgroundColor: "#278AB0",
+            border: "2px solid white",
+            "& .MuiAutocomplete-listbox": {
+              padding: 0,
+              "& .MuiAutocomplete-option": {
+                color: "white",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.3)",
+                "&:last-child": {
+                  borderBottom: "none",
+                },
+              },
+            },
           },
         },
       },

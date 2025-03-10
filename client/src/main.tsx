@@ -8,7 +8,6 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Register from "./pages/Register.tsx";
 import { UserProvider } from "./context/UserContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
-import BatchSendCredentials from "./pages/BatchSendCredentials.tsx";
 import VerifyCredentials from "./pages/VerifyCredentials.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "@mui/material/styles";
@@ -32,14 +31,6 @@ createRoot(document.getElementById("root")!).render(
                 element={
                   <ProtectedRoute>
                     <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="batchsend"
-                element={
-                  <ProtectedRoute>
-                    <BatchSendCredentials />
                   </ProtectedRoute>
                 }
               />

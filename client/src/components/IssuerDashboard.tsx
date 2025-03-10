@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
+import BatchIssueComponent from "../components/BatchIssueComponent";
 import "../styles/style.scss";
 
 const modalStyle = {
@@ -33,6 +34,7 @@ export function IssuerDashboard() {
   const { user } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
+  const [openBatchModal, setOpenBatchModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
     string | null
   >(null);
@@ -40,6 +42,10 @@ export function IssuerDashboard() {
   const handleIssueCredential = (credentialType: string) => {
     setSelectedCredentialType(credentialType);
     setOpenIssueModal(true);
+  };
+
+  const handleBatchIssue = () => {
+    setOpenBatchModal(true);
   };
 
   const handleEdit = (credentialType: string) => {
@@ -81,6 +87,14 @@ export function IssuerDashboard() {
           sx={{ "&:hover": { backgroundColor: "success.main" } }}
         >
           Issue Credential
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleBatchIssue}
+          sx={{ "&:hover": { backgroundColor: "success.main" } }}
+        >
+          Issue Batch
         </Button>
       </Box>
 
@@ -168,7 +182,21 @@ export function IssuerDashboard() {
           <IssueCredentialComponent
             credentialType={selectedCredentialType}
             onClose={() => setOpenIssueModal(false)}
+            onBatchIssue={() => {
+              setOpenBatchModal(true);
+            }}
           />
+        </Box>
+      </Modal>
+
+      <Modal
+        open={openBatchModal}
+        onClose={() => setOpenBatchModal(false)}
+        aria-labelledby="batch-issue-modal-title"
+        aria-describedby="batch-issue-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <BatchIssueComponent onClose={() => setOpenBatchModal(false)} />
         </Box>
       </Modal>
     </Container>

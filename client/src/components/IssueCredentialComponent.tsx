@@ -28,9 +28,11 @@ interface CredentialFormData {
 export default function IssueCredential({
   credentialType,
   onClose,
+  onBatchIssue,
 }: {
   credentialType: string | null;
   onClose: () => void;
+  onBatchIssue: () => void;
 }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -213,7 +215,10 @@ export default function IssueCredential({
                 <Button
                   variant="outlined"
                   color="secondary"
-                  onClick={() => navigate("/batchsend")}
+                  onClick={() => {
+                    onClose();
+                    onBatchIssue();
+                  }}
                   size="large"
                   sx={{
                     "&:hover": { color: "success.main" },
