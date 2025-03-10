@@ -26,6 +26,7 @@ export type CredentialIssue = {
   holder_id: number;
   credential_type_id: number;
   credential_type: CredentialType & { issuer: Issuer };
+  hidden: boolean;
 };
 
 type Holder = {

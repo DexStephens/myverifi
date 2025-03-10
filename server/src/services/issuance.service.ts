@@ -10,6 +10,7 @@ import { institutionCredentialAbi } from "../utils/abi.util";
 import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
 import { HolderModel } from "../models/holder.model";
+import { CredentialIssueModel } from "../models/credentialIssue.model";
 
 export class IssuanceService {
   static async retrieveAddress(email: string) {
@@ -114,5 +115,32 @@ export class IssuanceService {
     }
 
     return response;
+  }
+
+  static async getCredential(id: number) {
+    const credential = await CredentialIssueModel.findById(id);
+    console.log("Found credential", credential);
+
+    if (!credential) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credential issue exists for the id: ${id}`
+      );
+    }
+
+    return credential;
+  }
+
+  static async updateCredential(id: number, hidden: boolean) {
+    const credential = await this.getCredential(id);
+
+    if (!credential) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credential issue exists for the id: ${id}`
+      );
+    }
+
+    return await CredentialIssueModel.updateHidden(id, hidden);
   }
 }
