@@ -61,20 +61,25 @@ export class IssuanceService {
 
     const holders = await HolderModel.findByEmails(emails);
 
-    const issuees = [];
+    if (holders.length === 1) {
+      const holder = holders[0];
 
-    for (const holder of holders) {
       await ChainUtils.issueCredential(
         credentialType.issuer.user.wallet.privateKey as Address,
         credentialType.issuer.contract_address as Address,
         holder.user.wallet.address as Address,
         credentialType.token_id
       );
-
-      issuees.push(holder.user.email);
+    } else {
+      await ChainUtils.batchIssueCredential(
+        credentialType.issuer.user.wallet.privateKey as Address,
+        credentialType.issuer.contract_address as Address,
+        holders.map((holder) => holder.user.wallet.address as Address),
+        credentialType.token_id
+      );
     }
 
-    return issuees;
+    return holders.map((holder) => holder.user.email);
   }
 
   static async verify(email: string, credentialTypeIds: number[]) {
