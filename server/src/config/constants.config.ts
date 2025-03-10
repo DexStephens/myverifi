@@ -8,6 +8,7 @@ export const ERROR_TITLES = {
   DATA: "Data Error",
   DNE: "Does Not Exist",
   UNIQUE: "Already Exists",
+  UNAUTHORIZED: "Unauthorized",
 } as const;
 
 export const SOCKET_EVENTS = {
