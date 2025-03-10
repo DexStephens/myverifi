@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { publicClient } from "../utils/client";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { getJsonDataFromPinata } from "../utils/pinata.util";
+import { useUser } from "../context/UserContext";
 
 export function CredentialIssueCard({
   credentialIssue,
@@ -25,6 +26,7 @@ export function CredentialIssueCard({
   const [loadingDetails, setLoadingDetails] = useState(true);
   const [hidden, setHidden] = useState(credentialIssue.hidden);
   const [saving, setSaving] = useState(false);
+  const { fetchUserData } = useUser();
 
   useEffect(() => {
     const loadDetails = async () => {
@@ -69,7 +71,6 @@ export function CredentialIssueCard({
           body: JSON.stringify({ hidden }),
         }
       );
-
       if (!response.ok) {
         throw new Error("Failed to update credential");
       }
@@ -77,6 +78,7 @@ export function CredentialIssueCard({
       console.error(error);
     } finally {
       setSaving(false);
+      fetchUserData();
     }
   };
 

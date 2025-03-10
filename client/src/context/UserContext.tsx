@@ -15,6 +15,7 @@ interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => void;
+  fetchUserData: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -27,8 +28,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   
   const navigate = useNavigate();
 
-  // Function to fetch user data from API
-  const fetchUserData = async () => {
+  const fetchUserData = async (): Promise<void> => {
     try {
       const token = sessionStorage.getItem("token");
       if (!token) {
@@ -36,24 +36,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // navigate("/login");
         return;
       }
-      const response = await fetch(
-        `http://localhost:3000/auth/user`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            ...({ Authorization: `Bearer ${token}` }),
-          }
-        }
-      );
-
+  
+      const response = await fetch(`http://localhost:3000/auth/user`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
       const data = await response.json();
       console.log("Polled user data:", data);
 
       if (data.status === "success") {
         sessionStorage.setItem("user", JSON.stringify(data.data));
         setUser(data.data);
-        return { status: true, user: data.data };
       } else {
         setUser(null);
         navigate("/login");
@@ -150,7 +147,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   console.log("user", user);
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout: handleLogout }}>
+    <UserContext.Provider value={{ user, setUser, logout: handleLogout, fetchUserData }}>
       {children}
     </UserContext.Provider>
   );
