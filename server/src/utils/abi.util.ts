@@ -59,17 +59,233 @@ export const credentialFactoryAbi = [
 export const institutionCredentialAbi = [
   {
     inputs: [
-      { internalType: "address", name: "institutionOwner", type: "address" },
-      { internalType: "string", name: "name", type: "string" },
-      { internalType: "string", name: "jsonUri", type: "string" },
+      {
+        internalType: "address",
+        name: "institutionOwner",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "jsonUri",
+        type: "string",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
   {
+    inputs: [
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "cid",
+        type: "string",
+      },
+    ],
+    name: "createCredentialType",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "issueCredential",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "recipients",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "batchIssueCredential",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "revokeCredential",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "isValidCredential",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "uri",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "verifyCredential",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "institutionName",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "tokenIds",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "revokedTokens",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: "string", name: "name", type: "string" },
+      {
+        indexed: true,
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
       {
         indexed: false,
         internalType: "uint256",
@@ -117,63 +333,5 @@ export const institutionCredentialAbi = [
     ],
     name: "CredentialRevoked",
     type: "event",
-  },
-  {
-    inputs: [],
-    name: "institutionName",
-    outputs: [{ internalType: "string", name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    name: "isValidCredential",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "string", name: "name", type: "string" },
-      { internalType: "string", name: "cid", type: "string" },
-    ],
-    name: "createCredentialType",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "recipient", type: "address" },
-      { internalType: "uint256", name: "tokenId", type: "uint256" },
-    ],
-    name: "issueCredential",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    name: "revokeCredential",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "account", type: "address" },
-      { internalType: "uint256", name: "tokenId", type: "uint256" },
-    ],
-    name: "verifyCredential",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    name: "uri",
-    outputs: [{ internalType: "string", name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
   },
 ];
