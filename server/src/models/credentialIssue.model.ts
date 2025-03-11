@@ -32,4 +32,25 @@ export class CredentialIssueModel {
       },
     });
   }
+
+  static async findById(id: number): Promise<CredentialIssue | null> {
+    console.log("Trying to find credential id", id);
+    return prisma.credentialIssue.findUnique({
+      where: { id },
+      include: {
+        credential_type: {
+          include: {
+            issuer: true,
+          },
+        },
+      },
+    });
+  }
+
+  static async updateHidden(id: number, hidden: boolean) {
+    return prisma.credentialIssue.update({
+      where: { id },
+      data: { hidden },
+    });
+  }
 }

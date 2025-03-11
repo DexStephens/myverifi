@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { IssuanceService } from "../services/issuance.service";
 import { SchemaValidationUtil } from "../utils/schema_validation.util";
+import { AuthService } from "../services/auth.service";
+import { HolderModel } from "../models/holder.model";
 
 export class IssuanceController {
   static async issuers(req: Request, res: Response, next: NextFunction) {
@@ -90,6 +92,66 @@ export class IssuanceController {
         data: {
           issued,
         },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      SchemaValidationUtil.updateCredentialSchema.parse(req.body);
+      const { hidden } = req.body;
+
+      const { id } = req.params;
+
+      const authHeader = req.headers.authorization;
+      let token = null;
+
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+      }
+
+      if (!token) {
+        res.status(401).json({
+          status: "error",
+          message: "Bearer token not provided",
+        });
+        return;
+      }
+
+      console.log("TOKEN PROVIDED");
+
+      const user = await AuthService.getUser(token);
+
+      if (!user) {
+        res.status(401).json({
+          status: "error",
+          message: "Invalid token",
+        });
+        return;
+      }
+      console.log("TOKEN VALID");
+      
+      const credential = await IssuanceService.getCredential(parseInt(id));
+      const holder = await HolderModel.findHolderByUserId(user.id);
+
+      console.log("CREDENTIAL", credential);
+      console.log("USER", user);
+      console.log("HOLDER", holder);
+      if (credential.holder_id !== holder.id) {
+        res.status(401).json({
+          status: "error",
+          message: "Unauthorized",
+        });
+        return;
+      }
+      console.log("RIGHT USER");
+
+      await IssuanceService.updateCredential(parseInt(id), hidden);
+
+      res.status(200).json({
+        status: "success",
       });
     } catch (err) {
       next(err);
