@@ -52,15 +52,25 @@ export default function IssueCredential({
     }
   }, [user, navigate]);
 
+  const removeErrors = () => {
+    if (error || displayMessage) {
+      setError(null);
+      setDisplayMessage(null);
+    }
+  };
+
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    removeErrors();
     setSelectedCredentialId(Number(e.target.value));
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    removeErrors();
     setEmail(e.target.value);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    removeErrors();
     if (e.target.files && e.target.files.length > 0) {
       const uploadedFile = e.target.files[0];
       if (uploadedFile.type !== "text/csv") {
