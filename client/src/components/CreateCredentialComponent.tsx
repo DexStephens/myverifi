@@ -9,17 +9,21 @@ import {
   Card,
   CardContent,
   IconButton,
+  Tooltip,
+  Box,
 } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router";
 import { createCredentialType } from "../utils/credential.util";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface CredentialDetail {
   descriptor: string;
   value: string;
 }
 
-export default function CreateCredential() {
+export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const [credentialName, setCredentialName] = useState("");
   //I couldn't get this to work, I think it goes too fast through so frontend thinks it's done before the actual transaction goes through
   //Maybe there's some way to once length of credential_types is increased by 1, then the button goes back to create credential and not submitting
@@ -29,6 +33,7 @@ export default function CreateCredential() {
   >([]);
   const navigate = useNavigate();
   const { user } = useUser();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -53,7 +58,7 @@ export default function CreateCredential() {
       // if (cid !== null) {
 
       if (!title) {
-        alert("Please enter a Credential Name");
+        setError("Please enter a Credential Name");
         return;
       }
 
@@ -67,6 +72,7 @@ export default function CreateCredential() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsCreating(true);
+    setError(null);
 
     // Create JSON object from credential details
     const detailsJson = credentialDetails.reduce((acc, detail) => {
@@ -113,10 +119,54 @@ export default function CreateCredential() {
     <>
       <Container sx={{ py: 4 }} maxWidth="sm">
         <Card>
-          <CardContent>
-            <Typography variant="h4" component="h1" align="center" gutterBottom>
+          <CardContent sx={{ position: "relative" }}>
+            <Box
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                zIndex: 1,
+              }}
+            >
+              <IconButton
+                onClick={onClose}
+                size="small"
+                sx={{
+                  color: "white",
+                  "&:hover": {
+                    color: "error.main",
+                  },
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <Typography
+              variant="h4"
+              component="h1"
+              align="center"
+              gutterBottom
+              color="white"
+              sx={{ ml: 2 }}
+            >
               Create Credential
+              <Tooltip
+                title={
+                  "Enter the name of the credential and add any details to describe the attributes of this credential"
+                }
+                arrow
+              >
+                <IconButton size="small" color="success" sx={{ mt: -1 }}>
+                  <HelpOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Typography>
+
+            {error && (
+              <Typography color="error" align="center" sx={{ mb: 2 }}>
+                {error}
+              </Typography>
+            )}
 
             <form onSubmit={handleSubmit} noValidate>
               <Stack spacing={3}>
@@ -124,7 +174,10 @@ export default function CreateCredential() {
                   label="Credential Name"
                   variant="outlined"
                   value={credentialName}
-                  onChange={(e) => setCredentialName(e.target.value)}
+                  onChange={(e) => {
+                    setCredentialName(e.target.value);
+                    if (error) setError(null);
+                  }}
                   required
                 />
 
@@ -164,52 +217,36 @@ export default function CreateCredential() {
                     </IconButton>
                   </Stack>
                 ))}
-                <Button
-                  type="button"
-                  variant="outlined"
-                  onClick={addCredentialDetail}
-                >
-                  + Add Credential Detail
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  loading={isCreating}
-                  disabled={isCreating}
-                >
-                  Create Credential
-                </Button>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    color="secondary"
+                    onClick={addCredentialDetail}
+                    sx={{
+                      "&:hover": { color: "success.main" },
+                      fontWeight: "bold",
+                    }}
+                  >
+                    + Add Credential Detail
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    loading={isCreating}
+                    disabled={isCreating}
+                    sx={{ "&:hover": { backgroundColor: "success.main" } }}
+                  >
+                    Create Credential
+                  </Button>
+                </Stack>
               </Stack>
             </form>
-
-            <Stack sx={{ mt: 3 }} direction="row" spacing={2}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/issuecredential")}
-                fullWidth
-              >
-                Issue Credentials
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/viewcredentials")}
-                fullWidth
-              >
-                View Created Credentials
-              </Button>
-            </Stack>
           </CardContent>
         </Card>
       </Container>
-      <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-        {/* We can remove this whenever, but makes it super easy to tell if the credentials are created and added back into the user context */}
-        {user?.issuer?.contract_address}
-        {user?.issuer?.credential_types?.map((type) => type.name).join(", ")}
-      </Typography>
     </>
   );
 }

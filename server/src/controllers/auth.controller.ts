@@ -50,4 +50,43 @@ export class AuthController {
       next(err);
     }
   }
+
+  static async getUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const authHeader = req.headers.authorization;
+      let token = null;
+  
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+      }
+
+      if (!token) {
+        res.status(401).json({
+          status: "error",
+          message: "Bearer token not provided",
+        });
+        return;
+      }
+
+      const user = await AuthService.getUser(token);
+
+      if (user) {
+        res.json({
+          status: "success",
+          data: user,
+        });
+      } else {
+        res.status(404).json({
+          status: "error",
+          message: "Bearer token not valid",
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
 }

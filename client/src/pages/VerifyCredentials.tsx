@@ -12,6 +12,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  Box,
 } from "@mui/material";
 import {
   CredentialRequest,
@@ -19,6 +20,7 @@ import {
   verifyCredentials,
 } from "../utils/verify.util";
 import { Issuer } from "../utils/user.util";
+import "../styles/style.scss";
 
 export default function VerifyCredentials() {
   const [issuers, setIssuers] = useState<Issuer[] | null>(null);
@@ -54,8 +56,9 @@ export default function VerifyCredentials() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (email === "") {
-      setError("Email is required");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -128,144 +131,153 @@ export default function VerifyCredentials() {
   }
 
   return (
-    <>
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Card sx={{ backgroundColor: "#f5f5f5" }}>
-          <CardContent>
-            <Stack spacing={3}>
-              <Typography variant="h4" align="center" sx={{ color: "#333" }}>
-                Verify Credentials
-              </Typography>
-              {displayMessage && (
-                <Alert severity="success">{displayMessage}</Alert>
-              )}
-              {error && <Alert severity="error">{error}</Alert>}
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }} className="fade-in">
+      <Card sx={{ backgroundColor: "primary.main" }}>
+        <CardContent>
+          <Stack spacing={3}>
+            <Typography variant="h4" align="center" color="white">
+              Verify Credentials
+            </Typography>
+            {displayMessage && (
+              <Alert severity="success">{displayMessage}</Alert>
+            )}
+            {error && <Alert severity="error">{error}</Alert>}
 
-              <form onSubmit={onSubmit}>
-                {credentials.map((credential, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                    }}
-                  >
-                    <div style={{ flexGrow: 1 }}>
-                      <Typography align="center" sx={{ color: "#333" }}>
-                        Credential #{idx + 1}
-                      </Typography>
-                      <Autocomplete
-                        disablePortal
-                        options={issuers.map((issuer) => issuer.name)}
-                        value={
-                          issuers.find(
-                            (issuer) => issuer.id === credential.issuerId
-                          )?.name || null
-                        }
-                        sx={{ borderRadius: 2, backgroundColor: "white" }}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Institution" />
-                        )}
-                        onChange={(_, newValue) => {
-                          setCredentials((current) =>
-                            current.map((c, i) =>
-                              i === idx
-                                ? {
-                                    ...c,
-                                    issuerId:
-                                      newValue !== null
-                                        ? (issuers.find(
-                                            (issuer) => issuer.name === newValue
-                                          )?.id as number)
-                                        : -1,
-                                  }
-                                : c
-                            )
-                          );
-                        }}
-                      />
-                      <Autocomplete
-                        disablePortal
-                        options={
-                          issuers
-                            .find((issuer) => issuer.id === credential.issuerId)
-                            ?.credential_types.map((ct) => ct.name) || []
-                        }
-                        sx={{ borderRadius: 2, backgroundColor: "white" }}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Credential Type" />
-                        )}
-                        value={
-                          issuers
-                            .find((issuer) => issuer.id === credential.issuerId)
-                            ?.credential_types.find(
-                              (ct) => ct.token_id === credential.tokenId
-                            )?.name || null
-                        }
-                        onChange={(_, newValue) => {
-                          setCredentials((current) =>
-                            current.map((c, i) =>
-                              i === idx
-                                ? {
-                                    ...c,
-                                    tokenId:
-                                      newValue !== null
-                                        ? issuers
-                                            .find(
-                                              (issuer) =>
-                                                issuer.id === c.issuerId
-                                            )
-                                            ?.credential_types.find(
-                                              (ct) => ct.name == newValue
-                                            )
-                                            ?.token_id.toString() || ""
-                                        : "",
-                                  }
-                                : c
-                            )
-                          );
-                        }}
-                      />
-                    </div>
-                    {idx !== 0 && (
-                      <IconButton
-                        color="error"
-                        onClick={() =>
-                          setCredentials((current) =>
-                            current.filter((_, i) => i !== idx)
-                          )
-                        }
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
-                  </div>
-                ))}
-                <Button
-                  variant="outlined"
-                  startIcon={<AdditionIcon />}
-                  onClick={addCredential}
+            <form onSubmit={onSubmit}>
+              {credentials.map((credential, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
                 >
-                  Add Credential
-                </Button>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  required
-                  sx={{ backgroundColor: "white", borderRadius: 2 }}
-                />
-                <Button type="submit" variant="contained" loading={submitting}>
+                  <div style={{ flexGrow: 1 }}>
+                    <Typography align="center" color="white">
+                      Credential #{idx + 1}
+                    </Typography>
+                    <Autocomplete
+                      disablePortal
+                      options={issuers.map((issuer) => issuer.name)}
+                      value={
+                        issuers.find(
+                          (issuer) => issuer.id === credential.issuerId
+                        )?.name || null
+                      }
+                      sx={{ borderRadius: 2, color: "white" }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Institution" />
+                      )}
+                      onChange={(_, newValue) => {
+                        setCredentials((current) =>
+                          current.map((c, i) =>
+                            i === idx
+                              ? {
+                                  ...c,
+                                  issuerId:
+                                    newValue !== null
+                                      ? (issuers.find(
+                                          (issuer) => issuer.name === newValue
+                                        )?.id as number)
+                                      : -1,
+                                }
+                              : c
+                          )
+                        );
+                      }}
+                    />
+                    <Autocomplete
+                      disablePortal
+                      options={
+                        issuers
+                          .find((issuer) => issuer.id === credential.issuerId)
+                          ?.credential_types.map((ct) => ct.name) || []
+                      }
+                      sx={{ borderRadius: 2, color: "white" }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Credential Type" />
+                      )}
+                      value={
+                        issuers
+                          .find((issuer) => issuer.id === credential.issuerId)
+                          ?.credential_types.find(
+                            (ct) => ct.token_id === credential.tokenId
+                          )?.name || null
+                      }
+                      onChange={(_, newValue) => {
+                        setCredentials((current) =>
+                          current.map((c, i) =>
+                            i === idx
+                              ? {
+                                  ...c,
+                                  tokenId:
+                                    newValue !== null
+                                      ? issuers
+                                          .find(
+                                            (issuer) => issuer.id === c.issuerId
+                                          )
+                                          ?.credential_types.find(
+                                            (ct) => ct.name == newValue
+                                          )
+                                          ?.token_id.toString() || ""
+                                      : "",
+                                }
+                              : c
+                          )
+                        );
+                      }}
+                    />
+                  </div>
+                  {idx !== 0 && (
+                    <IconButton
+                      color="error"
+                      onClick={() =>
+                        setCredentials((current) =>
+                          current.filter((_, i) => i !== idx)
+                        )
+                      }
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                </div>
+              ))}
+              <Button
+                variant="outlined"
+                startIcon={<AdditionIcon />}
+                onClick={addCredential}
+                sx={{ color: "white", "&:hover": { color: "success.main" } }}
+              >
+                Add Credential
+              </Button>
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Email"
+                value={email}
+                onChange={handleEmailChange}
+                required
+                sx={{ borderRadius: 2 }}
+              />
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  color="secondary"
+                  loading={submitting}
+                  sx={{
+                    "&:hover": { backgroundColor: "success.main" },
+                  }}
+                >
                   Verify
                 </Button>
-              </form>
-            </Stack>
-          </CardContent>
-        </Card>
-      </Container>
-    </>
+              </Box>
+            </form>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Container>
   );
 }
