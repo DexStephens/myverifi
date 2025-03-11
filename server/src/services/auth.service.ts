@@ -130,4 +130,42 @@ export class AuthService {
       token, // Return the real JWT
     };
   }
+
+  static async getUser(token: string): Promise<AuthResponse | null> {
+    try {
+      if (!token) {
+        throw new ControllerError(ERROR_TITLES.UNAUTHORIZED, "Token is required");
+      }
+  
+      // Verify and decode JWT
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
+  
+      // Find user in the database
+      const user = await UserModel.findUserByEmail(decoded.email);
+      if (!user) {
+        throw new ControllerError(ERROR_TITLES.DNE, "User not found");
+      }
+  
+      return {
+        email: user.email,
+        wallet: user.wallet,
+        holder: user.holder
+          ? {
+              credential_issues: user.holder?.credential_issues ?? [],
+            }
+          : undefined,
+        issuer: user.issuer
+          ? {
+              name: user.issuer?.name,
+              contract_address: user.issuer?.contract_address,
+              credential_types: user.issuer?.credential_types ?? [],
+            }
+          : undefined,
+        token, // Optional: You might not need to return the token again
+      };
+    } catch (error) {
+      console.error("Error in getUser:", error);
+      return null;
+    }
+  }
 }

@@ -20,25 +20,58 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = sessionStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      sessionStorage.setItem("user", JSON.stringify(user));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) {
-      const sessionUser = sessionStorage.getItem("user");
-
-      if (sessionUser !== null) {
-        setUser(JSON.parse(sessionUser));
-        navigate("/dashboard");
+  // Function to fetch user data from API
+  const fetchUserData = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        // navigate("/login");
+        return;
       }
+      const response = await fetch(
+        `http://localhost:3000/auth/user`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...({ Authorization: `Bearer ${token}` }),
+          }
+        }
+      );
+
+      const data = await response.json();
+      console.log("Polled user data:", data);
+
+      if (data.status === "success") {
+        sessionStorage.setItem("user", JSON.stringify(data.data));
+        setUser(data.data);
+        return { status: true, user: data.data };
+      } else {
+        setUser(null);
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setUser(null);
+      navigate("/login");
     }
-  }, [navigate, user]);
+  };
+
+  // Fetch user on mount and set up polling
+  useEffect(() => {
+    fetchUserData(); // Initial fetch
+
+    const interval = setInterval(fetchUserData, 10000); // Fetch every 10 seconds
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
 
   useSocket(user?.wallet.address as Address, {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
