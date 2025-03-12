@@ -8,6 +8,7 @@ export const ERROR_TITLES = {
   DATA: "Data Error",
   DNE: "Does Not Exist",
   UNIQUE: "Already Exists",
+  UNAUTHORIZED: "Unauthorized",
 } as const;
 
 export const SOCKET_EVENTS = {
@@ -22,6 +23,7 @@ export const CREDENTIAL_CONTRACT_METHODS = {
   DEPLOY_INSTITUTION_CONTRACT: "deployInstitutionContract",
   CREATE_CREDENTIAL_TYPE: "createCredentialType",
   ISSUE_CREDENTIAL: "issueCredential",
+  BATCH_ISSUE_CREDENTIAL: "batchIssueCredential",
   GET_INSTITUTION_CONTRACT: "getInstitutionContract",
   VERIFY_CREDENTIAL: "verifyCredential",
 };

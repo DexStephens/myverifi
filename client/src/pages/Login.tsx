@@ -42,7 +42,6 @@ export default function Login() {
 
       if (response.status) {
         sessionStorage.setItem("token", response.user.token);
-        sessionStorage.setItem("user", JSON.stringify(response.user));
         navigate("/dashboard");
       } else {
         console.error("Login failed: ", response.error);

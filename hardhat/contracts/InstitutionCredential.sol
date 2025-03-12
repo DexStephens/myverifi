@@ -38,6 +38,20 @@ contract InstitutionCredential is ERC1155, Ownable {
         emit CredentialIssued(tokenId, recipient);
     }
 
+    function batchIssueCredential(address[] memory recipients, uint256 tokenId) external onlyOwner {
+        require(bytes(tokenIds[tokenId]).length > 0, "Credential type does not exist");
+        require(recipients.length <= 100, "Too many recipients in one batch");
+
+        for (uint256 i = 0; i < recipients.length; i++) {
+            address recipient = recipients[i];
+            require(balanceOf(recipient, tokenId) == 0, "Recipient already has this credential");
+
+            _mint(recipient, tokenId, 1, "");
+            emit CredentialIssued(tokenId, recipient);
+        }
+    }
+
+
     function revokeCredential(uint256 tokenId) external onlyOwner {
         require(!revokedTokens[tokenId], "Already revoked");
         revokedTokens[tokenId] = true;

@@ -38,6 +38,9 @@ export function HolderDashboard() {
     }
   );
 
+  const visibleCredentials = filteredCredentials.filter((credIssue) => !credIssue.hidden);
+  const hiddenCredentials = filteredCredentials.filter((credIssue) => credIssue.hidden);
+
   return (
     <Container sx={{ py: 4 }} maxWidth="md" className="fade-in">
       <Stack spacing={3}>
@@ -105,7 +108,7 @@ export function HolderDashboard() {
           }}
         />
 
-        {filteredCredentials.length > 0 ? (
+        {visibleCredentials.length > 0 ? (
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={1.68}
@@ -122,7 +125,7 @@ export function HolderDashboard() {
               },
             }}
           >
-            {filteredCredentials.map((credIssue) => (
+            {visibleCredentials.map((credIssue) => (
               <CredentialIssueCard
                 key={credIssue.id}
                 credentialIssue={credIssue}
@@ -134,6 +137,47 @@ export function HolderDashboard() {
             {searchQuery
               ? "No credentials match your search"
               : "You don't have any credentials yet"}
+          </Typography>
+        )}
+
+        <Typography
+          variant="h4"
+          component="h3"
+          align="center"
+          gutterBottom
+          color="secondary"
+        >
+          Hidden Credentials
+        </Typography>
+        {hiddenCredentials.length > 0 ? (
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            useFlexGap
+            flexWrap="wrap"
+            sx={{
+              "& > *": {
+                flexBasis: {
+                  xs: "100%",
+                  sm: "calc(50% - 8px)",
+                  md: "calc(33.333% - 10.667px)",
+                },
+                minWidth: 0,
+              },
+            }}
+          >
+            {hiddenCredentials.map((credIssue) => (
+              <CredentialIssueCard
+                key={credIssue.id}
+                credentialIssue={credIssue}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Typography align="center" color="primary">
+            {searchQuery
+              ? "No hidden credentials match your search"
+              : "You don't have any hidden credentials"}
           </Typography>
         )}
       </Stack>

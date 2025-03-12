@@ -34,10 +34,10 @@ export function IssuerDashboard() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
-    string | null
+    number | null
   >(null);
 
-  const handleIssueCredential = (credentialType: string) => {
+  const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
     setOpenIssueModal(true);
   };
@@ -77,7 +77,7 @@ export function IssuerDashboard() {
         <Button
           variant="contained"
           color="secondary"
-          onClick={() => handleIssueCredential("")}
+          onClick={() => handleIssueCredential(null)}
           sx={{ "&:hover": { backgroundColor: "success.main" } }}
         >
           Issue Credential
@@ -130,7 +130,7 @@ export function IssuerDashboard() {
                   <Button
                     variant="contained"
                     color="success"
-                    onClick={() => handleIssueCredential(type.id.toString())}
+                    onClick={() => handleIssueCredential(type.id)}
                     sx={{
                       color: "white",
                       display: "inline-block",

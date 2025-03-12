@@ -10,6 +10,7 @@ import { institutionCredentialAbi } from "../utils/abi.util";
 import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
 import { HolderModel } from "../models/holder.model";
+import { CredentialIssueModel } from "../models/credentialIssue.model";
 
 export class IssuanceService {
   static async retrieveAddress(email: string) {
@@ -61,20 +62,25 @@ export class IssuanceService {
 
     const holders = await HolderModel.findByEmails(emails);
 
-    const issuees = [];
+    if (holders.length === 1) {
+      const holder = holders[0];
 
-    for (const holder of holders) {
       await ChainUtils.issueCredential(
         credentialType.issuer.user.wallet.privateKey as Address,
         credentialType.issuer.contract_address as Address,
         holder.user.wallet.address as Address,
         credentialType.token_id
       );
-
-      issuees.push(holder.user.email);
+    } else {
+      await ChainUtils.batchIssueCredential(
+        credentialType.issuer.user.wallet.privateKey as Address,
+        credentialType.issuer.contract_address as Address,
+        holders.map((holder) => holder.user.wallet.address as Address),
+        credentialType.token_id
+      );
     }
 
-    return issuees;
+    return holders.map((holder) => holder.user.email);
   }
 
   static async verify(email: string, credentialTypeIds: number[]) {
@@ -114,5 +120,32 @@ export class IssuanceService {
     }
 
     return response;
+  }
+
+  static async getCredential(id: number) {
+    const credential = await CredentialIssueModel.findById(id);
+    console.log("Found credential", credential);
+
+    if (!credential) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credential issue exists for the id: ${id}`
+      );
+    }
+
+    return credential;
+  }
+
+  static async updateCredential(id: number, hidden: boolean) {
+    const credential = await this.getCredential(id);
+
+    if (!credential) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credential issue exists for the id: ${id}`
+      );
+    }
+
+    return await CredentialIssueModel.updateHidden(id, hidden);
   }
 }

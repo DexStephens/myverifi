@@ -6,12 +6,15 @@ import {
   Button,
   Box,
   Modal,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { CredentialIssue } from "../utils/user.util";
 import { useEffect, useState } from "react";
 import { publicClient } from "../utils/client";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { getJsonDataFromPinata } from "../utils/pinata.util";
+import { useUser } from "../context/UserContext";
 
 export function CredentialIssueCard({
   credentialIssue,
@@ -21,6 +24,9 @@ export function CredentialIssueCard({
   const [viewMoreDetails, setViewMoreDetails] = useState(false);
   const [moreDetails, setMoreDetails] = useState<JSON | object | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(true);
+  const [hidden, setHidden] = useState(credentialIssue.hidden);
+  const [saving, setSaving] = useState(false);
+  const { fetchUserData } = useUser();
 
   useEffect(() => {
     const loadDetails = async () => {
@@ -50,6 +56,32 @@ export function CredentialIssueCard({
     credentialIssue.credential_type.token_id,
   ]);
 
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:3000/issuances/credentials/${credentialIssue.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            ...({ Authorization: `Bearer ${token}` }),
+          },
+          body: JSON.stringify({ hidden }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update credential");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSaving(false);
+      fetchUserData();
+    }
+  };
+
   return (
     <>
       <Modal
@@ -72,7 +104,7 @@ export function CredentialIssueCard({
           )}
         </Box>
       </Modal>
-      <Card sx={{ minWidth: 275 }}>
+      <Card sx={{ minWidth: 375 }}>
         <CardContent>
           <Typography gutterBottom sx={{ color: "white" }}>
             {credentialIssue.credential_type.issuer.name}
@@ -94,6 +126,35 @@ export function CredentialIssueCard({
             }}
           >
             View Details
+          </Button>
+          {/* Hide credential checkbox */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={hidden}
+                onChange={(e) => setHidden(e.target.checked)}
+                sx={{ color: "white" }}
+              />
+            }
+            label="Hide credential"
+            sx={{ color: "white" }}
+          />
+          {/* Save button with outline and conditional disabling */}
+          <Button
+            onClick={handleSave}
+            disabled={saving || hidden === credentialIssue.hidden}
+            variant="outlined"
+            size="small"
+            sx={{
+              color: "white",
+              borderColor: "white",
+              "&:hover": {
+                borderColor: "success.main",
+                color: "success.main",
+              },
+            }}
+          >
+            {saving ? "Saving..." : "Save"}
           </Button>
         </CardActions>
       </Card>

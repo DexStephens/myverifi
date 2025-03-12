@@ -14,32 +14,35 @@ import {
   SelectChangeEvent,
   IconButton,
   Box,
+  Alert,
+  Tooltip,
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import { issueCredentialType } from "../utils/credential.util";
 import CloseIcon from "@mui/icons-material/Close";
-
-interface CredentialFormData {
-  credentialId: string;
-  email: string;
-}
+import { parseCSV } from "../utils/csv.util";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 export default function IssueCredential({
   credentialType,
   onClose,
 }: {
-  credentialType: string | null;
+  credentialType: number | null;
   onClose: () => void;
 }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<CredentialFormData>({
-    credentialId: credentialType || "",
-    email: "",
-  });
+  const [displayMessage, setDisplayMessage] = useState<string | null>(null);
   const { user } = useUser();
+  const [email, setEmail] = useState<string | null>(null);
+  const [selectedCredentialId, setSelectedCredentialId] = useState<
+    number | null
+  >(credentialType);
+  const [file, setFile] = useState<File | null>(null);
+  const [batch, setBatch] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -49,81 +52,127 @@ export default function IssueCredential({
     }
   }, [user, navigate]);
 
-  const existingCredentials = user?.issuer?.credential_types || [
-    {
-      id: 0,
-      issuer_id: 0,
-      token_id: "0",
-      name: "No Credentials, Create a Credential First",
-    },
-  ];
+  const removeErrors = () => {
+    if (error || displayMessage) {
+      setError(null);
+      setDisplayMessage(null);
+    }
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    removeErrors();
+    setSelectedCredentialId(Number(e.target.value));
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    removeErrors();
+    setEmail(e.target.value);
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    removeErrors();
+    if (e.target.files && e.target.files.length > 0) {
+      const uploadedFile = e.target.files[0];
+      if (uploadedFile.type !== "text/csv") {
+        setError("Please upload a valid CSV file.");
+        setFile(null);
+      } else {
+        setError(null);
+        setFile(uploadedFile);
+      }
+    }
+  };
 
   async function onIssueInstitutionCredential(
     emails: string[],
     credential_id: number
   ) {
-    //NEEDSWORK: This does return a list of emails that were successful, but we can handle this at a later date
-    await issueCredentialType(emails, credential_id);
+    const data = await issueCredentialType(emails, credential_id);
 
-    return true;
+    if (data.status && Array.isArray(data.issued)) {
+      const successful: string[] = data.issued;
+      const failed = emails.filter((e) => !data.issued.includes(e));
+
+      if (successful.length > 0) {
+        setDisplayMessage(
+          `${
+            successful.length > 1 ? successful.length + " " : ""
+          }Credential(s) Issued`
+        );
+      }
+      if (failed.length > 0) {
+        setError(
+          `${
+            failed.length > 1 ? failed.length + " " : ""
+          }Credential(s) Failed: ${failed.join(", ")}`
+        );
+      }
+    }
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.credentialId || !formData.email) {
+  const validateForm = (emails: string[]): boolean => {
+    if (selectedCredentialId === null || emails.length === 0) {
       setError("Please fill in all required fields");
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address");
-      return false;
-    } else if (formData.email === user?.email) {
-      setError("You cannot issue a credential to yourself");
-      return false;
+    for (const email of emails) {
+      if (!emailRegex.test(email)) {
+        setError("Please enter a valid email address");
+        return false;
+      } else if (email === user?.email) {
+        setError("You cannot issue a credential to yourself");
+        return false;
+      }
     }
-
-    //TODO: Check if the email is associated with a registered user (holder)
 
     return true;
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validateForm()) {
+    setError(null);
+    setDisplayMessage(null);
+
+    const extractedEmails = [];
+
+    if (file) {
+      try {
+        const extracted = await parseCSV(file);
+
+        if (Array.isArray(extracted)) {
+          extractedEmails.push(...extracted);
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred.");
+        }
+        return;
+      }
+    } else if (email !== null) {
+      extractedEmails.push(email);
+    }
+
+    if (extractedEmails.length === 0) {
+      setError("Please input valid emails");
+      return;
+    }
+
+    if (validateForm(extractedEmails)) {
       setLoading(true);
       setError(null);
       try {
-        if (formData.credentialId === "0") {
-          alert("Please create a credential first");
-          return;
-        }
-
         await onIssueInstitutionCredential(
-          [formData.email],
-          Number(formData.credentialId)
+          extractedEmails,
+          selectedCredentialId ?? 0
         );
 
-        setFormData({
-          credentialId: "",
-          email: "",
-        });
+        setEmail(null);
+        setFile(null);
+        setSelectedCredentialId(0);
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
@@ -164,15 +213,20 @@ export default function IssueCredential({
             align="center"
             gutterBottom
             color="white"
-            sx={{ ml: 2 }}
+            sx={{ m: 2 }}
           >
             Issue Credential
           </Typography>
 
+          {displayMessage && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {displayMessage}
+            </Alert>
+          )}
           {error && (
-            <Typography color="error" align="center" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 3 }}>
               {error}
-            </Typography>
+            </Alert>
           )}
 
           <form onSubmit={handleSubmit} noValidate>
@@ -184,11 +238,11 @@ export default function IssueCredential({
                 <Select
                   labelId="credential-select-label"
                   name="credentialId"
-                  value={formData.credentialId}
+                  value={selectedCredentialId?.toString()}
                   onChange={handleSelectChange}
                   label="Select Credential"
                 >
-                  {existingCredentials.map((credential) => (
+                  {user?.issuer?.credential_types.map((credential) => (
                     <MenuItem
                       key={credential.id}
                       value={credential.id}
@@ -199,29 +253,99 @@ export default function IssueCredential({
                   ))}
                 </Select>
               </FormControl>
-              <FormControl fullWidth required>
-                <TextField
-                  label="User Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  fullWidth
-                />
-              </FormControl>
-              <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+              <Box sx={{ display: "flex", gap: 2 }}>
                 <Button
-                  variant="outlined"
                   color="secondary"
-                  onClick={() => navigate("/batchsend")}
-                  size="large"
+                  variant={batch ? "outlined" : "contained"}
+                  onClick={() => setBatch(false)}
+                >
+                  Single
+                </Button>
+                <Button
+                  color="secondary"
+                  variant={batch ? "contained" : "outlined"}
+                  onClick={() => setBatch(true)}
+                >
+                  Batch
+                </Button>
+              </Box>
+              {batch ? (
+                <Box
                   sx={{
-                    "&:hover": { color: "success.main" },
-                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    flex: 1,
+                    minWidth: 0, // This allows the box to shrink below its content size
                   }}
                 >
-                  Batch Issue
-                </Button>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<UploadFileIcon />}
+                    size="large"
+                    color="secondary"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "success.main",
+                      },
+                      flexShrink: 0, // Prevents the button from shrinking
+                    }}
+                  >
+                    Upload CSV
+                    <input
+                      type="file"
+                      accept=".csv"
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                    />
+                  </Button>
+                  <Box
+                    sx={{
+                      flex: 1,
+                      minWidth: 0,
+                      maxWidth: "200px",
+                    }}
+                  >
+                    {file?.name ? (
+                      <Tooltip title={file.name} arrow>
+                        <Typography
+                          color="white"
+                          sx={{
+                            ml: 2,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            opacity: 1,
+                          }}
+                        >
+                          {file.name}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip
+                        title="Upload a CSV file containing a list of email addresses to issue credentials to multiple users at once"
+                        arrow
+                      >
+                        <IconButton size="small" color="success" sx={{ ml: 1 }}>
+                          <HelpOutlineIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Box>
+                </Box>
+              ) : (
+                <FormControl fullWidth required>
+                  <TextField
+                    label="User Email"
+                    name="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                    fullWidth
+                  />
+                </FormControl>
+              )}
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
                 <Button
                   type="submit"
                   variant="contained"

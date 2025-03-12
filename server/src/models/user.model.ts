@@ -61,7 +61,15 @@ export class UserModel {
         wallet: true,
         holder: {
           include: {
-            credential_issues: true,
+            credential_issues: {
+              include: {
+                credential_type: {
+                  include: {
+                    issuer: true,
+                  },
+                },
+              },
+            },
           },
         },
         issuer: {

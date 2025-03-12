@@ -111,6 +111,23 @@ export class ChainUtils {
     );
   }
 
+  static async batchIssueCredential(
+    privateKey: Address,
+    contractAddress: Address,
+    recipients: Address[],
+    tokenId: bigint
+  ) {
+    for (let i = 0; i < recipients.length; i += 100) {
+      await this.#callContract(
+        institutionCredentialAbi as Abi,
+        contractAddress,
+        CREDENTIAL_CONTRACT_METHODS.BATCH_ISSUE_CREDENTIAL,
+        [recipients.slice(i, i + 100), tokenId],
+        privateKey
+      );
+    }
+  }
+
   static async #callContract(
     abi: Abi,
     contractAddress: Address,
