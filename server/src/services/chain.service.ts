@@ -12,29 +12,25 @@ export class ChainService {
 
       const user = await UserModel.findUserByAddress(institution);
 
-      if (
-        user &&
-        user.issuer &&
-        !user.issuer.credential_types.find(
-          (credentialType) => credentialType.token_id === tokenId
-        )
-      ) {
-        const credentialType = await CredentialTypeModel.createCredentialType({
+      let credentialType = user.issuer.credential_types.find(
+        (credentialType) => credentialType.token_id === tokenId
+      );
+
+      if (user && user.issuer && credentialType === undefined) {
+        credentialType = await CredentialTypeModel.createCredentialType({
           name,
           token_id: tokenId,
           issuer_id: user.issuer.id,
         });
-
-        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
-          address: user.wallet.address,
-          id: credentialType.id,
-          name: credentialType.name,
-          token_id: credentialType.token_id,
-          issuer_id: credentialType.issuer_id,
-        });
-        return;
       }
-      console.log("Did not process credential creation:", credential);
+
+      eventBus.emit(SOCKET_EVENTS.CREDENTIAL_CREATION, {
+        address: user.wallet.address,
+        id: credentialType.id,
+        name: credentialType.name,
+        token_id: credentialType.token_id,
+        issuer_id: credentialType.issuer_id,
+      });
     }
   }
 
@@ -50,32 +46,30 @@ export class ChainService {
           contractAddress
         );
 
+      let credentialIssue = user.holder.credential_issues.find(
+        (credentialIssue) =>
+          credentialIssue.credential_type_id === credentialType.id
+      );
+
       if (
         user &&
         user.holder &&
         credentialType &&
-        !user.holder.credential_issues.find(
-          (credentialIssue) =>
-            credentialIssue.credential_type_id === credentialType.id
-        )
+        credentialIssue === undefined
       ) {
-        const credentialIssue =
-          await CredentialIssueModel.createCredentialIssue({
-            holder_id: user.holder.id,
-            credential_type_id: credentialType.id,
-          });
-
-        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_ISSUANCE, {
-          address: recipient,
-          id: credentialIssue.id,
-          holder_id: credentialIssue.holder_id,
-          credential_type_id: credentialIssue.holder_id,
-          credential_type: credentialIssue.credential_type,
+        credentialIssue = await CredentialIssueModel.createCredentialIssue({
+          holder_id: user.holder.id,
+          credential_type_id: credentialType.id,
         });
-        return;
       }
 
-      console.log("Unable to issue credential", issue);
+      eventBus.emit(SOCKET_EVENTS.CREDENTIAL_ISSUANCE, {
+        address: recipient,
+        id: credentialIssue.id,
+        holder_id: credentialIssue.holder_id,
+        credential_type_id: credentialIssue.holder_id,
+        credential_type: credentialIssue.credential_type,
+      });
     }
   }
 }

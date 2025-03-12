@@ -17,13 +17,15 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<AuthResponse | null> {
-    const { password_hash, ...user } = await UserModel.findUserByEmail(email);
-    if (!user) {
+    const existingUser = await UserModel.findUserByEmail(email);
+    if (!existingUser) {
       throw new ControllerError(
         ERROR_TITLES.DNE,
         `No user found for the email: ${email}`
       );
     }
+
+    const { password_hash, ...user } = existingUser;
 
     const isPasswordValid = await AuthUtils.verifyPassword(
       password,
