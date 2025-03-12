@@ -6,8 +6,6 @@ import {
   Button,
   Box,
   Modal,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import { CredentialIssue } from "../utils/user.util";
 import { useEffect, useState } from "react";
@@ -56,7 +54,7 @@ export function CredentialIssueCard({
     credentialIssue.credential_type.token_id,
   ]);
 
-  const handleSave = async () => {
+  const handleToggleHidden = async () => {
     setSaving(true);
     try {
       const token = sessionStorage.getItem("token");
@@ -68,12 +66,13 @@ export function CredentialIssueCard({
             "Content-Type": "application/json",
             ...({ Authorization: `Bearer ${token}` }),
           },
-          body: JSON.stringify({ hidden }),
+          body: JSON.stringify({ hidden: !hidden }),
         }
       );
       if (!response.ok) {
         throw new Error("Failed to update credential");
       }
+      setHidden(!hidden);
     } catch (error) {
       console.error(error);
     } finally {
@@ -127,22 +126,9 @@ export function CredentialIssueCard({
           >
             View Details
           </Button>
-          {/* Hide credential checkbox */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={hidden}
-                onChange={(e) => setHidden(e.target.checked)}
-                sx={{ color: "white" }}
-              />
-            }
-            label="Hide credential"
-            sx={{ color: "white" }}
-          />
-          {/* Save button with outline and conditional disabling */}
           <Button
-            onClick={handleSave}
-            disabled={saving || hidden === credentialIssue.hidden}
+            onClick={handleToggleHidden}
+            disabled={saving}
             variant="outlined"
             size="small"
             sx={{
@@ -154,7 +140,7 @@ export function CredentialIssueCard({
               },
             }}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? "Saving..." : hidden ? "Unhide" : "Hide"}
           </Button>
         </CardActions>
       </Card>
