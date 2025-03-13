@@ -103,8 +103,8 @@ export function CredentialIssueCard({
           )}
         </Box>
       </Modal>
-      <Card sx={{ minWidth: 375 }}>
-        <CardContent>
+      <Card sx={{ minWidth: 375, display: "flex", flexDirection: "column" }}>
+        <CardContent sx={{ flexGrow:1}}>
           <Typography gutterBottom sx={{ color: "white" }}>
             {credentialIssue.credential_type.issuer.name}
           </Typography>
@@ -112,7 +112,7 @@ export function CredentialIssueCard({
             {credentialIssue.credential_type.name}
           </Typography>
         </CardContent>
-        <CardActions>
+        <CardActions sx={{ mt: "auto"}}>
           <Button
             onClick={() => setViewMoreDetails((current) => !current)}
             size="small"
