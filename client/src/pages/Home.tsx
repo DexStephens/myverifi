@@ -31,7 +31,7 @@ export default function Home() {
       
 
       {/* Call to Action Section */}
-      <HomeSection sx={{ padding: 0, marginTop: "-100px" }}> {/* Adjusted margin to bring it up */}
+      <HomeSection sx={{ padding: 0, marginTop: "-30px" }}> {/* Adjusted margin to bring it up */}
         <Stack spacing={4} alignItems="center" textAlign="center">
           <Box
             sx={{
