@@ -42,7 +42,7 @@ export function HolderDashboard() {
   const hiddenCredentials = filteredCredentials.filter((credIssue) => credIssue.hidden);
 
   return (
-    <Container sx={{ py: 4 }} maxWidth="md" className="fade-in">
+    <Container sx={{ py: 4, maxWidth: '900px' }} className="fade-in">
       <Stack spacing={3}>
         <Typography
           variant="h4"
@@ -61,20 +61,18 @@ export function HolderDashboard() {
           placeholder="Search by institution or credential name..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          slotProps={{
-            input: {
-              endAdornment: searchQuery && (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClearSearch}
-                    edge="end"
-                    size="small"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
+          InputProps={{
+            endAdornment: searchQuery && (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleClearSearch}
+                  edge="end"
+                  size="small"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
           }}
           sx={{
             "& .MuiOutlinedInput-root": {
@@ -111,7 +109,7 @@ export function HolderDashboard() {
         {visibleCredentials.length > 0 ? (
           <Stack
             direction={{ xs: "column", sm: "row" }}
-            spacing={2}
+            spacing={1.68}
             useFlexGap
             flexWrap="wrap"
             sx={{

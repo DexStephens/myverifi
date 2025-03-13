@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import {
   CredentialRequest,
@@ -127,14 +128,25 @@ export default function VerifyCredentials() {
   };
 
   if (issuers === null) {
-    return <h4>Loading...</h4>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }} className="fade-in">
       <Card sx={{ backgroundColor: "primary.main" }}>
         <CardContent>
-          <Stack spacing={3}>
+          <Stack spacing={2}>
             <Typography variant="h4" align="center" color="white">
               Verify Credentials
             </Typography>
@@ -157,77 +169,83 @@ export default function VerifyCredentials() {
                     <Typography align="center" color="white">
                       Credential #{idx + 1}
                     </Typography>
-                    <Autocomplete
-                      disablePortal
-                      options={issuers.map((issuer) => issuer.name)}
-                      value={
-                        issuers.find(
-                          (issuer) => issuer.id === credential.issuerId
-                        )?.name || null
-                      }
-                      sx={{ borderRadius: 2, color: "white" }}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Institution" />
-                      )}
-                      onChange={(_, newValue) => {
-                        setCredentials((current) =>
-                          current.map((c, i) =>
-                            i === idx
-                              ? {
-                                  ...c,
-                                  issuerId:
-                                    newValue !== null
-                                      ? (issuers.find(
-                                          (issuer) => issuer.name === newValue
-                                        )?.id as number)
-                                      : -1,
-                                }
-                              : c
-                          )
-                        );
-                      }}
-                    />
-                    <Autocomplete
-                      disablePortal
-                      options={
-                        issuers
-                          .find((issuer) => issuer.id === credential.issuerId)
-                          ?.credential_types.map((ct) => ct.name) || []
-                      }
-                      sx={{ borderRadius: 2, color: "white" }}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Credential Type" />
-                      )}
-                      value={
-                        issuers
-                          .find((issuer) => issuer.id === credential.issuerId)
-                          ?.credential_types.find(
-                            (ct) => ct.token_id === credential.tokenId
+                    <Box mb={2}>
+                      <Autocomplete
+                        disablePortal
+                        options={issuers.map((issuer) => issuer.name)}
+                        value={
+                          issuers.find(
+                            (issuer) => issuer.id === credential.issuerId
                           )?.name || null
-                      }
-                      onChange={(_, newValue) => {
-                        setCredentials((current) =>
-                          current.map((c, i) =>
-                            i === idx
-                              ? {
-                                  ...c,
-                                  tokenId:
-                                    newValue !== null
-                                      ? issuers
-                                          .find(
-                                            (issuer) => issuer.id === c.issuerId
-                                          )
-                                          ?.credential_types.find(
-                                            (ct) => ct.name == newValue
-                                          )
-                                          ?.token_id.toString() || ""
-                                      : "",
-                                }
-                              : c
-                          )
-                        );
-                      }}
-                    />
+                        }
+                        sx={{ borderRadius: 2, color: "white" }}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Institution" />
+                        )}
+                        onChange={(_, newValue) => {
+                          setCredentials((current) =>
+                            current.map((c, i) =>
+                              i === idx
+                                ? {
+                                    ...c,
+                                    issuerId:
+                                      newValue !== null
+                                        ? (issuers.find(
+                                            (issuer) =>
+                                              issuer.name === newValue
+                                          )?.id as number)
+                                        : -1,
+                                  }
+                                : c
+                            )
+                          );
+                        }}
+                      />
+                    </Box>
+                    <Box>
+                      <Autocomplete
+                        disablePortal
+                        options={
+                          issuers
+                            .find((issuer) => issuer.id === credential.issuerId)
+                            ?.credential_types.map((ct) => ct.name) || []
+                        }
+                        sx={{ borderRadius: 2, color: "white" }}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Credential Type" />
+                        )}
+                        value={
+                          issuers
+                            .find((issuer) => issuer.id === credential.issuerId)
+                            ?.credential_types.find(
+                              (ct) => ct.token_id === credential.tokenId
+                            )?.name || null
+                        }
+                        onChange={(_, newValue) => {
+                          setCredentials((current) =>
+                            current.map((c, i) =>
+                              i === idx
+                                ? {
+                                    ...c,
+                                    tokenId:
+                                      newValue !== null
+                                        ? issuers
+                                            .find(
+                                              (issuer) =>
+                                                issuer.id === c.issuerId
+                                            )
+                                            ?.credential_types.find(
+                                              (ct) => ct.name == newValue
+                                            )
+                                            ?.token_id.toString() || ""
+                                        : "",
+                                  }
+                                : c
+                            )
+                          );
+                        }}
+                      />
+                    </Box>
                   </div>
                   {idx !== 0 && (
                     <IconButton
