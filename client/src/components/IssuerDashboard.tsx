@@ -14,6 +14,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  TablePagination,
 } from "@mui/material";
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
@@ -41,6 +42,8 @@ export function IssuerDashboard() {
     number | null
   >(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
@@ -55,12 +58,28 @@ export function IssuerDashboard() {
     setSearchQuery("");
   };
 
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const filteredCredentials = user?.issuer?.credential_types?.filter((type) => {
     const searchLower = searchQuery.toLowerCase();
     const credentialName = type.name.toLowerCase();
 
     return credentialName.includes(searchLower);
   });
+
+  const paginatedCredentials = filteredCredentials?.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Container sx={{ py: 4 }} maxWidth="md" className="fade-in">
@@ -172,7 +191,7 @@ export function IssuerDashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredCredentials?.map((type, index) => (
+            {paginatedCredentials?.map((type, index) => (
               <TableRow key={index}>
                 <TableCell sx={{ color: "white", textAlign: "left" }}>
                   {type.name}
@@ -207,6 +226,15 @@ export function IssuerDashboard() {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredCredentials?.length || 0}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
 
       <Modal
