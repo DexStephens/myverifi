@@ -11,11 +11,15 @@ import {
   Container,
   TableHead,
   Paper,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
+import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
 
 const modalStyle = {
@@ -36,6 +40,7 @@ export function IssuerDashboard() {
   const [selectedCredentialType, setSelectedCredentialType] = useState<
     number | null
   >(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
@@ -45,6 +50,17 @@ export function IssuerDashboard() {
   const handleEdit = (credentialType: string) => {
     console.log(`Edit credential type: ${credentialType}`);
   };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
+  const filteredCredentials = user?.issuer?.credential_types?.filter((type) => {
+    const searchLower = searchQuery.toLowerCase();
+    const credentialName = type.name.toLowerCase();
+
+    return credentialName.includes(searchLower);
+  });
 
   return (
     <Container sx={{ py: 4 }} maxWidth="md" className="fade-in">
@@ -84,6 +100,54 @@ export function IssuerDashboard() {
         </Button>
       </Box>
 
+      <TextField
+        fullWidth
+        variant="outlined"
+        size="medium"
+        placeholder="Search by credential name..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        InputProps={{
+          endAdornment: searchQuery && (
+            <InputAdornment position="end">
+              <IconButton onClick={handleClearSearch} edge="end" size="small">
+                <CloseIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "white",
+            "& fieldset": {
+              borderColor: "secondary.main",
+              borderWidth: "2px",
+            },
+            "&:hover fieldset": {
+              borderColor: "success.main",
+              borderWidth: "2px",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "success.main",
+              borderWidth: "2px",
+            },
+            "& input": {
+              color: "secondary.main",
+            },
+            "& input::placeholder": {
+              color: "secondary.main",
+              opacity: 1,
+            },
+          },
+          "& .MuiIconButton-root": {
+            color: "secondary.main",
+            "&:hover": {
+              color: "error.main",
+            },
+          },
+        }}
+      />
+
       <TableContainer component={Paper} sx={{ mt: 3 }}>
         <Table>
           <TableHead>
@@ -108,7 +172,7 @@ export function IssuerDashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {user?.issuer?.credential_types?.map((type, index) => (
+            {filteredCredentials?.map((type, index) => (
               <TableRow key={index}>
                 <TableCell sx={{ color: "white", textAlign: "left" }}>
                   {type.name}
