@@ -5,11 +5,13 @@ import {
   CardContent,
   Stack,
   Divider,
+  Box,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router";
 import HomeSection from "../components/HomeSection";
 import "../styles/style.scss";
 import { useUser } from "../context/UserContext";
+import backgroundPic from "../../assets/myverifiHome.png"; // Import the image
 
 export default function Home() {
   const navigate = useNavigate();
@@ -25,9 +27,31 @@ export default function Home() {
 
   return (
     <div className="home-wrapper">
+      {/* Top Image */}
+      
+
       {/* Call to Action Section */}
-      <HomeSection>
+      <HomeSection sx={{ padding: 0, marginTop: "-30px" }}> {/* Adjusted margin to bring it up */}
         <Stack spacing={4} alignItems="center" textAlign="center">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              padding: "0px 0", // Adjusted padding to reduce space
+            }}
+          >
+            <Box
+              component="img"
+              src={backgroundPic}
+              alt="myverifi Landing"
+              sx={{
+                width: "55%",
+                height: "auto",
+              }}
+            />
+          </Box>
           <Typography variant="h2" component="h1" color="primary">
             myverifi
           </Typography>

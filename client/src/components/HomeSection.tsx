@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
+import { Box, BoxProps } from "@mui/material";
 
-export default function HomeSection({ children }: React.ComponentProps<"div">) {
+export default function HomeSection({ children, sx, ...props }: BoxProps) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -13,7 +14,7 @@ export default function HomeSection({ children }: React.ComponentProps<"div">) {
         }
       },
       {
-        threshold: 0.5, // Trigger when 10% of the element is visible
+        threshold: 0.5, // Trigger when 50% of the element is visible
       }
     );
 
@@ -29,8 +30,8 @@ export default function HomeSection({ children }: React.ComponentProps<"div">) {
   }, []);
 
   return (
-    <div className="home-section" ref={ref}>
+    <Box className="home-section" ref={ref} sx={sx} {...props}>
       {children}
-    </div>
+    </Box>
   );
 }
