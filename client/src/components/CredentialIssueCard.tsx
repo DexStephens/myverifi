@@ -6,6 +6,7 @@ import {
   Button,
   Box,
   Modal,
+  CircularProgress,
 } from "@mui/material";
 import { CredentialIssue } from "../utils/user.util";
 import { useEffect, useState } from "react";
@@ -34,7 +35,9 @@ export function CredentialIssueCard({
           address: credentialIssue.credential_type.issuer.contract_address,
           abi: institutionCredentialAbi,
           functionName: "uri",
-          args: [BigInt(credentialIssue.credential_type.token_id)],
+          args: [
+            BigInt(credentialIssue.credential_type.token_id.replace(/n$/, "")),
+          ],
         })) as string;
 
         pinataJson = await getJsonDataFromPinata(cid);
@@ -64,7 +67,7 @@ export function CredentialIssueCard({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            ...({ Authorization: `Bearer ${token}` }),
+            ...{ Authorization: `Bearer ${token}` },
           },
           body: JSON.stringify({ hidden: !hidden }),
         }
@@ -89,22 +92,56 @@ export function CredentialIssueCard({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+          onClick={() => setViewMoreDetails(false)}
+        >
           {moreDetails === null && loadingDetails ? (
-            <p>Loading Credential Extra Details...</p>
+            <CircularProgress />
           ) : (
-            <p>
-              {moreDetails !== null && Object.keys(moreDetails).length > 0 ? (
-                <p>{JSON.stringify(moreDetails)}</p>
-              ) : (
-                <p>There are no extra details from the institution</p>
-              )}
-            </p>
+            <Card
+              sx={{
+                width: "100%",
+                maxWidth: 500,
+                bgcolor: "white",
+                boxShadow: 3,
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Additional Information
+                </Typography>
+
+                {moreDetails !== null && Object.keys(moreDetails).length > 0 ? (
+                  Object.entries(moreDetails).map(([key, value]) => (
+                    <Box key={key} sx={{ display: "flex", gap: 1, py: 0.5 }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        sx={{ textTransform: "capitalize" }}
+                      >
+                        {key}:
+                      </Typography>
+                      <Typography variant="body2">{String(value)}</Typography>
+                    </Box>
+                  ))
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    There are no extra details from the institution.
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
           )}
         </Box>
       </Modal>
       <Card sx={{ minWidth: 375, display: "flex", flexDirection: "column" }}>
-        <CardContent sx={{ flexGrow:1}}>
+        <CardContent sx={{ flexGrow: 1 }}>
           <Typography gutterBottom sx={{ color: "white" }}>
             {credentialIssue.credential_type.issuer.name}
           </Typography>
@@ -112,7 +149,7 @@ export function CredentialIssueCard({
             {credentialIssue.credential_type.name}
           </Typography>
         </CardContent>
-        <CardActions sx={{ mt: "auto"}}>
+        <CardActions sx={{ mt: "auto" }}>
           <Button
             onClick={() => setViewMoreDetails((current) => !current)}
             size="small"

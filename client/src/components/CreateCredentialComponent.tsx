@@ -17,6 +17,7 @@ import { useNavigate } from "react-router";
 import { createCredentialType } from "../utils/credential.util";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CloseIcon from "@mui/icons-material/Close";
+import { uploadJsonToPinata } from "../utils/pinata.util";
 
 interface CredentialDetail {
   descriptor: string;
@@ -50,22 +51,26 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
     jsonData: object // Eventually we will need this, right now it does nothing
   ) {
     if (user) {
-      console.log(jsonData); //just have this so error goes away
-      //First need to upload jsonData to pinata to get a cid to upload to the contract
-      // const cid = await uploadJsonToPinata(title, jsonData);
-
-      // //If successful, then we can create the credential type on our contract
-      // if (cid !== null) {
-
       if (!title) {
         setError("Please enter a Credential Name");
         return;
       }
+      //First need to upload jsonData to pinata to get a cid to upload to the contract
+      let cid: string | null = null;
 
-      await createCredentialType(user.email, title, "default cid for now");
+      if (Object.keys(jsonData).length > 0) {
+        cid = await uploadJsonToPinata(title, jsonData);
+      } else {
+        //No data to attach
+        cid = "";
+      }
 
-      return true;
-      // }
+      // //If successful, then we can create the credential type on our contract
+      if (cid !== null) {
+        await createCredentialType(user.email, title, cid);
+
+        return true;
+      }
     }
   }
 
