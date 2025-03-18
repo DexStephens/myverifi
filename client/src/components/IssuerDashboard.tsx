@@ -181,7 +181,7 @@ export function IssuerDashboard() {
               <TableCell
                 sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
               >
-                Edit
+                View Details
               </TableCell>
               <TableCell
                 sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
@@ -206,7 +206,7 @@ export function IssuerDashboard() {
                       display: "inline-block",
                     }}
                   >
-                    Edit
+                    Details
                   </Button>
                 </TableCell>
                 <TableCell align="center">
