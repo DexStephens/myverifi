@@ -15,8 +15,9 @@ import {
   InputAdornment,
   IconButton,
   TablePagination,
+  CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
@@ -29,29 +30,46 @@ const modalStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "auto",
-  bgcolor: "transparent",
-  boxShadow: "none",
-  p: 0,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
 };
 
 export function IssuerDashboard() {
   const { user } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
-  const [selectedCredentialType, setSelectedCredentialType] = useState<
-    number | null
-  >(null);
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+  const [selectedCredentialType, setSelectedCredentialType] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [details, setDetails] = useState<any>(null);
 
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
     setOpenIssueModal(true);
   };
 
-  const handleEdit = (credentialType: string) => {
-    console.log(`Edit credential type: ${credentialType}`);
+  const handleViewDetails = async (credentialType: number | null) => {
+    setSelectedCredentialType(credentialType);
+    setLoadingDetails(true);
+    setOpenDetailsModal(true);
+
+    // Fetch details (replace with your actual fetch logic)
+    const fetchedDetails = await fetchDetails(credentialType);
+    setDetails(fetchedDetails);
+    setLoadingDetails(false);
+  };
+
+  const fetchDetails = async (credentialType: number | null) => {
+    // Replace with your actual fetch logic
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ id: credentialType, name: "Sample Credential", description: "This is a sample description." });
+      }, 1000);
+    });
   };
 
   const handleClearSearch = () => {
@@ -62,9 +80,7 @@ export function IssuerDashboard() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -200,7 +216,7 @@ export function IssuerDashboard() {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => handleEdit(type.name)}
+                    onClick={() => handleViewDetails(type.id)}
                     sx={{
                       "&:hover": { backgroundColor: "success.main" },
                       display: "inline-block",
@@ -261,6 +277,38 @@ export function IssuerDashboard() {
             credentialType={selectedCredentialType}
             onClose={() => setOpenIssueModal(false)}
           />
+        </Box>
+      </Modal>
+
+      <Modal
+        open={openDetailsModal}
+        onClose={() => setOpenDetailsModal(false)}
+        aria-labelledby="details-credential-modal-title"
+        aria-describedby="details-credential-modal-description"
+      >
+        <Box sx={modalStyle}>
+          {loadingDetails ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Credential Details
+              </Typography>
+              <Typography variant="body2">
+                {details ? (
+                  <>
+                    <strong>ID:</strong> {details.id}
+                    <br />
+                    <strong>Name:</strong> {details.name}
+                    <br />
+                    <strong>Description:</strong> {details.description}
+                  </>
+                ) : (
+                  "No details available."
+                )}
+              </Typography>
+            </>
+          )}
         </Box>
       </Modal>
     </Container>
