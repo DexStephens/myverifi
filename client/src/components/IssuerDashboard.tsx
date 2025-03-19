@@ -64,12 +64,31 @@ export function IssuerDashboard() {
   };
 
   const fetchDetails = async (credentialType: number | null) => {
-    // Replace with your actual fetch logic
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ id: credentialType, name: "Sample Credential", description: "This is a sample description." });
-      }, 1000);
-    });
+    if (!credentialType) return null;
+  
+    try {
+      const token = sessionStorage.getItem("token"); // Assuming you use a token for authentication
+      const response = await fetch(
+        `http://localhost:3000/credentials/${credentialType}`, // Replace with your actual API endpoint
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token if required
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch credential details");
+      }
+  
+      const data = await response.json();
+      return data; // Assuming the API returns the credential details as JSON
+    } catch (error) {
+      console.error("Error fetching credential details:", error);
+      return null;
+    }
   };
 
   const handleClearSearch = () => {
