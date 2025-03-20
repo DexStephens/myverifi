@@ -108,9 +108,8 @@ export function IssuerDashboard() {
   };
 
   const handleRegenerateApiKey = async () => {
-    // TODO
-    // await handleRevokeApiKey();
-    // await handleGenerateApiKey();
+    await handleRevokeApiKey();
+    await handleGenerateApiKey();
   };
 
   const closeModal = () => {
