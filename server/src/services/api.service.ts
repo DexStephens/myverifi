@@ -1,4 +1,5 @@
 import { IssuerModel } from "../models/issuer.model";
+import { AuthUtils } from "../utils/auth.utils";
 import { AuthService } from "./auth.service";
 import { randomBytes } from "crypto";
 
@@ -14,8 +15,9 @@ export class ApiService {
             console.log("Got user...");
 
             const apiKey = randomBytes(32).toString("hex");
+            const hashedApiKey =  await AuthUtils.hashPassword(apiKey);
 
-            const success = await IssuerModel.setApiKey(user.id, apiKey);
+            const success = await IssuerModel.setApiKey(user.id, hashedApiKey);
 
             console.log("Set API key...", success);
 
