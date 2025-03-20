@@ -8,35 +8,39 @@ export class ApiController {
         next: NextFunction
     ): Promise<void> {
         try {
-        const authHeader = req.headers.authorization;
-        let token = null;
-    
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            token = authHeader.split(' ')[1];
-        }
-    
-        if (!token) {
-            res.status(401).json({
-                status: "error",
-                message: "Unauthorized",
-            });
-        }
-        else {
-            const apiKey = await ApiService.generateApiKey(token);
+            console.log("Generating API Key...");
 
-            if (!apiKey) {
-                res.status(500).json({
-                    status: "error",
-                    message: "Failed to generate API key",
-                });
-                return;
+            const authHeader = req.headers.authorization;
+            let token = null;
+        
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                token = authHeader.split(' ')[1];
             }
+        
+            if (!token) {
+                res.status(401).json({
+                    status: "error",
+                    message: "Unauthorized",
+                });
+            }
+            else {
+                const apiKey = await ApiService.generateApiKey(token);
 
-            res.json({
-                status: "success",
-                apiKey,
-            });
-        }
+                console.log("Generated API Key:", apiKey);
+
+                if (!apiKey) {
+                    res.status(500).json({
+                        status: "error",
+                        message: "Failed to generate API key",
+                    });
+                    return;
+                }
+
+                res.json({
+                    status: "success",
+                    apiKey,
+                });
+            }
         } catch (e) {
             next(e);
         }

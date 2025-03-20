@@ -1,5 +1,6 @@
 import { IssuerModel } from "../models/issuer.model";
 import { AuthService } from "./auth.service";
+import { randomBytes } from "crypto";
 
 export class ApiService {
     static async generateApiKey(token: string) {
@@ -10,11 +11,22 @@ export class ApiService {
                 throw new Error("Invalid token");
             }
 
-            const success = await IssuerModel.setApiKey(user.id, 'test-api-key-123456');
+            console.log("Got user...");
+
+            const apiKey = randomBytes(32).toString("hex");
+
+            const success = await IssuerModel.setApiKey(user.id, apiKey);
+
+            console.log("Set API key...", success);
+
+            if (!success) {
+                throw new Error("Failed to set API key");
+            }
 
             // Simulate API key generation
-            return "mock-api-key-123456";
+            return apiKey;
         } catch (error) {
+            console.error("Error in generateApiKey:", error);
             throw new Error("Failed to generate API key");
         }
     }

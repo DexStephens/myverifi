@@ -17,7 +17,7 @@ import {
   TablePagination,
   Link
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
@@ -49,8 +49,14 @@ export function IssuerDashboard() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [apiKey, setApiKey] = useState(user?.issuer?.apiKey || null);
+  const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+
+  useEffect(() => {
+    if (user?.issuer?.apiKey) {
+      setApiKey("••••••••••••••••");
+    }
+  }, [user]);
 
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
@@ -89,9 +95,21 @@ export function IssuerDashboard() {
   );
 
   const handleGenerateApiKey = async () => {
-    // Simulate API key generation
     const newApiKey = await generateApiKey();
     setApiKey(newApiKey);
+    localStorage.setItem("apiKeyVisible", "true");
+  };
+
+  const handleRevokeApiKey = async () => {
+    // TODO
+    // await revokeApiKey();
+    // setApiKey(null);
+  };
+
+  const handleRegenerateApiKey = async () => {
+    // TODO
+    // await handleRevokeApiKey();
+    // await handleGenerateApiKey();
   };
 
   const toggleShowApiKey = () => {
@@ -282,21 +300,13 @@ export function IssuerDashboard() {
       </Modal>
 
       {/* API Management Section */}
-      <Box
-        sx={{
-          mt: 5,
-          p: 3,
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-        }}
-      >
-        <Typography variant="h5" component="h2" gutterBottom>
-          API Management
-        </Typography>
-
-        {apiKey ? (
+      <Box sx={{ mt: 5, p: 3, border: "1px solid #ccc", borderRadius: "8px" }}>
+      <Typography variant="h5" component="h2" gutterBottom>
+        API Management
+      </Typography>
+      {apiKey ? (
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <TextField
-            label="Your API Key"
             type={showApiKey ? "text" : "password"}
             value={apiKey}
             fullWidth
@@ -309,35 +319,20 @@ export function IssuerDashboard() {
                 </InputAdornment>
               ),
             }}
-            sx={{
-              mb: 2,
-              "& input": {
-                color: "secondary.main",
-              },
-            }}
           />
-        ) : (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleGenerateApiKey}
-            sx={{ "&:hover": { backgroundColor: "success.main" }, mb: 2 }}
-          >
-            Generate API Key
+          <Button variant="contained" color="warning" onClick={handleRegenerateApiKey}>
+            Regenerate
           </Button>
-        )}
-
-        <Link
-          href="/api-docs"
-          underline="hover"
-          target="_blank"
-          rel="noopener"
-          color="primary"
-          sx={{ display: "block", mt: 1 }}
-        >
-          View API Documentation
-        </Link>
-      </Box>
+          <Button variant="contained" color="error" onClick={handleRevokeApiKey}>
+            Revoke
+          </Button>
+        </Box>
+      ) : (
+        <Button variant="contained" color="secondary" onClick={handleGenerateApiKey}>
+          Generate API Key
+        </Button>
+      )}
+    </Box>
     </Container>
   );
 }

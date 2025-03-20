@@ -39,9 +39,11 @@ export class IssuerModel {
   }
 
   static async setApiKey(userId: number, apiKey: string) {
+    console.log("Setting API key for user:", userId, apiKey);
+    console.log("IssuerModel:", prisma.issuer);
     return prisma.issuer.update({
-      where: { userId: userId },
+      where: { userId },
       data: { apiKey },
     });
-  }
+  } 
 }

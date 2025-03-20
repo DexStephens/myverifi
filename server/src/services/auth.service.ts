@@ -61,6 +61,7 @@ export class AuthService {
             name: user.issuer?.name,
             contract_address: user.issuer?.contract_address,
             credential_types: user.issuer?.credential_types ?? [],
+            apiKey: user.issuer?.apiKey,
           }
         : undefined,
       token, // Return the real JWT
@@ -164,6 +165,7 @@ export class AuthService {
               name: user.issuer?.name,
               contract_address: user.issuer?.contract_address,
               credential_types: user.issuer?.credential_types ?? [],
+              apiKey: user.issuer?.apiKey,
             }
           : undefined,
         token, // Optional: You might not need to return the token again
