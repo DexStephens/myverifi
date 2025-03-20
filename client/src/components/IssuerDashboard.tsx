@@ -22,8 +22,6 @@ import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import "../styles/style.scss";
 import { generateApiKey } from "../utils/apikey.util";
 
@@ -51,6 +49,8 @@ export function IssuerDashboard() {
 
   const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasApiKeyBeenShown, setHasApiKeyBeenShown] = useState(false);
 
   useEffect(() => {
     if (user?.issuer?.apiKey) {
@@ -97,7 +97,7 @@ export function IssuerDashboard() {
   const handleGenerateApiKey = async () => {
     const newApiKey = await generateApiKey();
     setApiKey(newApiKey);
-    localStorage.setItem("apiKeyVisible", "true");
+    setIsModalOpen(true);
   };
 
   const handleRevokeApiKey = async () => {
@@ -114,6 +114,11 @@ export function IssuerDashboard() {
 
   const toggleShowApiKey = () => {
     setShowApiKey(!showApiKey);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setHasApiKeyBeenShown(true);
   };
 
   return (
@@ -304,21 +309,30 @@ export function IssuerDashboard() {
       <Typography variant="h5" component="h2" gutterBottom>
         API Management
       </Typography>
-      {apiKey ? (
+
+      {/* Modal to show API key first time */}
+      <Modal open={isModalOpen} onClose={closeModal}>
+        <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, maxWidth: 400, margin: "auto", mt: 5 }}>
+          <Typography variant="h6" gutterBottom>
+            Your API Key
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {apiKey} {/* Display API key here */}
+          </Typography>
+          <Button variant="contained" onClick={closeModal}>
+            Close
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* API Key Display/Regeneration Section */}
+      {apiKey && !hasApiKeyBeenShown || hasApiKeyBeenShown ? (
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <TextField
             type={showApiKey ? "text" : "password"}
             value={apiKey}
             fullWidth
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={toggleShowApiKey} edge="end">
-                    {showApiKey ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
+            disabled
           />
           <Button variant="contained" color="warning" onClick={handleRegenerateApiKey}>
             Regenerate
@@ -328,10 +342,23 @@ export function IssuerDashboard() {
           </Button>
         </Box>
       ) : (
-        <Button variant="contained" color="secondary" onClick={handleGenerateApiKey}>
-          Generate API Key
-        </Button>
+        (
+          <Button variant="contained" color="secondary" onClick={handleGenerateApiKey}>
+            Generate API Key
+          </Button>
+        )
       )}
+
+      <Link
+        href="/api-docs"
+        underline="hover"
+        target="_blank"
+        rel="noopener"
+        color="primary"
+        sx={{ display: "block", mt: 1 }}
+      >
+        View API Documentation
+      </Link>
     </Box>
     </Container>
   );
