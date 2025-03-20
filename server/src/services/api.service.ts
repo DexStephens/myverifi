@@ -6,7 +6,6 @@ import { randomBytes } from "crypto";
 export class ApiService {
     static async generateApiKey(token: string) {
         try {
-            // Get the user from the token
             const user = await AuthService.getUser(token);
             if (!user || !user.issuer) {
                 throw new Error("Invalid token");
@@ -25,11 +24,34 @@ export class ApiService {
                 throw new Error("Failed to set API key");
             }
 
-            // Simulate API key generation
             return apiKey;
         } catch (error) {
             console.error("Error in generateApiKey:", error);
             throw new Error("Failed to generate API key");
+        }
+    }
+
+    static async revokeApiKey(token: string) {
+        try {
+            const user = await AuthService.getUser(token);
+            if (!user || !user.issuer) {
+                throw new Error("Invalid token");
+            }
+
+            console.log("Got user...");
+
+            const success = await IssuerModel.setApiKey(user.id, null);
+
+            console.log("Revoked API key...", success);
+
+            if (!success) {
+                throw new Error("Failed to revoke API key");
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Error in revokeApiKey:", error);
+            throw new Error("Failed to revoke API key");
         }
     }
 };

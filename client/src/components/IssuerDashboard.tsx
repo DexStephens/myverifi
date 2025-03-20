@@ -23,7 +23,7 @@ import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
-import { generateApiKey } from "../utils/apikey.util";
+import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
 
 const modalStyle = {
   position: "absolute",
@@ -37,7 +37,7 @@ const modalStyle = {
 };
 
 export function IssuerDashboard() {
-  const { user } = useUser();
+  const { user, fetchUserData } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
@@ -101,19 +101,16 @@ export function IssuerDashboard() {
   };
 
   const handleRevokeApiKey = async () => {
-    // TODO
-    // await revokeApiKey();
-    // setApiKey(null);
+    await revokeApiKey();
+    setApiKey("");
+    setHasApiKeyBeenShown(false);
+    fetchUserData();
   };
 
   const handleRegenerateApiKey = async () => {
     // TODO
     // await handleRevokeApiKey();
     // await handleGenerateApiKey();
-  };
-
-  const toggleShowApiKey = () => {
-    setShowApiKey(!showApiKey);
   };
 
   const closeModal = () => {
