@@ -38,6 +38,7 @@ export type Issuer = {
   name: string;
   contract_address: Address;
   credential_types: CredentialType[];
+  apiKey?: string;
 };
 
 export interface UserContextType {

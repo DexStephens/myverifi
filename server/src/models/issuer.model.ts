@@ -37,4 +37,11 @@ export class IssuerModel {
       },
     });
   }
+
+  static async setApiKey(userId: number, apiKey: string) {
+    return prisma.issuer.update({
+      where: { userId: userId },
+      data: { apiKey },
+    });
+  }
 }

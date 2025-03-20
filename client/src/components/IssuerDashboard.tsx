@@ -15,13 +15,17 @@ import {
   InputAdornment,
   IconButton,
   TablePagination,
+  Link
 } from "@mui/material";
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import "../styles/style.scss";
+import { generateApiKey } from "../utils/apikey.util";
 
 const modalStyle = {
   position: "absolute",
@@ -44,6 +48,9 @@ export function IssuerDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [apiKey, setApiKey] = useState(user?.issuer?.apiKey || null);
+  const [showApiKey, setShowApiKey] = useState(false);
 
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
@@ -80,6 +87,16 @@ export function IssuerDashboard() {
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  const handleGenerateApiKey = async () => {
+    // Simulate API key generation
+    const newApiKey = await generateApiKey();
+    setApiKey(newApiKey);
+  };
+
+  const toggleShowApiKey = () => {
+    setShowApiKey(!showApiKey);
+  };
 
   return (
     <Container sx={{ py: 4 }} maxWidth="md" className="fade-in">
@@ -263,6 +280,64 @@ export function IssuerDashboard() {
           />
         </Box>
       </Modal>
+
+      {/* API Management Section */}
+      <Box
+        sx={{
+          mt: 5,
+          p: 3,
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+        }}
+      >
+        <Typography variant="h5" component="h2" gutterBottom>
+          API Management
+        </Typography>
+
+        {apiKey ? (
+          <TextField
+            label="Your API Key"
+            type={showApiKey ? "text" : "password"}
+            value={apiKey}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={toggleShowApiKey} edge="end">
+                    {showApiKey ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              mb: 2,
+              "& input": {
+                color: "secondary.main",
+              },
+            }}
+          />
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleGenerateApiKey}
+            sx={{ "&:hover": { backgroundColor: "success.main" }, mb: 2 }}
+          >
+            Generate API Key
+          </Button>
+        )}
+
+        <Link
+          href="/api-docs"
+          underline="hover"
+          target="_blank"
+          rel="noopener"
+          color="primary"
+          sx={{ display: "block", mt: 1 }}
+        >
+          View API Documentation
+        </Link>
+      </Box>
     </Container>
   );
 }

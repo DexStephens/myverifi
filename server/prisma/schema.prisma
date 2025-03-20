@@ -44,9 +44,10 @@ model Issuer {
   userId            Int                @unique
   user              User               @relation(fields: [userId], references: [id])
   name              String
-  contract_address  String            @unique
+  contract_address  String             @unique
   // An institution can issue several credential types
   credential_types  CredentialType[]
+  apiKey            String?            @unique
 }
 
 model CredentialType {
