@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiService } from "../services/api.service";
+import { AuthUtils } from "../utils/auth.utils";
 
 export class ApiController {
     static async generateApiKey(
@@ -8,39 +9,25 @@ export class ApiController {
         next: NextFunction
     ): Promise<void> {
         try {
-            console.log("Generating API Key...");
-
-            const authHeader = req.headers.authorization;
-            let token = null;
-        
-            if (authHeader && authHeader.startsWith('Bearer ')) {
-                token = authHeader.split(' ')[1];
-            }
-        
-            if (!token) {
-                res.status(401).json({
+            const token = AuthUtils.getTokenFromHeader(req);
+            if (!token){
+                res.status(401).json({ status: "error", message: "Unauthorized" });
+                return;
+            } 
+            
+            const apiKey = await ApiService.generateApiKey(token);
+            if (!apiKey) {
+                res.status(500).json({
                     status: "error",
-                    message: "Unauthorized",
+                    message: "Failed to generate API key",
                 });
+                return;
             }
-            else {
-                const apiKey = await ApiService.generateApiKey(token);
 
-                console.log("Generated API Key:", apiKey);
-
-                if (!apiKey) {
-                    res.status(500).json({
-                        status: "error",
-                        message: "Failed to generate API key",
-                    });
-                    return;
-                }
-
-                res.json({
-                    status: "success",
-                    apiKey,
-                });
-            }
+            res.json({
+                status: "success",
+                apiKey,
+            });
         } catch (e) {
             next(e);
         }
@@ -52,37 +39,25 @@ export class ApiController {
         next: NextFunction
     ): Promise<void> {
         try {
-            console.log("Revoking API Key...");
+            const token = AuthUtils.getTokenFromHeader(req);
+            if (!token){
+                res.status(401).json({ status: "error", message: "Unauthorized" });
+                return;
+            } 
+            const success = await ApiService.revokeApiKey(token);
 
-            const authHeader = req.headers.authorization;
-            let token = null;
-        
-            if (authHeader && authHeader.startsWith('Bearer ')) {
-                token = authHeader.split(' ')[1];
-            }
-        
-            if (!token) {
-                res.status(401).json({
+            if (!success) {
+                res.status(500).json({
                     status: "error",
-                    message: "Unauthorized",
+                    message: "Failed to revoke API key",
                 });
+                return;
             }
-            else {
-                const success = await ApiService.revokeApiKey(token);
 
-                if (!success) {
-                    res.status(500).json({
-                        status: "error",
-                        message: "Failed to revoke API key",
-                    });
-                    return;
-                }
-
-                res.json({
-                    status: "success",
-                    message: "API key revoked successfully",
-                });
-            }
+            res.json({
+                status: "success",
+                message: "API key revoked successfully",
+            });
         } catch (e) {
             next(e);
         }

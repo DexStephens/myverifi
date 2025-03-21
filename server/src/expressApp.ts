@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import authRoutes from "./routes/auth.route";
-import apiRoutes from "./routes/api.routes";
+import apiRoutes from "./routes/api.route";
 import issuanceRoutes from "./routes/issuance.route";
 import cors from "cors";
 import helmet from "helmet";
