@@ -4,43 +4,31 @@ import { AuthService } from "./auth.service";
 import { randomBytes } from "crypto";
 
 export class ApiService {
-    static async generateApiKey(token: string) {
+    static async generateApiKey(userId: number) {
         try {
-            const user = await AuthService.getUser(token);
-            if (!user || !user.issuer) {
-                throw new Error("Invalid token");
-            }
-
             const apiKey = randomBytes(32).toString("hex");
             const hashedApiKey =  await AuthUtils.hashPassword(apiKey);
 
-            const success = await IssuerModel.setApiKey(user.id, hashedApiKey);
-
+            const success = await IssuerModel.setApiKey(userId, hashedApiKey);
             if (!success) {
                 throw new Error("Failed to set API key");
             }
 
             return apiKey;
         } catch (error) {
+            console.error("Error generating API key for user:", userId, error);
             throw new Error("Failed to generate API key");
         }
     }
 
-    static async revokeApiKey(token: string) {
+    static async revokeApiKey(userId: number) {
         try {
-            const user = await AuthService.getUser(token);
-            if (!user || !user.issuer) {
-                throw new Error("Invalid token");
-            }
-
-            const success = await IssuerModel.setApiKey(user.id, null);
-
+            const success = await IssuerModel.setApiKey(userId, null);
             if (!success) {
                 throw new Error("Failed to revoke API key");
             }
-
-            return true;
         } catch (error) {
+            console.error("Error generating API key for user:", userId, error);
             throw new Error("Failed to revoke API key");
         }
     }

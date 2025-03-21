@@ -5,11 +5,8 @@ import { IssuerModel } from "../models/issuer.model";
 import { HolderModel } from "../models/holder.model";
 import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
-import * as jwt from "jsonwebtoken";
 import { ChainUtils } from "../utils/chain.util";
 import { Address } from "viem";
-
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export class AuthService {
   static async loginUser(
