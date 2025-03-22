@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiService } from "../services/api.service";
+import { IssuanceService } from "../services/issuance.service";
 
 export class ApiController {
     static async generateApiKey(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -26,6 +27,24 @@ export class ApiController {
           res.json({ status: "success", credentials });
         } catch (e) {
           next(e);
+        }
+    }
+
+    static async createCredential(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { title, attributes } = req.body;
+
+            if (!title) {
+                res.status(400).json({ error: "Credential title is required" });
+                return;
+            }
+
+             // this is actually issuer id
+            const credential = await IssuanceService.createCredentialTypeApi(req.user.id, title, attributes);
+            
+            res.json({ status: "success", credential });
+        } catch (e) {
+            next(e);
         }
     }
 };

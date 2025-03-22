@@ -16,13 +16,8 @@ export const apiToken = async (
     return;
   }
 
-  console.log("API Token:", token);
-
   try {
     const hashedToken = AuthUtils.hashToken(token);
-
-    console.log("Hashed API Token:", hashedToken);
-
     const issuer = await IssuerModel.findByApiKey(hashedToken);
 
     if (!issuer) {

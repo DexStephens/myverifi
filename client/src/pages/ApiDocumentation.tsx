@@ -119,17 +119,33 @@ print(response.json())`,
           <Divider />
           <ListItem>
             <ListItemText
-              primary="POST /api/credentials"
-              secondary="Create a new credential."
+              primary="POST /api/createCredential"
+              secondary="Create a new credential with a title and attributes."
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
-          </ListItem>
-          <Divider />
-          <ListItem>
             <ListItemText
-              primary="POST /api/credentials/:id/issue"
-              secondary="Issue a credential by ID."
-              secondaryTypographyProps={{ sx: { color: "white" } }}
+              secondary={
+                <Box
+                  component="pre"
+                  sx={{
+                    bgcolor: "#f5f5f5",
+                    p: 2,
+                    borderRadius: 1,
+                    color: "black",
+                    overflow: "auto",
+                    whiteSpace: "pre-wrap",
+                    maxHeight: 300,
+                  }}
+                >
+                  {`{
+ "title": "My New Credential",
+ "attributes": {
+    "key1": "value1",
+    "key2": "value2"
+  }
+}`}
+                </Box>
+              }
             />
           </ListItem>
         </List>

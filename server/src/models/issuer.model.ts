@@ -2,6 +2,12 @@ import { Issuer } from "@prisma/client";
 import prisma from "../config/db.config";
 
 export class IssuerModel {
+  static async findById(id: number): Promise<Issuer | null> {
+    return prisma.issuer.findUnique({
+      where: { id },
+    });
+  }
+
   static async createIssuer(data: {
     userId: number;
     name: string;
