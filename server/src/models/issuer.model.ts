@@ -44,4 +44,10 @@ export class IssuerModel {
       data: { apiKey },
     });
   } 
+
+  static async findByApiKey(hashedApiKey: string) {
+    return await prisma.issuer.findFirst({
+      where: { apiKey: hashedApiKey }
+    });
+  }
 }

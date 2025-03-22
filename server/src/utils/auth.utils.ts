@@ -2,6 +2,7 @@ import * as bcrypt from "bcrypt";
 import { Request } from "express";
 import * as jwt from "jsonwebtoken";
 import { config } from "../config";
+import { createHash } from "crypto";
 
 export class AuthUtils {
   private static readonly SALT_ROUNDS = 10;
@@ -36,5 +37,9 @@ export class AuthUtils {
   static validateJwt(token: string): any {
     const decoded = jwt.verify(token, config.JWT_SECRET) as { id: string; email: string };
     return decoded;
+  }
+
+  static hashToken(token: string): string {
+    return createHash("sha256").update(token).digest("hex");
   }
 }

@@ -1,13 +1,13 @@
 import { IssuerModel } from "../models/issuer.model";
 import { AuthUtils } from "../utils/auth.utils";
-import { AuthService } from "./auth.service";
 import { randomBytes } from "crypto";
+import prisma from "../config/db.config";
 
 export class ApiService {
     static async generateApiKey(userId: number) {
         try {
             const apiKey = randomBytes(32).toString("hex");
-            const hashedApiKey =  await AuthUtils.hashPassword(apiKey);
+            const hashedApiKey = AuthUtils.hashToken(apiKey);
 
             const success = await IssuerModel.setApiKey(userId, hashedApiKey);
             if (!success) {
@@ -32,4 +32,10 @@ export class ApiService {
             throw new Error("Failed to revoke API key");
         }
     }
+
+    static async listCredentials(issuer_id: number) {
+        return await prisma.credentialType.findMany({
+          where: { issuer_id }
+        });
+    }      
 };
