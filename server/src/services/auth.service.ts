@@ -5,12 +5,8 @@ import { IssuerModel } from "../models/issuer.model";
 import { HolderModel } from "../models/holder.model";
 import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
-import * as jwt from "jsonwebtoken";
 import { ChainUtils } from "../utils/chain.util";
 import { Address } from "viem";
-
-// Define a secret key (store this in an environment variable in production)
-const JWT_SECRET = process.env.JWT_SECRET; // Replace with a strong secret in production
 
 export class AuthService {
   static async loginUser(
@@ -36,16 +32,7 @@ export class AuthService {
       return null;
     }
 
-    // Create JWT payload
-    const payload = {
-      id: user.id,
-      email: user.email,
-      wallet: user.wallet,
-      // Add more fields if needed, but avoid sensitive data
-    };
-
-    // Generate JWT (expires in 1 hour)
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+    const token = AuthUtils.getJwt(user);
 
     return {
       id: user.id,
@@ -61,9 +48,10 @@ export class AuthService {
             name: user.issuer?.name,
             contract_address: user.issuer?.contract_address,
             credential_types: user.issuer?.credential_types ?? [],
+            apiKey: user.issuer?.apiKey,
           }
         : undefined,
-      token, // Return the real JWT
+      token,
     };
   }
 
@@ -105,15 +93,7 @@ export class AuthService {
       newHolder = await HolderModel.createHolder({ userId: newUser.id });
     }
 
-    // Create JWT payload
-    const payload = {
-      id: newUser.id,
-      email: newUser.email,
-      // Add more fields if needed
-    };
-
-    // Generate JWT (expires in 1 hour)
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+    const token = AuthUtils.getJwt(newUser);
 
     return {
       id: newUser.id,
@@ -131,7 +111,7 @@ export class AuthService {
             credential_types: newIssuer?.credential_types ?? [],
           }
         : undefined,
-      token, // Return the real JWT
+      token,
     };
   }
 
@@ -141,11 +121,8 @@ export class AuthService {
         throw new ControllerError(ERROR_TITLES.UNAUTHORIZED, "Token is required");
       }
   
-      // Verify and decode JWT
-      const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
-  
-      // Find user in the database
-      const user = await UserModel.findUserByEmail(decoded.email);
+      const { email } = AuthUtils.validateJwt(token);
+      const user = await UserModel.findUserByEmail(email);
       if (!user) {
         throw new ControllerError(ERROR_TITLES.DNE, "User not found");
       }
@@ -164,13 +141,13 @@ export class AuthService {
               name: user.issuer?.name,
               contract_address: user.issuer?.contract_address,
               credential_types: user.issuer?.credential_types ?? [],
+              apiKey: user.issuer?.apiKey,
             }
           : undefined,
-        token, // Optional: You might not need to return the token again
+        token,
       };
     } catch (error) {
-      console.error("Error in getUser:", error);
-      return null;
+      throw new ControllerError(ERROR_TITLES.UNAUTHORIZED, "Invalid or expired token");
     }
   }
 }

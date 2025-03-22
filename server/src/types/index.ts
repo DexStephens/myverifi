@@ -9,6 +9,7 @@ export interface AuthResponse {
     name: string;
     contract_address: string;
     credential_types: CredentialType[];
+    apiKey?: string;
   };
   holder?: {
     credential_issues: CredentialIssue[];

@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import authRoutes from "./routes/auth.route";
+import apiRoutes from "./routes/api.route";
 import issuanceRoutes from "./routes/issuance.route";
 import cors from "cors";
 import helmet from "helmet";
@@ -27,6 +28,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Routes
 app.use("/auth", authRoutes);
 app.use("/issuances", issuanceRoutes);
+app.use("/api", apiRoutes);
 
 //Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

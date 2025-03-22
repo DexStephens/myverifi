@@ -15,13 +15,15 @@ import {
   InputAdornment,
   IconButton,
   TablePagination,
+  Link
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
+import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
 
 const modalStyle = {
   position: "absolute",
@@ -35,7 +37,7 @@ const modalStyle = {
 };
 
 export function IssuerDashboard() {
-  const { user } = useUser();
+  const { user, fetchUserData } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
@@ -44,6 +46,17 @@ export function IssuerDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [apiKey, setApiKey] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasApiKeyBeenShown, setHasApiKeyBeenShown] = useState(false);
+
+  useEffect(() => {
+    if (user?.issuer?.apiKey) {
+      setApiKey("••••••••••••••••");
+    }
+  }, [user]);
 
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
@@ -80,6 +93,29 @@ export function IssuerDashboard() {
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  const handleGenerateApiKey = async () => {
+    const newApiKey = await generateApiKey();
+    setApiKey(newApiKey);
+    setIsModalOpen(true);
+  };
+
+  const handleRevokeApiKey = async () => {
+    await revokeApiKey();
+    setApiKey("");
+    setHasApiKeyBeenShown(false);
+    fetchUserData();
+  };
+
+  const handleRegenerateApiKey = async () => {
+    await handleRevokeApiKey();
+    await handleGenerateApiKey();
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setHasApiKeyBeenShown(true);
+  };
 
   return (
     <Container sx={{ py: 4 }} maxWidth="md" className="fade-in">
@@ -263,6 +299,63 @@ export function IssuerDashboard() {
           />
         </Box>
       </Modal>
+
+      {/* API Management Section */}
+      <Box sx={{ mt: 5, p: 3, border: "1px solid #ccc", borderRadius: "8px" }}>
+      <Typography variant="h5" component="h2" gutterBottom>
+        API Management
+      </Typography>
+
+      {/* Modal to show API key first time */}
+      <Modal open={isModalOpen} onClose={closeModal}>
+        <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, maxWidth: 400, margin: "auto", mt: 5 }}>
+          <Typography variant="h6" gutterBottom>
+            Your API Key
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {apiKey} {/* Display API key here */}
+          </Typography>
+          <Button variant="contained" onClick={closeModal}>
+            Close
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* API Key Display/Regeneration Section */}
+      {apiKey && !hasApiKeyBeenShown || hasApiKeyBeenShown ? (
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <TextField
+            type={showApiKey ? "text" : "password"}
+            value={apiKey}
+            fullWidth
+            disabled
+          />
+          <Button variant="contained" color="warning" onClick={handleRegenerateApiKey}>
+            Regenerate
+          </Button>
+          <Button variant="contained" color="error" onClick={handleRevokeApiKey}>
+            Revoke
+          </Button>
+        </Box>
+      ) : (
+        (
+          <Button variant="contained" color="secondary" onClick={handleGenerateApiKey}>
+            Generate API Key
+          </Button>
+        )
+      )}
+
+      <Link
+        href="/api-docs"
+        underline="hover"
+        target="_blank"
+        rel="noopener"
+        color="primary"
+        sx={{ display: "block", mt: 1 }}
+      >
+        View API Documentation
+      </Link>
+    </Box>
     </Container>
   );
 }
