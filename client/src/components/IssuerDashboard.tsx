@@ -269,6 +269,11 @@ export function IssuerDashboard() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
+          sx={{ color: "gray",
+                "& .MuiSelect-icon": {
+                color: "gray",
+              }
+           }}
           count={filteredCredentials?.length || 0}
           rowsPerPage={rowsPerPage}
           page={page}
@@ -381,7 +386,6 @@ export function IssuerDashboard() {
       <Link
         href="/api-docs"
         underline="hover"
-        target="_blank"
         rel="noopener"
         color="primary"
         sx={{ display: "block", mt: 1 }}
