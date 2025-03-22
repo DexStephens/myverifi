@@ -15,9 +15,14 @@ import {
 import ContentCopy from "@mui/icons-material/ContentCopy";
 
 export default function ApiDocumentation() {
-  const [codeLang, setCodeLang] = useState<"curl" | "javascript" | "python">("curl");
+  const [codeLang, setCodeLang] = useState<"curl" | "javascript" | "python">(
+    "curl"
+  );
 
-  const handleLangChange = (_: any, newLang: "curl" | "javascript" | "python" | null) => {
+  const handleLangChange = (
+    _: any,
+    newLang: "curl" | "javascript" | "python" | null
+  ) => {
     if (newLang !== null) {
       setCodeLang(newLang);
     }
@@ -57,7 +62,8 @@ print(response.json())`,
           Overview
         </Typography>
         <Typography>
-          Our API allows you to manage credentials programmatically. You can create, issue, and retrieve credentials using HTTP requests.
+          Our API allows you to manage credentials programmatically. You can
+          create, issue, and retrieve credentials using HTTP requests.
         </Typography>
       </Paper>
 
@@ -67,7 +73,8 @@ print(response.json())`,
           Authentication
         </Typography>
         <Typography>
-          All API requests require an API key. Include your API key in the Authorization header as follows:
+          All API requests require an API key. Include your API key in the
+          Authorization header as follows:
         </Typography>
         <Box sx={{ position: "relative", mt: 2 }}>
           <Box
@@ -83,7 +90,11 @@ print(response.json())`,
             {`Authorization: Bearer YOUR_API_KEY`}
           </Box>
           <IconButton
-            onClick={() => navigator.clipboard.writeText("Authorization: Bearer YOUR_API_KEY")}
+            onClick={() =>
+              navigator.clipboard.writeText(
+                "Authorization: Bearer YOUR_API_KEY"
+              )
+            }
             sx={{
               position: "absolute",
               top: 8,
@@ -111,7 +122,7 @@ print(response.json())`,
         <List>
           <ListItem>
             <ListItemText
-              primary="GET /api/credentials"
+              primary="GET /api/listCredentials"
               secondary="Fetch a list of all credentials."
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
@@ -204,7 +215,9 @@ print(response.json())`,
 
         <Box sx={{ position: "relative" }}>
           <IconButton
-            onClick={() => navigator.clipboard.writeText(codeExamples[codeLang])}
+            onClick={() =>
+              navigator.clipboard.writeText(codeExamples[codeLang])
+            }
             sx={{
               position: "absolute",
               top: 8,
