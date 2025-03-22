@@ -50,6 +50,29 @@ export class IssuanceService {
     );
   }
 
+  static async createCredentialTypeApi(
+    issuer_id: number,
+    title: string,
+    attributes: string[]
+  ) {
+    const issuer = await IssuerModel.findById(issuer_id);
+    if (!issuer) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No issuer exists for the id: ${issuer_id}`
+      );
+    }
+
+    const user = await UserModel.findUserById(issuer.userId);
+
+    await ChainUtils.createCredentialType(
+      user.wallet.privateKey as Address,
+      issuer.contract_address as Address,
+      title,
+      ""
+    );
+  };
+
   static async issueCredential(emails: string[], credential_id: number) {
     const credentialType = await CredentialTypeModel.findById(credential_id);
 

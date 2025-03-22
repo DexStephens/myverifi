@@ -53,7 +53,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setUser(data.data);
       } else {
         setUser(null);
-        navigate("/login");
+        // navigate("/login");
       }
     } catch (error) {
       console.error("Error fetching user data:", error);

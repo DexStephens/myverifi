@@ -1,197 +1,32 @@
 import {
   Typography,
-  Button,
-  Card,
-  CardContent,
   Stack,
   Divider,
-  Box,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router";
+
 import HomeSection from "../components/HomeSection";
 import "../styles/style.scss";
-import { useUser } from "../context/UserContext";
-import backgroundPic from "../../assets/myverifiHome.png"; // Import the image
+import TeamComponent from "../components/Homepage/TeamComponent";
+import CallToActionComponent from "../components/Homepage/CallToActionComponent";
+import InfoComponent from "../components/Homepage/InfoComponent";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const { user } = useUser();
-
-  const handleGetVerified = () => {
-    if (user) {
-      navigate("/dashboard");
-    } else {
-      navigate("/register");
-    }
-  };
 
   return (
     <div className="home-wrapper">
-      {/* Top Image */}
-      
-
-      {/* Call to Action Section */}
-      <HomeSection sx={{ padding: 0, marginTop: "-30px" }}> {/* Adjusted margin to bring it up */}
-        <Stack spacing={4} alignItems="center" textAlign="center">
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              padding: "0px 0", // Adjusted padding to reduce space
-            }}
-          >
-            <Box
-              component="img"
-              src={backgroundPic}
-              alt="myverifi Landing"
-              sx={{
-                width: "55%",
-                height: "auto",
-              }}
-            />
-          </Box>
-          <Typography variant="h2" component="h1" color="primary">
-            myverifi
-          </Typography>
-          <Typography variant="h5" component="p" color="primary">
-            Instant verification. Secure transactions. Controlled data.
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="large"
-              onClick={handleGetVerified}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "success.main",
-                },
-              }}
-            >
-              Get Verified
-            </Button>
-            <Button
-              component={Link}
-              to="/verify"
-              variant="contained"
-              color="secondary"
-              size="large"
-              sx={{
-                "&:hover": {
-                  backgroundColor: "success.main",
-                },
-              }}
-            >
-              Verify Credentials
-            </Button>
-          </Stack>
-        </Stack>
+      <HomeSection sx={{ padding: 0, marginTop: "-30px" }}>
+        <CallToActionComponent />
       </HomeSection>
 
-      {/* Card Section for More Info */}
       <HomeSection>
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={4}
-          sx={{ width: "100%", px: 4 }}
-        >
-          <Card>
-            <CardContent>
-              <Typography
-                variant="h5"
-                component="h2"
-                gutterBottom
-                color="white"
-              >
-                Comprehensive Verification
-              </Typography>
-              <Typography variant="body2" component="p" color="white">
-                Our advanced verification process ensures the highest level of
-                accuracy and reliability for your organization.
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <Typography
-                variant="h5"
-                component="h2"
-                gutterBottom
-                color="white"
-              >
-                Secure Data Management
-              </Typography>
-              <Typography variant="body2" component="p" color="white">
-                Take complete control of your data with our secure,
-                blockchain-enabled platform that prioritizes privacy and
-                transparency.
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <Typography
-                variant="h5"
-                component="h2"
-                gutterBottom
-                color="white"
-              >
-                Streamlined Processes
-              </Typography>
-              <Typography variant="body2" component="p" color="white">
-                Reduce complexity and save time with our intuitive verification
-                workflow designed for modern organizations.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Stack>
+        <InfoComponent />
       </HomeSection>
 
       {/* Team Section */}
-      <HomeSection>
-        <Stack spacing={4} alignItems="center" sx={{ width: "100%", px: 4 }}>
-          <Typography
-            variant="h3"
-            component="h2"
-            align="center"
-            gutterBottom
-            color="primary"
-          >
-            Meet the Team
-          </Typography>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={4}
-            flexWrap="wrap"
-            justifyContent="center"
-          >
-            {[
-              { name: "Tanner Greenwood", description: "RAD DESCRIPTION" },
-              { name: "Jacob Sargent", description: "RAD DESCRIPTION" },
-              { name: "Dexter Stephens", description: "RAD DESCRIPTION" },
-              { name: "Drew Wilson", description: "RAD DESCRIPTION" },
-            ].map((member) => (
-              <Card
-                key={member.name}
-                sx={{ minWidth: { xs: "100%", sm: "45%", md: "22%" } }}
-              >
-                <CardContent>
-                  <Stack spacing={1} alignItems="center">
-                    <Typography variant="h5" component="h2" color="white">
-                      {member.name}
-                    </Typography>
-                    <Typography component="p" color="white">
-                      {member.description}
-                    </Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
-          </Stack>
-        </Stack>
+      <HomeSection sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <TeamComponent />
       </HomeSection>
+
       <Divider
         variant="middle"
         sx={{ border: "1px solid rgba(28, 70, 112, 0.4)" }}

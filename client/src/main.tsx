@@ -13,6 +13,7 @@ import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme/theme.ts";
 import { CssBaseline } from "@mui/material";
+import ApiDocumentation from "./pages/ApiDocumentation.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -34,6 +35,7 @@ createRoot(document.getElementById("root")!).render(
                   </ProtectedRoute>
                 }
               />
+              <Route path="api-docs" element={<ApiDocumentation />} />
             </Route>
           </Routes>
         </UserProvider>

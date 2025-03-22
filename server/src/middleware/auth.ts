@@ -1,28 +1,31 @@
 import * as jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { config } from "../config";
 
 export const authenticateToken = (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {  // Explicitly return void
+): void => {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Expecting "Bearer <token>"
+  const token = authHeader?.split(" ")[1];
 
   if (!token) {
     res.status(401).json({ error: "No token provided" });
-    return; // Ensure the function exits after sending a response
+    return;
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, config.JWT_SECRET, (err, decoded) => {
     if (err) {
-      res.status(403).json({ error: "Invalid or expired token" });
-      return; // Exit the function after sending a response
+      if (err.name === "TokenExpiredError") {
+        res.status(401).json({ error: "Token expired, please log in again" });
+      } else {
+        res.status(403).json({ error: "Invalid token" });
+      }
+      return;
     }
 
-    req.user = decoded as jwt.JwtPayload; // Explicitly type `req.user`
-    next(); // Ensure `next()` is called
+    req.user = decoded as jwt.JwtPayload;
+    next();
   });
 };

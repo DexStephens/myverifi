@@ -2,6 +2,12 @@ import { Issuer } from "@prisma/client";
 import prisma from "../config/db.config";
 
 export class IssuerModel {
+  static async findById(id: number): Promise<Issuer | null> {
+    return prisma.issuer.findUnique({
+      where: { id },
+    });
+  }
+
   static async createIssuer(data: {
     userId: number;
     name: string;
@@ -35,6 +41,19 @@ export class IssuerModel {
       include: {
         credential_types: true,
       },
+    });
+  }
+
+  static async setApiKey(userId: number, apiKey: string) {
+    return prisma.issuer.update({
+      where: { userId },
+      data: { apiKey },
+    });
+  } 
+
+  static async findByApiKey(hashedApiKey: string) {
+    return await prisma.issuer.findFirst({
+      where: { apiKey: hashedApiKey }
     });
   }
 }
