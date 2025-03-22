@@ -48,6 +48,7 @@ export function IssuerDashboard() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [apiKey, setApiKey] = useState("");
+  const [modalApiKey, setModalApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasApiKeyBeenShown, setHasApiKeyBeenShown] = useState(false);
@@ -97,6 +98,8 @@ export function IssuerDashboard() {
   const handleGenerateApiKey = async () => {
     const newApiKey = await generateApiKey();
     setApiKey(newApiKey);
+    setModalApiKey(newApiKey);
+    setShowApiKey(true);
     setIsModalOpen(true);
   };
 
@@ -115,6 +118,7 @@ export function IssuerDashboard() {
   const closeModal = () => {
     setIsModalOpen(false);
     setHasApiKeyBeenShown(true);
+    setShowApiKey(false);
   };
 
   return (
@@ -308,14 +312,43 @@ export function IssuerDashboard() {
 
       {/* Modal to show API key first time */}
       <Modal open={isModalOpen} onClose={closeModal}>
-        <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, maxWidth: 400, margin: "auto", mt: 5 }}>
+        <Box
+          sx={{
+            p: 3,
+            backgroundColor: "white",
+            borderRadius: 2,
+            maxWidth: 500,
+            width: "90%",
+            margin: "auto",
+            mt: 5,
+            boxShadow: 3,
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Your API Key
           </Typography>
-          <Typography variant="body1" gutterBottom>
-            {apiKey} {/* Display API key here */}
+
+          <Typography variant="body2" color="error" gutterBottom>
+            Make sure to save this key now. You won't be able to see it again!
+            Do not close this modal or refresh the page.
           </Typography>
-          <Button variant="contained" onClick={closeModal}>
+
+          <Box
+            sx={{
+              backgroundColor: "#f5f5f5",
+              border: "1px solid #ccc",
+              borderRadius: 1,
+              p: 2,
+              my: 2,
+              wordWrap: "break-word",
+              fontFamily: "monospace",
+              fontSize: "0.9rem",
+            }}
+          >
+            {modalApiKey}
+          </Box>
+
+          <Button variant="contained" fullWidth onClick={closeModal}>
             Close
           </Button>
         </Box>
