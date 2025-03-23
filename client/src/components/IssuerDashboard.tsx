@@ -15,7 +15,12 @@ import {
   InputAdornment,
   IconButton,
   TablePagination,
-  Link
+  Link,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Alert,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
@@ -24,6 +29,7 @@ import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
 import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
+import { useCredentialQueue } from "../hooks/useCredentialQueue";
 
 const modalStyle = {
   position: "absolute",
@@ -38,6 +44,7 @@ const modalStyle = {
 
 export function IssuerDashboard() {
   const { user, fetchUserData } = useUser();
+  const { pendingCredentials, isLoading, error } = useCredentialQueue(user);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
@@ -141,6 +148,23 @@ export function IssuerDashboard() {
           mb: 3,
         }}
       >
+        {isLoading && <CircularProgress />}
+        {error && <Alert severity="error">{error}</Alert>}
+        {pendingCredentials.length > 0 && (
+          <Box>
+            <Typography variant="h6">Pending Credential Types</Typography>
+            <List>
+              {pendingCredentials.map((cred, index) => (
+                <ListItem key={index}>
+                  <ListItemText
+                    primary={cred.title}
+                    secondary={`Status: ${cred.status}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
         <Button
           variant="contained"
           color="secondary"
@@ -269,11 +293,12 @@ export function IssuerDashboard() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          sx={{ color: "gray",
-                "& .MuiSelect-icon": {
-                color: "gray",
-              }
-           }}
+          sx={{
+            color: "gray",
+            "& .MuiSelect-icon": {
+              color: "gray",
+            },
+          }}
           count={filteredCredentials?.length || 0}
           rowsPerPage={rowsPerPage}
           page={page}
@@ -311,88 +336,98 @@ export function IssuerDashboard() {
 
       {/* API Management Section */}
       <Box sx={{ mt: 5, p: 3, border: "1px solid #ccc", borderRadius: "8px" }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        API Management
-      </Typography>
+        <Typography variant="h5" component="h2" gutterBottom>
+          API Management
+        </Typography>
 
-      {/* Modal to show API key first time */}
-      <Modal open={isModalOpen} onClose={closeModal}>
-        <Box
-          sx={{
-            p: 3,
-            backgroundColor: "white",
-            borderRadius: 2,
-            maxWidth: 500,
-            width: "90%",
-            margin: "auto",
-            mt: 5,
-            boxShadow: 3,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Your API Key
-          </Typography>
-
-          <Typography variant="body2" color="error" gutterBottom>
-            Make sure to save this key now. You won't be able to see it again!
-            Do not close this modal or refresh the page.
-          </Typography>
-
+        {/* Modal to show API key first time */}
+        <Modal open={isModalOpen} onClose={closeModal}>
           <Box
             sx={{
-              backgroundColor: "#f5f5f5",
-              border: "1px solid #ccc",
-              borderRadius: 1,
-              p: 2,
-              my: 2,
-              wordWrap: "break-word",
-              fontFamily: "monospace",
-              fontSize: "0.9rem",
+              p: 3,
+              backgroundColor: "white",
+              borderRadius: 2,
+              maxWidth: 500,
+              width: "90%",
+              margin: "auto",
+              mt: 5,
+              boxShadow: 3,
             }}
           >
-            {modalApiKey}
+            <Typography variant="h6" gutterBottom>
+              Your API Key
+            </Typography>
+
+            <Typography variant="body2" color="error" gutterBottom>
+              Make sure to save this key now. You won't be able to see it again!
+              Do not close this modal or refresh the page.
+            </Typography>
+
+            <Box
+              sx={{
+                backgroundColor: "#f5f5f5",
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                p: 2,
+                my: 2,
+                wordWrap: "break-word",
+                fontFamily: "monospace",
+                fontSize: "0.9rem",
+              }}
+            >
+              {modalApiKey}
+            </Box>
+
+            <Button variant="contained" fullWidth onClick={closeModal}>
+              Close
+            </Button>
           </Box>
+        </Modal>
 
-          <Button variant="contained" fullWidth onClick={closeModal}>
-            Close
-          </Button>
-        </Box>
-      </Modal>
-
-      {/* API Key Display/Regeneration Section */}
-      {apiKey && !hasApiKeyBeenShown || hasApiKeyBeenShown ? (
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <TextField
-            type={showApiKey ? "text" : "password"}
-            value={apiKey}
-            fullWidth
-            disabled
-          />
-          <Button variant="contained" color="warning" onClick={handleRegenerateApiKey}>
-            Regenerate
-          </Button>
-          <Button variant="contained" color="error" onClick={handleRevokeApiKey}>
-            Revoke
-          </Button>
-        </Box>
-      ) : (
-        (
-          <Button variant="contained" color="secondary" onClick={handleGenerateApiKey}>
+        {/* API Key Display/Regeneration Section */}
+        {(apiKey && !hasApiKeyBeenShown) || hasApiKeyBeenShown ? (
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <TextField
+              type={showApiKey ? "text" : "password"}
+              value={apiKey}
+              fullWidth
+              disabled
+            />
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={handleRegenerateApiKey}
+            >
+              Regenerate
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleRevokeApiKey}
+            >
+              Revoke
+            </Button>
+          </Box>
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleGenerateApiKey}
+          >
             Generate API Key
           </Button>
-        )
-      )}
+        )}
 
-      <Link
-        href="/api-docs"
-        underline="hover"
-        rel="noopener"
-        color="primary"
-        sx={{ display: "block", mt: 1 }}
-      >
-        View API Documentation
-      </Link>
-    </Box>
+        <Link
+          href="/api-docs"
+          underline="hover"
+          rel="noopener"
+          color="primary"
+          sx={{ display: "block", mt: 1 }}
+        >
+          View API Documentation
+        </Link>
+      </Box>
     </Container>
   );
 }

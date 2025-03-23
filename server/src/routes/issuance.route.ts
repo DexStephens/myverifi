@@ -13,5 +13,10 @@ router.post(
 );
 router.post("/credentials", authenticateToken, IssuanceController.credentials);
 router.patch("/credentials/:id", authenticateToken, IssuanceController.update);
+router.post(
+  "/credential-queue",
+  authenticateToken,
+  IssuanceController.getPendingCredentialTypes
+);
 
 export default router;

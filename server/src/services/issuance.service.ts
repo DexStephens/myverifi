@@ -11,6 +11,7 @@ import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
 import { HolderModel } from "../models/holder.model";
 import { CredentialIssueModel } from "../models/credentialIssue.model";
+import { credentialQueue } from "./credentialQueue.service";
 
 export class IssuanceService {
   static async retrieveAddress(email: string) {
@@ -42,12 +43,13 @@ export class IssuanceService {
       );
     }
 
-    await ChainUtils.createCredentialType(
-      user.wallet.privateKey as Address,
-      user.issuer.contract_address as Address,
-      title,
-      cid
-    );
+    credentialQueue.enqueue(email, title, cid);
+
+    return { status: "pending" };
+  }
+
+  static async getPendingCredentialTypes(email: string) {
+    return credentialQueue.getPendingByEmail(email);
   }
 
   static async createCredentialTypeApi(
@@ -71,7 +73,7 @@ export class IssuanceService {
       title,
       ""
     );
-  };
+  }
 
   static async issueCredential(emails: string[], credential_id: number) {
     const credentialType = await CredentialTypeModel.findById(credential_id);

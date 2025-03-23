@@ -108,7 +108,9 @@ export class IssuanceController {
 
       const token = AuthUtils.getTokenFromHeader(req);
       if (!token) {
-        res.status(401).json({ status: "error", message: "Bearer token not provided" });
+        res
+          .status(401)
+          .json({ status: "error", message: "Bearer token not provided" });
         return;
       }
 
@@ -120,7 +122,7 @@ export class IssuanceController {
         });
         return;
       }
-      
+
       const credential = await IssuanceService.getCredential(parseInt(id));
       const holder = await HolderModel.findHolderByUserId(user.id);
 
@@ -136,6 +138,29 @@ export class IssuanceController {
 
       res.status(200).json({
         status: "success",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getPendingCredentialTypes(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { email } = req.body;
+
+      const pendingCredTypes = await IssuanceService.getPendingCredentialTypes(
+        email
+      );
+
+      res.status(200).json({
+        status: "success",
+        data: {
+          pendingCredTypes,
+        },
       });
     } catch (err) {
       next(err);
