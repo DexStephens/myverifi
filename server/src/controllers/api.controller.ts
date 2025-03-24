@@ -47,4 +47,25 @@ export class ApiController {
             next(e);
         }
     }
+
+    static async issue(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { email, credentialId } = req.body;
+
+            if (!email) {
+                res.status(400).json({ error: "Email is required" });
+                return;
+            }
+
+            if (!credentialId) {
+                res.status(400).json({ error: "Credential ID is required" });
+                return;
+            }
+
+            const issuance = await IssuanceService.issueCredentialApi(req.user.id, email, credentialId);
+            res.json({ status: "success", issuance });
+        } catch (e) {
+            next(e);
+        }
+    }
 };

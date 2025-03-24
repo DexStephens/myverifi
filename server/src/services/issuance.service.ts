@@ -171,4 +171,8 @@ export class IssuanceService {
 
     return await CredentialIssueModel.updateHidden(id, hidden);
   }
+
+  static async issueCredentialApi(issuer_id: number, email: string, credential_id: number) {
+    return await this.issueCredential([email], credential_id);
+  }
 }
