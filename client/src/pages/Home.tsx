@@ -9,6 +9,7 @@ import "../styles/style.scss";
 import TeamComponent from "../components/Homepage/TeamComponent";
 import CallToActionComponent from "../components/Homepage/CallToActionComponent";
 import InfoComponent from "../components/Homepage/InfoComponent";
+import AboutUsComponent from "../components/Homepage/AboutUsComponent";
 
 export default function Home() {
 
@@ -20,6 +21,10 @@ export default function Home() {
 
       <HomeSection sx={{ my: 2 }}>
         <InfoComponent />
+      </HomeSection>
+
+      <HomeSection sx={{ my: 2 }}>
+        <AboutUsComponent />
       </HomeSection>
 
       <HomeSection sx={{ my: 2}}>
