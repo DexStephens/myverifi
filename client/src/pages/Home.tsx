@@ -14,16 +14,15 @@ export default function Home() {
 
   return (
     <div className="home-wrapper">
-      <HomeSection sx={{ padding: 0, marginTop: "-30px" }}>
+      <HomeSection sx={{ my: 2 }}>
         <CallToActionComponent />
       </HomeSection>
 
-      <HomeSection>
+      <HomeSection sx={{ my: 2 }}>
         <InfoComponent />
       </HomeSection>
 
-      {/* Team Section */}
-      <HomeSection sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <HomeSection sx={{ my: 2}}>
         <TeamComponent />
       </HomeSection>
 

@@ -161,7 +161,7 @@ print(response.json())`,
           </ListItem>
         </List>
 
-        <Typography variant="h6" sx={{ mt: 4 }}>
+        {/* <Typography variant="h6" sx={{ mt: 4 }}>
           For Verifiers
         </Typography>
         <List>
@@ -172,7 +172,7 @@ print(response.json())`,
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
           </ListItem>
-        </List>
+        </List> */}
       </Paper>
 
       {/* Example Request */}

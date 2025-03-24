@@ -5,12 +5,12 @@ export default function TeamComponent () {
 
     return (
         <Stack 
-    spacing={6} 
+    spacing={2} 
     alignItems="center" 
     sx={{ 
       width: "100%", 
       px: { xs: 2, md: 4 }, 
-      py: 6,
+      py: 2,
       flexGrow: 1, // Allows the stack to expand and push content away from footer
       overflow: 'auto' // Ensures content scrolls if it overflows
     }}
