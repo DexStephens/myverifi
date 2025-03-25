@@ -182,7 +182,7 @@ print(response.json())`,
                 >
                   {`{
  "email": "test@gmail.com",
-  "credentialId": "123456"
+  "credentialId": 123456
  }`}
                 </Box>
               }
