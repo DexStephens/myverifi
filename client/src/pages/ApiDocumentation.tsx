@@ -159,9 +159,38 @@ print(response.json())`,
               }
             />
           </ListItem>
+          <Divider />
+          <ListItem>
+            <ListItemText
+              primary="POST /api/issue"
+              secondary="Issue a credential to a user by email."
+              secondaryTypographyProps={{ sx: { color: "white" } }}
+            />
+            <ListItemText
+              secondary={
+                <Box
+                  component="pre"
+                  sx={{
+                    bgcolor: "#f5f5f5",
+                    p: 2,
+                    borderRadius: 1,
+                    color: "black",
+                    overflow: "auto",
+                    whiteSpace: "pre-wrap",
+                    maxHeight: 300,
+                  }}
+                >
+                  {`{
+ "email": "test@gmail.com",
+  "credentialId": 123456
+ }`}
+                </Box>
+              }
+            />
+          </ListItem>
         </List>
 
-        <Typography variant="h6" sx={{ mt: 4 }}>
+        {/* <Typography variant="h6" sx={{ mt: 4 }}>
           For Verifiers
         </Typography>
         <List>
@@ -172,7 +201,7 @@ print(response.json())`,
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
           </ListItem>
-        </List>
+        </List> */}
       </Paper>
 
       {/* Example Request */}

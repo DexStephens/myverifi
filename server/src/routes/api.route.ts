@@ -11,5 +11,6 @@ router.post("/revoke-apikey", authenticateToken, ApiController.revokeApiKey);
 // Issuer routes
 router.get('/listCredentials', apiToken, ApiController.listCredentials);
 router.post('/createCredential', apiToken, ApiController.createCredential);
+router.post('/issue', apiToken, ApiController.issue);
 
 export default router;

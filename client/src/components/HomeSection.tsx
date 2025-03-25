@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Box, BoxProps } from "@mui/material";
 
 export default function HomeSection({ children, sx, ...props }: BoxProps) {
@@ -10,11 +10,11 @@ export default function HomeSection({ children, sx, ...props }: BoxProps) {
         if (entry.isIntersecting) {
           ref.current?.classList.add("visible");
         } else {
-          ref.current?.classList.remove("visible"); // Optional if you want to reverse the effect
+          // ref.current?.classList.remove("visible"); // Optional if you want to reverse the effect
         }
       },
       {
-        threshold: 0.5, // Trigger when 50% of the element is visible
+        threshold: 0.33,
       }
     );
 
@@ -30,7 +30,7 @@ export default function HomeSection({ children, sx, ...props }: BoxProps) {
   }, []);
 
   return (
-    <Box className="home-section" ref={ref} sx={sx} {...props}>
+    <Box className="home-section" ref={ref} sx={{ py: 4, ...sx }} {...props}>
       {children}
     </Box>
   );

@@ -4,7 +4,7 @@ export default function InfoComponent() {
     return (
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={4}
+          spacing={2}
           sx={{ width: "100%", px: 4 }}
         >
           <Card>
