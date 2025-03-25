@@ -17,7 +17,7 @@ export default function CallToActionComponent() {
       };
 
     return (
-<Stack spacing={4} alignItems="center" textAlign="center">
+<Stack spacing={2} alignItems="center" textAlign="center">
   <Box
     sx={{
       display: "flex",
