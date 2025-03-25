@@ -2,6 +2,7 @@ import {
   Typography,
   Button,
   Modal,
+  Chip,
   Box,
   TableCell,
   TableRow,
@@ -16,13 +17,8 @@ import {
   IconButton,
   TablePagination,
   Link,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemText,
-  Alert,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
@@ -44,7 +40,7 @@ const modalStyle = {
 
 export function IssuerDashboard() {
   const { user, fetchUserData } = useUser();
-  const { pendingCredentials, isLoading, error } = useCredentialQueue(user);
+  const { pendingCredentials } = useCredentialQueue(user);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
@@ -90,10 +86,27 @@ export function IssuerDashboard() {
     setPage(0);
   };
 
-  const filteredCredentials = user?.issuer?.credential_types?.filter((type) => {
+  // const filteredCredentials = user?.issuer?.credential_types?.filter((type) => {
+  //   const searchLower = searchQuery.toLowerCase();
+  //   const credentialName = type.name.toLowerCase();
+
+  //   return credentialName.includes(searchLower);
+  // });
+  const combinedCredentials = useMemo(() => {
+    const existingCredentials = user?.issuer?.credential_types || [];
+    const pendingAsCredentials = pendingCredentials.map((pending) => ({
+      id: 0,
+      name: pending.title,
+      isPending: true,
+      status: pending.status,
+    }));
+
+    return [...existingCredentials, ...pendingAsCredentials];
+  }, [user?.issuer?.credential_types, pendingCredentials]);
+
+  const filteredCredentials = combinedCredentials.filter((type) => {
     const searchLower = searchQuery.toLowerCase();
     const credentialName = type.name.toLowerCase();
-
     return credentialName.includes(searchLower);
   });
 
@@ -148,23 +161,6 @@ export function IssuerDashboard() {
           mb: 3,
         }}
       >
-        {isLoading && <CircularProgress />}
-        {error && <Alert severity="error">{error}</Alert>}
-        {pendingCredentials.length > 0 && (
-          <Box>
-            <Typography variant="h6">Pending Credential Types</Typography>
-            <List>
-              {pendingCredentials.map((cred, index) => (
-                <ListItem key={index}>
-                  <ListItemText
-                    primary={cred.title}
-                    secondary={`Status: ${cred.status}`}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-        )}
         <Button
           variant="contained"
           color="secondary"
