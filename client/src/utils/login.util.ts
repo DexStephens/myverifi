@@ -6,13 +6,16 @@ export async function loginUser(
   setUser: (user: User) => void
 ) {
   try {
-    const response = await fetch("http://localhost:3000/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/auth/login`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const data = await response.json();
     console.log("Server response:", data);

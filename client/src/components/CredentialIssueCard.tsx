@@ -62,7 +62,9 @@ export function CredentialIssueCard({
     try {
       const token = sessionStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3000/issuances/credentials/${credentialIssue.id}`,
+        `${import.meta.env.VITE_SERVER_URL}/issuances/credentials/${
+          credentialIssue.id
+        }`,
         {
           method: "PATCH",
           headers: {

@@ -8,7 +8,7 @@ export async function createCredentialType(
   try {
     const token = sessionStorage.getItem("token");
     const response = await fetch(
-      `http://localhost:3000/issuances/credential_types`,
+      `${import.meta.env.VITE_SERVER_URL}/issuances/credential_types`,
       {
         method: "POST",
         headers: {
@@ -50,7 +50,7 @@ export async function issueCredentialType(
   try {
     const token = sessionStorage.getItem("token");
     const response = await fetch(
-      `http://localhost:3000/issuances/credentials`,
+      `${import.meta.env.VITE_SERVER_URL}/issuances/credentials`,
       {
         method: "POST",
         headers: {

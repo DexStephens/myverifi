@@ -5,13 +5,16 @@ export async function generateApiKey() {
       console.error("No token found in session storage");
       return null;
     }
-    const response = await fetch("http://localhost:3000/api/generate-apikey", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/generate-apikey`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     const data = await response.json();
     if (data.status === "success") {
       return data.apiKey;
@@ -19,8 +22,7 @@ export async function generateApiKey() {
       console.error("Failed to generate API key:", data.error);
       return null;
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Failed to generate API key:", error);
     return null;
   }
@@ -33,13 +35,16 @@ export async function revokeApiKey() {
       console.error("No token found in session storage");
       return null;
     }
-    const response = await fetch("http://localhost:3000/api/revoke-apikey", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/revoke-apikey`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     const data = await response.json();
     if (data.status === "success") {
       return true;

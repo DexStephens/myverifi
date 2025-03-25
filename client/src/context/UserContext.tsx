@@ -25,7 +25,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const storedUser = sessionStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  
+
   const navigate = useNavigate();
 
   const fetchUserData = async (): Promise<void> => {
@@ -36,15 +36,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // navigate("/login");
         return;
       }
-  
-      const response = await fetch(`http://localhost:3000/auth/user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/auth/user`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       const data = await response.json();
       console.log("Polled user data:", data);
 
@@ -126,7 +129,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
               ...currentUser.holder,
               credential_issues: [
                 ...currentUser.holder.credential_issues,
-                { id, holder_id, credential_type_id, credential_type, hidden: false },
+                {
+                  id,
+                  holder_id,
+                  credential_type_id,
+                  credential_type,
+                  hidden: false,
+                },
               ],
             },
           };
@@ -147,7 +156,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   console.log("user", user);
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout: handleLogout, fetchUserData }}>
+    <UserContext.Provider
+      value={{ user, setUser, logout: handleLogout, fetchUserData }}
+    >
       {children}
     </UserContext.Provider>
   );
