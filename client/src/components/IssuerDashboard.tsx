@@ -142,7 +142,6 @@ export function IssuerDashboard() {
           gap: 2,
           justifyContent: "center",
           mb: 3,
-          alignItems: "center",
         }}
       >
         <PendingCredentialTypes pendingCredentials={pendingCredentials} />
@@ -238,14 +237,7 @@ export function IssuerDashboard() {
           </TableHead>
           <TableBody>
             {paginatedCredentials?.map((type, index) => (
-              <TableRow
-                key={index}
-                sx={
-                  type.isPending
-                    ? { backgroundColor: "rgba(255, 152, 0, 0.08)" }
-                    : undefined
-                }
-              >
+              <TableRow key={index}>
                 <TableCell sx={{ color: "white", textAlign: "left" }}>
                   {type.name}
                 </TableCell>
@@ -254,11 +246,9 @@ export function IssuerDashboard() {
                     variant="contained"
                     color="secondary"
                     onClick={() => handleEdit(type.name)}
-                    disabled={type.isPending}
                     sx={{
                       "&:hover": { backgroundColor: "success.main" },
                       display: "inline-block",
-                      opacity: type.isPending ? 0.5 : 1,
                     }}
                   >
                     Edit
@@ -269,11 +259,9 @@ export function IssuerDashboard() {
                     variant="contained"
                     color="success"
                     onClick={() => handleIssueCredential(type.id)}
-                    disabled={type.isPending}
                     sx={{
                       color: "white",
                       display: "inline-block",
-                      opacity: type.isPending ? 0.5 : 1,
                     }}
                   >
                     Issue

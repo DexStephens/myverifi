@@ -19,7 +19,6 @@ type CredentialType = {
   name: string;
   token_id: string; // Needs to be converted to bigint
   issuer_id: number;
-  isPending?: boolean;
 };
 
 export type CredentialIssue = {
