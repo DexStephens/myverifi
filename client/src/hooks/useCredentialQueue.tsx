@@ -53,7 +53,6 @@ export const useCredentialQueue = (user: User | null) => {
         data.status === "success" &&
         Array.isArray(data.data.pendingCredTypes)
       ) {
-        // Only update if there's actually a change
         const newCredentials = data.data.pendingCredTypes.filter(
           (pending: PendingCredentialType) => {
             const exists = user.issuer?.credential_types?.some(

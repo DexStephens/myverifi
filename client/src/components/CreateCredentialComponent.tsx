@@ -11,6 +11,8 @@ import {
   IconButton,
   Tooltip,
   Box,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router";
@@ -37,6 +39,8 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const { user } = useUser();
   const [error, setError] = useState<string | null>(null);
   const { startPolling } = useCredentialQueue(user);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [submittedName, setSubmittedName] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -80,8 +84,8 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
     e.preventDefault();
     setIsCreating(true);
     setError(null);
+    setSubmittedName(credentialName);
 
-    // Create JSON object from credential details
     const detailsJson = credentialDetails.reduce((acc, detail) => {
       if (detail.descriptor && detail.value) {
         acc[detail.descriptor] = detail.value;
@@ -90,11 +94,11 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
     }, {} as { [key: string]: string });
 
     try {
-      // Wait for the transaction to complete
       await onCreateInstitutionCredentialType(credentialName, detailsJson);
 
+      // Show confirmation message
+      setShowConfirmation(true);
       startPolling();
-      // Only clear form after successful transaction
       setCredentialName("");
       setCredentialDetails([]);
     } catch (error) {
@@ -255,6 +259,29 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
           </CardContent>
         </Card>
       </Container>
+
+      {/* Add Snackbar for confirmation */}
+      <Snackbar
+        open={showConfirmation}
+        autoHideDuration={2000}
+        onClose={() => setShowConfirmation(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{
+            width: "100%",
+            backgroundColor: "success.main",
+            color: "white",
+            "& .MuiAlert-icon": {
+              color: "white",
+            },
+          }}
+        >
+          {`"${submittedName}" is being created. Status will be available shortly.`}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
