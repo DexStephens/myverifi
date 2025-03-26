@@ -62,15 +62,10 @@ export const useCredentialQueue = (user: User | null) => {
           }
         );
 
-        if (
-          JSON.stringify(latestCredentials.current) !==
-          JSON.stringify(newCredentials)
-        ) {
-          setPendingCredentials(newCredentials);
+        setPendingCredentials(newCredentials);
 
-          if (newCredentials.length === 0) {
-            setShouldPoll(false);
-          }
+        if (newCredentials.length === 0) {
+          setShouldPoll(false);
         }
       }
     } catch (err) {

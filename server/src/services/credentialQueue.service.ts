@@ -13,12 +13,15 @@ interface QueuedCredentialType {
 
 class CredentialTypeQueue {
   private static instance: CredentialTypeQueue;
-  private queue: QueuedCredentialType[] = [];
-  private isProcessing: boolean = false;
+  private userQueues: Map<
+    string,
+    {
+      queue: QueuedCredentialType[];
+      isProcessing: boolean;
+    }
+  > = new Map();
 
-  private constructor() {
-    this.processQueue();
-  }
+  private constructor() {}
 
   static getInstance(): CredentialTypeQueue {
     if (!CredentialTypeQueue.instance) {
@@ -28,7 +31,17 @@ class CredentialTypeQueue {
   }
 
   enqueue(email: string, title: string, cid: string) {
-    this.queue.push({
+    if (!this.userQueues.has(email)) {
+      this.userQueues.set(email, {
+        queue: [],
+        isProcessing: false,
+      });
+
+      this.processUserQueue(email);
+    }
+
+    const userQueue = this.userQueues.get(email)!;
+    userQueue.queue.push({
       email,
       title,
       cid,
@@ -39,56 +52,71 @@ class CredentialTypeQueue {
   }
 
   getPendingByEmail(email: string): QueuedCredentialType[] {
-    return this.queue.filter(
-      (item) =>
-        item.email === email &&
-        (item.status === "pending" || item.status === "processing")
+    const userQueue = this.userQueues.get(email);
+
+    if (!userQueue) return [];
+
+    return userQueue.queue.filter(
+      (item) => item.status === "pending" || item.status === "processing"
     );
   }
 
-  private async processQueue() {
-    while (true) {
-      if (this.queue.length === 0 || this.isProcessing) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        continue;
-      }
+  private async processUserQueue(email: string) {
+    const processQueue = async () => {
+      const userQueue = this.userQueues.get(email);
+      if (!userQueue) return;
 
-      this.isProcessing = true;
-      const item = this.queue[0];
-
-      try {
-        item.status = "processing";
-
-        const user = await UserModel.findUserByEmail(item.email);
-        if (!user || !user.issuer) {
-          throw new Error(`No issuer found for email: ${item.email}`);
+      while (true) {
+        if (userQueue.queue.length === 0 || userQueue.isProcessing) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          continue;
         }
 
-        await ChainUtils.createCredentialType(
-          user.wallet.privateKey as Address,
-          user.issuer.contract_address as Address,
-          item.title,
-          item.cid
-        );
+        userQueue.isProcessing = true;
+        const item = userQueue.queue[0];
 
-        item.status = "completed";
+        try {
+          item.status = "processing";
 
-        this.queue.shift();
-        console.log(
-          `Completed credential type: ${item.title} for email: ${item.email}`
-        );
-      } catch (error) {
-        console.error("Error processing credential type: ", error);
-        item.status = "failed";
-        item.error = error.message;
+          const user = await UserModel.findUserByEmail(email);
+          if (!user || !user.issuer) {
+            throw new Error(`No isuer found for email: ${email}`);
+          }
 
-        this.queue.shift();
-      } finally {
-        this.isProcessing = false;
+          await ChainUtils.createCredentialType(
+            user.wallet.privateKey as Address,
+            user.issuer.contract_address as Address,
+            item.title,
+            item.cid
+          );
+
+          item.status = "completed";
+          userQueue.queue.shift();
+
+          console.log(
+            `Completed credential type: ${item.title} for email ${email}`
+          );
+
+          if (userQueue.queue.length === 0) {
+            this.userQueues.delete(email);
+            break;
+          }
+        } catch (error) {
+          console.error("Error processing credential type: ", error);
+          item.status = "failed";
+          item.error = error.message;
+          userQueue.queue.shift();
+        } finally {
+          userQueue.isProcessing = false;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
+    };
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
+    processQueue().catch((error) => {
+      console.error(`Error in queue processing for ${email}:`, error);
+    });
   }
 }
 
