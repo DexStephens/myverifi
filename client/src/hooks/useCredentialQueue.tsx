@@ -54,16 +54,22 @@ export const useCredentialQueue = (user: User | null) => {
         Array.isArray(data.data.pendingCredTypes)
       ) {
         // Only update if there's actually a change
-        const newCredentials = data.data.pendingCredTypes;
+        const newCredentials = data.data.pendingCredTypes.filter(
+          (pending: PendingCredentialType) => {
+            const exists = user.issuer?.credential_types?.some(
+              (existing) => existing.name === pending.title
+            );
+            return !exists;
+          }
+        );
+
         if (
           JSON.stringify(latestCredentials.current) !==
           JSON.stringify(newCredentials)
         ) {
           setPendingCredentials(newCredentials);
 
-          if (newCredentials.length > 0) {
-            setShouldPoll(true);
-          } else {
+          if (newCredentials.length === 0) {
             setShouldPoll(false);
           }
         }
@@ -71,7 +77,7 @@ export const useCredentialQueue = (user: User | null) => {
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     }
-  }, [user?.email]);
+  }, [user]);
 
   const startPolling = useCallback(() => {
     setShouldPoll(true);
@@ -83,9 +89,11 @@ export const useCredentialQueue = (user: User | null) => {
     }
   }, [user?.email, checkQueueStatus]);
 
-  // Initial load with loading state
+  //Initial load with loading state
   useEffect(() => {
     if (!shouldPoll || !user?.email) return;
+
+    checkQueueStatus();
 
     const intervalId = setInterval(checkQueueStatus, 10000);
     return () => clearInterval(intervalId);

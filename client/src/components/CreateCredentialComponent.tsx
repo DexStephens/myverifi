@@ -18,6 +18,7 @@ import { createCredentialType } from "../utils/credential.util";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import { uploadJsonToPinata } from "../utils/pinata.util";
+import { useCredentialQueue } from "../hooks/useCredentialQueue";
 
 interface CredentialDetail {
   descriptor: string;
@@ -35,6 +36,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
   const { user } = useUser();
   const [error, setError] = useState<string | null>(null);
+  const { startPolling } = useCredentialQueue(user);
 
   useEffect(() => {
     if (!user) {
@@ -91,6 +93,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
       // Wait for the transaction to complete
       await onCreateInstitutionCredentialType(credentialName, detailsJson);
 
+      startPolling();
       // Only clear form after successful transaction
       setCredentialName("");
       setCredentialDetails([]);

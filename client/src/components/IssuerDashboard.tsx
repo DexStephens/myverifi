@@ -2,7 +2,6 @@ import {
   Typography,
   Button,
   Modal,
-  Chip,
   Box,
   TableCell,
   TableRow,
@@ -18,7 +17,7 @@ import {
   TablePagination,
   Link,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
@@ -26,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
 import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
 import { useCredentialQueue } from "../hooks/useCredentialQueue";
+import { PendingCredentialTypes } from "./PendingCredentialTypes";
 
 const modalStyle = {
   position: "absolute",
@@ -86,27 +86,10 @@ export function IssuerDashboard() {
     setPage(0);
   };
 
-  // const filteredCredentials = user?.issuer?.credential_types?.filter((type) => {
-  //   const searchLower = searchQuery.toLowerCase();
-  //   const credentialName = type.name.toLowerCase();
-
-  //   return credentialName.includes(searchLower);
-  // });
-  const combinedCredentials = useMemo(() => {
-    const existingCredentials = user?.issuer?.credential_types || [];
-    const pendingAsCredentials = pendingCredentials.map((pending) => ({
-      id: 0,
-      name: pending.title,
-      isPending: true,
-      status: pending.status,
-    }));
-
-    return [...existingCredentials, ...pendingAsCredentials];
-  }, [user?.issuer?.credential_types, pendingCredentials]);
-
-  const filteredCredentials = combinedCredentials.filter((type) => {
+  const filteredCredentials = user?.issuer?.credential_types?.filter((type) => {
     const searchLower = searchQuery.toLowerCase();
     const credentialName = type.name.toLowerCase();
+
     return credentialName.includes(searchLower);
   });
 
@@ -159,8 +142,10 @@ export function IssuerDashboard() {
           gap: 2,
           justifyContent: "center",
           mb: 3,
+          alignItems: "center",
         }}
       >
+        <PendingCredentialTypes pendingCredentials={pendingCredentials} />
         <Button
           variant="contained"
           color="secondary"
@@ -238,6 +223,7 @@ export function IssuerDashboard() {
               >
                 Credential Name
               </TableCell>
+
               <TableCell
                 sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
               >
@@ -252,7 +238,14 @@ export function IssuerDashboard() {
           </TableHead>
           <TableBody>
             {paginatedCredentials?.map((type, index) => (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                sx={
+                  type.isPending
+                    ? { backgroundColor: "rgba(255, 152, 0, 0.08)" }
+                    : undefined
+                }
+              >
                 <TableCell sx={{ color: "white", textAlign: "left" }}>
                   {type.name}
                 </TableCell>
@@ -261,9 +254,11 @@ export function IssuerDashboard() {
                     variant="contained"
                     color="secondary"
                     onClick={() => handleEdit(type.name)}
+                    disabled={type.isPending}
                     sx={{
                       "&:hover": { backgroundColor: "success.main" },
                       display: "inline-block",
+                      opacity: type.isPending ? 0.5 : 1,
                     }}
                   >
                     Edit
@@ -274,9 +269,11 @@ export function IssuerDashboard() {
                     variant="contained"
                     color="success"
                     onClick={() => handleIssueCredential(type.id)}
+                    disabled={type.isPending}
                     sx={{
                       color: "white",
                       display: "inline-block",
+                      opacity: type.isPending ? 0.5 : 1,
                     }}
                   >
                     Issue
