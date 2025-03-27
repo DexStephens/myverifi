@@ -171,8 +171,4 @@ export class AuthService {
       );
     }
   }
-
-  static async getPendingUserCredentialTypes(email: string) {
-    return credentialQueue.getPendingByEmail(email);
-  }
 }
