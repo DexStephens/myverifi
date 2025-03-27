@@ -28,9 +28,11 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 export default function IssueCredential({
   credentialType,
   onClose,
+  onIssue, // Added prop to trigger animation
 }: {
   credentialType: number | null;
   onClose: () => void;
+  onIssue: () => void; // New prop for triggering animation
 }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -173,6 +175,11 @@ export default function IssueCredential({
         setEmail(null);
         setFile(null);
         setSelectedCredentialId(0);
+
+        // Trigger the animation in the parent component
+        if (onIssue) {
+          onIssue();
+        }
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
@@ -275,7 +282,7 @@ export default function IssueCredential({
                     display: "flex",
                     alignItems: "center",
                     flex: 1,
-                    minWidth: 0, // This allows the box to shrink below its content size
+                    minWidth: 0,
                   }}
                 >
                   <Button
@@ -288,7 +295,7 @@ export default function IssueCredential({
                       "&:hover": {
                         backgroundColor: "success.main",
                       },
-                      flexShrink: 0, // Prevents the button from shrinking
+                      flexShrink: 0,
                     }}
                   >
                     Upload CSV
@@ -352,7 +359,6 @@ export default function IssueCredential({
                   color="secondary"
                   size="large"
                   disabled={loading}
-                  loading={loading}
                   sx={{
                     "&:hover": { backgroundColor: "success.main" },
                   }}
