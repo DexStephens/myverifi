@@ -14,7 +14,6 @@ import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
 import { CONSTANTS } from "../config/constants";
 import { Address } from "viem";
-import io from "socket.io-client";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -167,24 +166,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   useSocket(user?.wallet?.address as Address, eventHandlers);
-
-  useEffect(() => {
-    if (user?.wallet?.address && user?.email) {
-      const SOCKET_URL = `${import.meta.env.VITE_SOCKET_BASE}${
-        user.wallet.address
-      }`;
-      const socket = io(SOCKET_URL);
-
-      socket.on("connect", () => {
-        console.log("Socket connected, requesting credential queue");
-        socket.emit("get_credential_queue", { email: user.email });
-      });
-
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [user?.wallet?.address, user?.email]);
 
   const handleLogout = () => {
     setUser(null);

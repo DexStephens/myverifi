@@ -48,10 +48,6 @@ export class IssuanceService {
     return { status: "pending" };
   }
 
-  static async getPendingCredentialTypes(email: string) {
-    return credentialQueue.getPendingByEmail(email);
-  }
-
   static async createCredentialTypeApi(
     issuer_id: number,
     title: string,
@@ -174,7 +170,11 @@ export class IssuanceService {
     return await CredentialIssueModel.updateHidden(id, hidden);
   }
 
-  static async issueCredentialApi(issuer_id: number, email: string, credential_id: number) {
+  static async issueCredentialApi(
+    issuer_id: number,
+    email: string,
+    credential_id: number
+  ) {
     return await this.issueCredential([email], credential_id);
   }
 }

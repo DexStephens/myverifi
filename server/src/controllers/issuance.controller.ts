@@ -143,27 +143,4 @@ export class IssuanceController {
       next(err);
     }
   }
-
-  static async getPendingCredentialTypes(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { email } = req.body;
-
-      const pendingCredTypes = await IssuanceService.getPendingCredentialTypes(
-        email
-      );
-
-      res.status(200).json({
-        status: "success",
-        data: {
-          pendingCredTypes,
-        },
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
 }
