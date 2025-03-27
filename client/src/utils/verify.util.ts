@@ -5,12 +5,15 @@ export type CredentialRequest = {
 
 export async function getIssuersWithCredentialTypes() {
   try {
-    const response = await fetch("http://localhost:3000/issuances/issuers", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/issuances/issuers`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const data = await response.json();
     console.log("Issuer response:", data);
@@ -35,13 +38,16 @@ export async function verifyCredentials(
   credential_types: number[]
 ) {
   try {
-    const response = await fetch("http://localhost:3000/issuances/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, credential_types }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/issuances/verify`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, credential_types }),
+      }
+    );
 
     const data:
       | {
