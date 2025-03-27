@@ -10,7 +10,9 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email, password } = SchemaValidationUtil.LoginSchema.parse(req.body);
+      const { email, password } = SchemaValidationUtil.LoginSchema.parse(
+        req.body
+      );
 
       const user = await AuthService.loginUser(email, password);
 
@@ -50,23 +52,29 @@ export class AuthController {
     }
   }
 
-  static async getUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-        const token = AuthUtils.getTokenFromHeader(req);
-        if (!token) {
-          res.status(401).json({ status: "error", message: "Bearer token not provided" });
-          return;
-        }
+      const token = AuthUtils.getTokenFromHeader(req);
+      if (!token) {
+        res
+          .status(401)
+          .json({ status: "error", message: "Bearer token not provided" });
+        return;
+      }
 
-        const user = await AuthService.getUser(token);
-        if (!user) {
-          res.status(404).json({ status: "error", message: "Invalid token" });
-          return;
-        }
+      const user = await AuthService.getUser(token);
+      if (!user) {
+        res.status(404).json({ status: "error", message: "Invalid token" });
+        return;
+      }
 
-        res.json({ status: "success", data: user });
+      res.json({ status: "success", data: user });
     } catch (err) {
-        next(err);
+      next(err);
     }
   }
 }

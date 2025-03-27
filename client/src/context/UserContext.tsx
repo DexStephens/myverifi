@@ -5,18 +5,15 @@ import {
   useState,
   useEffect,
 } from "react";
-import { User } from "../utils/user.util";
+import {
+  PendingCredentialType,
+  User,
+  UserContextType,
+} from "../utils/user.util";
 import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
 import { CONSTANTS } from "../config/constants";
 import { Address } from "viem";
-
-interface UserContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  logout: () => void;
-  fetchUserData: () => Promise<void>;
-}
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -26,6 +23,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
+  const [pendingCredentials, setPendingCredentials] = useState<
+    PendingCredentialType[]
+  >([]);
+
   const navigate = useNavigate();
 
   const fetchUserData = async (): Promise<void> => {
@@ -33,9 +34,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const token = sessionStorage.getItem("token");
       if (!token) {
         setUser(null);
-        // navigate("/login");
         return;
       }
+
 
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/auth/user`,
@@ -54,9 +55,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (data.status === "success") {
         sessionStorage.setItem("user", JSON.stringify(data.data));
         setUser(data.data);
+
+        if (data.data.issuer?.pending_credential_types) {
+          setPendingCredentials(data.data.issuer.pending_credential_types);
+        }
       } else {
         setUser(null);
-        // navigate("/login");
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -65,15 +69,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Fetch user on mount and set up polling
   useEffect(() => {
-    fetchUserData(); // Initial fetch
+    fetchUserData();
 
-    const interval = setInterval(fetchUserData, 10000); // Fetch every 10 seconds
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    const interval = setInterval(fetchUserData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
-  useSocket(user?.wallet.address as Address, {
+  const eventHandlers = {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
@@ -97,6 +100,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
           currentUser.issuer &&
           !currentUser.issuer.credential_types.find((ct) => ct.id === id)
         ) {
+          setPendingCredentials((prev) =>
+            prev.filter((cred) => cred.title !== name)
+          );
+
           return {
             ...currentUser,
             issuer: {
@@ -144,20 +151,44 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return currentUser;
       });
     },
-  });
+    [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: (data) => {
+      console.log("Received credential queue update:", data);
+
+      if (user?.issuer?.credential_types) {
+        const filteredData = data.filter((pending: PendingCredentialType) => {
+          const exists = user.issuer.credential_types.some(
+            (existing) => existing.name === pending.title
+          );
+          return !exists;
+        });
+
+        setPendingCredentials(filteredData);
+      } else {
+        setPendingCredentials(data);
+      }
+    },
+  };
+
+  useSocket(user?.wallet?.address as Address, eventHandlers);
 
   const handleLogout = () => {
     setUser(null);
+    setPendingCredentials([]);
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     navigate("/login");
   };
 
-  console.log("user", user);
-
   return (
     <UserContext.Provider
-      value={{ user, setUser, logout: handleLogout, fetchUserData }}
+      value={{
+        user,
+        setUser,
+        logout: handleLogout,
+        fetchUserData,
+        pendingCredentials,
+      }}
+
     >
       {children}
     </UserContext.Provider>
