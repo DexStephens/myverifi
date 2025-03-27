@@ -5,18 +5,16 @@ import {
   useState,
   useEffect,
 } from "react";
-import { User } from "../utils/user.util";
+import {
+  PendingCredentialType,
+  User,
+  UserContextType,
+} from "../utils/user.util";
 import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
 import { CONSTANTS } from "../config/constants";
 import { Address } from "viem";
-
-interface UserContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  logout: () => void;
-  fetchUserData: () => Promise<void>;
-}
+import io from "socket.io-client";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -25,7 +23,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const storedUser = sessionStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  
+
+  const [pendingCredentials, setPendingCredentials] = useState<
+    PendingCredentialType[]
+  >([]);
+
   const navigate = useNavigate();
 
   const fetchUserData = async (): Promise<void> => {
@@ -33,10 +35,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const token = sessionStorage.getItem("token");
       if (!token) {
         setUser(null);
-        // navigate("/login");
         return;
       }
-  
+
       const response = await fetch(`http://localhost:3000/auth/user`, {
         method: "GET",
         headers: {
@@ -44,16 +45,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       const data = await response.json();
       console.log("Polled user data:", data);
 
       if (data.status === "success") {
         sessionStorage.setItem("user", JSON.stringify(data.data));
         setUser(data.data);
+
+        if (data.data.issuer?.pending_credential_types) {
+          setPendingCredentials(data.data.issuer.pending_credential_types);
+        }
       } else {
         setUser(null);
-        // navigate("/login");
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -62,15 +66,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Fetch user on mount and set up polling
   useEffect(() => {
-    fetchUserData(); // Initial fetch
+    fetchUserData();
 
-    const interval = setInterval(fetchUserData, 10000); // Fetch every 10 seconds
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    const interval = setInterval(fetchUserData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
-  useSocket(user?.wallet.address as Address, {
+  const eventHandlers = {
     [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
@@ -94,6 +97,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
           currentUser.issuer &&
           !currentUser.issuer.credential_types.find((ct) => ct.id === id)
         ) {
+          setPendingCredentials((prev) =>
+            prev.filter((cred) => cred.title !== name)
+          );
+
           return {
             ...currentUser,
             issuer: {
@@ -126,7 +133,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
               ...currentUser.holder,
               credential_issues: [
                 ...currentUser.holder.credential_issues,
-                { id, holder_id, credential_type_id, credential_type, hidden: false },
+                {
+                  id,
+                  holder_id,
+                  credential_type_id,
+                  credential_type,
+                  hidden: false,
+                },
               ],
             },
           };
@@ -135,19 +148,62 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return currentUser;
       });
     },
-  });
+    [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: (data) => {
+      console.log("Received credential queue update:", data);
+
+      if (user?.issuer?.credential_types) {
+        const filteredData = data.filter((pending: PendingCredentialType) => {
+          const exists = user.issuer.credential_types.some(
+            (existing) => existing.name === pending.title
+          );
+          return !exists;
+        });
+
+        setPendingCredentials(filteredData);
+      } else {
+        setPendingCredentials(data);
+      }
+    },
+  };
+
+  useSocket(user?.wallet?.address as Address, eventHandlers);
+
+  useEffect(() => {
+    if (user?.wallet?.address && user?.email) {
+      const SOCKET_URL = `${import.meta.env.VITE_SOCKET_BASE}${
+        user.wallet.address
+      }`;
+      const socket = io(SOCKET_URL);
+
+      socket.on("connect", () => {
+        console.log("Socket connected, requesting credential queue");
+        socket.emit("get_credential_queue", { email: user.email });
+      });
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [user?.wallet?.address, user?.email]);
 
   const handleLogout = () => {
     setUser(null);
+    setPendingCredentials([]);
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     navigate("/login");
   };
 
-  console.log("user", user);
-
   return (
-    <UserContext.Provider value={{ user, setUser, logout: handleLogout, fetchUserData }}>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        logout: handleLogout,
+        fetchUserData,
+        pendingCredentials,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

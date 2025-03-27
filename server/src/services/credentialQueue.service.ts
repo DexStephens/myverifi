@@ -1,8 +1,10 @@
 import { Address } from "viem";
 import { UserModel } from "../models/user.model";
 import { ChainUtils } from "../utils/chain.util";
+import { eventBus } from "../busHandlers";
+import { SOCKET_EVENTS } from "../config/constants.config";
 
-interface QueuedCredentialType {
+export interface QueuedCredentialType {
   email: string;
   title: string;
   cid: string;
@@ -48,6 +50,8 @@ class CredentialTypeQueue {
       status: "pending",
       addedAt: new Date(),
     });
+
+    this.emitQueueUpdate(email);
     console.log(`Enqueued credential type: ${title} for email: ${email}`);
   }
 
@@ -59,6 +63,22 @@ class CredentialTypeQueue {
     return userQueue.queue.filter(
       (item) => item.status === "pending" || item.status === "processing"
     );
+  }
+
+  private async emitQueueUpdate(email: string) {
+    try {
+      const user = await UserModel.findUserByEmail(email);
+      if (user?.wallet?.address) {
+        const pendingCredentials = this.getPendingByEmail(email);
+
+        eventBus.emit(SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE, {
+          address: user.wallet.address,
+          pendingCredTypes: pendingCredentials,
+        });
+      }
+    } catch (error) {
+      console.error("Error emitting queue update: ", error);
+    }
   }
 
   private async processUserQueue(email: string) {
@@ -78,6 +98,8 @@ class CredentialTypeQueue {
         try {
           item.status = "processing";
 
+          await this.emitQueueUpdate(email);
+
           const user = await UserModel.findUserByEmail(email);
           if (!user || !user.issuer) {
             throw new Error(`No isuer found for email: ${email}`);
@@ -93,12 +115,15 @@ class CredentialTypeQueue {
           item.status = "completed";
           userQueue.queue.shift();
 
+          await this.emitQueueUpdate(email);
+
           console.log(
             `Completed credential type: ${item.title} for email ${email}`
           );
 
           if (userQueue.queue.length === 0) {
             this.userQueues.delete(email);
+            await this.emitQueueUpdate(email);
             break;
           }
         } catch (error) {
@@ -106,6 +131,7 @@ class CredentialTypeQueue {
           item.status = "failed";
           item.error = error.message;
           userQueue.queue.shift();
+          await this.emitQueueUpdate(email);
         } finally {
           userQueue.isProcessing = false;
         }

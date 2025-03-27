@@ -1,5 +1,5 @@
 import { AuthUtils } from "../utils/auth.utils";
-import { AuthResponse } from "../types";
+import { AuthResponse as BaseAuthResponse } from "../types";
 import { UserModel } from "../models/user.model";
 import { IssuerModel } from "../models/issuer.model";
 import { HolderModel } from "../models/holder.model";
@@ -7,7 +7,19 @@ import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
 import { ChainUtils } from "../utils/chain.util";
 import { Address } from "viem";
+import { credentialQueue } from "./credentialQueue.service";
+import { QueuedCredentialType } from "./credentialQueue.service";
+import { CredentialType } from "@prisma/client";
 
+interface AuthResponse extends BaseAuthResponse {
+  issuer?: {
+    name: string;
+    contract_address: Address;
+    credential_types: CredentialType[];
+    pending_credential_types?: QueuedCredentialType[];
+    apiKey?: string;
+  };
+}
 export class AuthService {
   static async loginUser(
     email: string,
@@ -46,7 +58,7 @@ export class AuthService {
       issuer: user.issuer
         ? {
             name: user.issuer?.name,
-            contract_address: user.issuer?.contract_address,
+            contract_address: user.issuer?.contract_address as Address,
             credential_types: user.issuer?.credential_types ?? [],
             apiKey: user.issuer?.apiKey,
           }
@@ -118,14 +130,19 @@ export class AuthService {
   static async getUser(token: string): Promise<AuthResponse | null> {
     try {
       if (!token) {
-        throw new ControllerError(ERROR_TITLES.UNAUTHORIZED, "Token is required");
+        throw new ControllerError(
+          ERROR_TITLES.UNAUTHORIZED,
+          "Token is required"
+        );
       }
-  
+
       const { email } = AuthUtils.validateJwt(token);
       const user = await UserModel.findUserByEmail(email);
       if (!user) {
         throw new ControllerError(ERROR_TITLES.DNE, "User not found");
       }
+
+      const pendingCredTypes = credentialQueue.getPendingByEmail(user.email);
 
       return {
         id: user.id,
@@ -139,15 +156,23 @@ export class AuthService {
         issuer: user.issuer
           ? {
               name: user.issuer?.name,
-              contract_address: user.issuer?.contract_address,
+              contract_address: user.issuer?.contract_address as Address,
               credential_types: user.issuer?.credential_types ?? [],
+              pending_credential_types: pendingCredTypes,
               apiKey: user.issuer?.apiKey,
             }
           : undefined,
         token,
       };
     } catch (error) {
-      throw new ControllerError(ERROR_TITLES.UNAUTHORIZED, "Invalid or expired token");
+      throw new ControllerError(
+        ERROR_TITLES.UNAUTHORIZED,
+        "Invalid or expired token: "
+      );
     }
+  }
+
+  static async getPendingUserCredentialTypes(email: string) {
+    return credentialQueue.getPendingByEmail(email);
   }
 }

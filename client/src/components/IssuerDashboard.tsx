@@ -24,7 +24,6 @@ import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
 import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
-import { useCredentialQueue } from "../hooks/useCredentialQueue";
 import { PendingCredentialTypes } from "./PendingCredentialTypes";
 
 const modalStyle = {
@@ -39,8 +38,7 @@ const modalStyle = {
 };
 
 export function IssuerDashboard() {
-  const { user, fetchUserData } = useUser();
-  const { pendingCredentials } = useCredentialQueue(user);
+  const { user, fetchUserData, pendingCredentials } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<

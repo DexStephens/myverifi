@@ -21,6 +21,13 @@ type CredentialType = {
   issuer_id: number;
 };
 
+export interface PendingCredentialType {
+  title: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  addedAt: Date;
+  error?: string;
+}
+
 export type CredentialIssue = {
   id: number;
   holder_id: number;
@@ -43,6 +50,8 @@ export type Issuer = {
 
 export interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => void;
+  fetchUserData: () => Promise<void>;
+  pendingCredentials: PendingCredentialType[];
 }

@@ -20,7 +20,6 @@ import { createCredentialType } from "../utils/credential.util";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import { uploadJsonToPinata } from "../utils/pinata.util";
-import { useCredentialQueue } from "../hooks/useCredentialQueue";
 
 interface CredentialDetail {
   descriptor: string;
@@ -38,7 +37,6 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
   const { user } = useUser();
   const [error, setError] = useState<string | null>(null);
-  const { startPolling } = useCredentialQueue(user);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
 
@@ -96,9 +94,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
     try {
       await onCreateInstitutionCredentialType(credentialName, detailsJson);
 
-      // Show confirmation message
       setShowConfirmation(true);
-      startPolling();
       setCredentialName("");
       setCredentialDetails([]);
     } catch (error) {
@@ -279,7 +275,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
             },
           }}
         >
-          {`"${submittedName}" is being created. Status will be available shortly.`}
+          {`"${submittedName}" is being created. Click on the hourglass to see status.`}
         </Alert>
       </Snackbar>
     </>
