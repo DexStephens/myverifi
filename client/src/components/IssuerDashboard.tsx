@@ -15,7 +15,6 @@ import {
   InputAdornment,
   IconButton,
   TablePagination,
-  Link,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
@@ -23,7 +22,6 @@ import IssueCredentialComponent from "../components/IssueCredentialComponent";
 import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
-import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
 
 const modalStyle = {
   position: "absolute",
@@ -36,32 +34,8 @@ const modalStyle = {
   p: 0,
 };
 
-const loadingModalStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  backgroundColor: "rgba(0, 0, 0, 0.2)", // Gray background with 20% opacity
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1300,
-};
-
-const statementBoxStyle = {
-  backgroundColor: "white",
-  padding: "20px",
-  borderRadius: "8px",
-  textAlign: "center",
-  maxWidth: "400px",
-  width: "90%",
-  position: "relative",
-  animation: "fade-in-out 5s ease-in-out",
-};
-
 export function IssuerDashboard() {
-  const { user, fetchUserData } = useUser();
+  const { user } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<number | null>(null);
@@ -69,50 +43,9 @@ export function IssuerDashboard() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
-  const [currentStatement, setCurrentStatement] = useState(0);
-
-  const statements = [
-    "Preparing to issue the credential...",
-    "Validating the credential details...",
-    "Finalizing the issuance process...",
-  ];
-
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
     setOpenIssueModal(true);
-  };
-
-  const triggerAnimation = () => {
-    setLoadingAnimation(true);
-
-    // Simulate the loading process
-    setTimeout(() => {
-      setLoadingAnimation(false);
-      setOpenIssueModal(false);
-      alert("Credential issued successfully!"); // Replace with actual logic
-    }, statements.length * 5000); // Total time = 3 statements * 5 seconds each
-  };
-
-  const closeAnimationEarly = () => {
-    setLoadingAnimation(false);
-    setCurrentStatement(0); // Reset the statement index
-  };
-
-  useEffect(() => {
-    if (loadingAnimation) {
-      const interval = setInterval(() => {
-        setCurrentStatement((prev) => prev + 1);
-      }, 5000); // Change statement every 5 seconds
-
-      return () => clearInterval(interval); // Cleanup interval on unmount
-    } else {
-      setCurrentStatement(0); // Reset statement index when animation ends
-    }
-  }, [loadingAnimation]);
-
-  const handleEdit = (credentialType: string) => {
-    console.log(`Edit credential type: ${credentialType}`);
   };
 
   const handleClearSearch = () => {
@@ -259,7 +192,6 @@ export function IssuerDashboard() {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => handleEdit(type.name)}
                     sx={{
                       "&:hover": { backgroundColor: "success.main" },
                       display: "inline-block",
@@ -324,36 +256,12 @@ export function IssuerDashboard() {
         <Box sx={modalStyle}>
           <IssueCredentialComponent
             credentialType={selectedCredentialType}
-            onIssue={triggerAnimation} // Pass the animation trigger as a prop
+            onIssue={async (emails, credentialId) => {
+              console.log("Issuing credential:", emails, credentialId);
+              // Add any additional logic here if needed
+            }}
             onClose={() => setOpenIssueModal(false)}
           />
-        </Box>
-      </Modal>
-
-      {/* Loading Animation Modal */}
-      <Modal open={loadingAnimation} aria-labelledby="loading-modal">
-        <Box sx={loadingModalStyle}>
-          <Box sx={statementBoxStyle}>
-            {/* Close Button */}
-            <IconButton
-              onClick={closeAnimationEarly}
-              size="small"
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                color: "gray",
-                "&:hover": { color: "error.main" },
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-
-            {/* Statement */}
-            <Typography variant="h6" color="primary">
-              {statements[currentStatement]}
-            </Typography>
-          </Box>
         </Box>
       </Modal>
     </Container>

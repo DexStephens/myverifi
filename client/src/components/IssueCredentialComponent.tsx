@@ -16,23 +16,23 @@ import {
   Box,
   Alert,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router";
-import { issueCredentialType } from "../utils/credential.util";
-import CloseIcon from "@mui/icons-material/Close";
 import { parseCSV } from "../utils/csv.util";
+import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 export default function IssueCredential({
   credentialType,
   onClose,
-  onIssue, // Updated to accept arguments
+  onIssue,
 }: {
   credentialType: number | null;
   onClose: () => void;
-  onIssue: (emails: string[], credentialId: number) => void; // Updated to accept arguments
+  onIssue: (emails: string[], credentialId: number) => Promise<void>;
 }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -40,11 +40,19 @@ export default function IssueCredential({
   const [displayMessage, setDisplayMessage] = useState<string | null>(null);
   const { user } = useUser();
   const [email, setEmail] = useState<string | null>(null);
-  const [selectedCredentialId, setSelectedCredentialId] = useState<
-    number | null
-  >(credentialType);
+  const [selectedCredentialId, setSelectedCredentialId] = useState<number | null>(credentialType);
   const [file, setFile] = useState<File | null>(null);
   const [batch, setBatch] = useState(false);
+
+  // Animation-related states
+  const [animationActive, setAnimationActive] = useState(false);
+  const [currentStatement, setCurrentStatement] = useState(0);
+
+  const statements = [
+    "Preparing to issue the credential...",
+    "Validating the credential details...",
+    "Finalizing the issuance process...",
+  ];
 
   useEffect(() => {
     if (!user) {
@@ -53,6 +61,18 @@ export default function IssueCredential({
       navigate("/dashboard");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (animationActive) {
+      const interval = setInterval(() => {
+        setCurrentStatement((prev) => (prev + 1) % statements.length);
+      }, 4000); // Change statement every 4 seconds
+
+      return () => clearInterval(interval); // Cleanup interval on unmount
+    } else {
+      setCurrentStatement(0); // Reset statement index when animation ends
+    }
+  }, [animationActive]);
 
   const removeErrors = () => {
     if (error || displayMessage) {
@@ -138,11 +158,11 @@ export default function IssueCredential({
 
     if (validateForm(extractedEmails)) {
       setLoading(true);
+      setAnimationActive(true); // Start the animation
       setError(null);
       try {
-        // Trigger the animation and loading process in the parent component
-        onIssue(extractedEmails, selectedCredentialId ?? 0);
-
+        await onIssue(extractedEmails, selectedCredentialId ?? 0);
+        setDisplayMessage("Credential issued successfully!");
         setEmail(null);
         setFile(null);
         setSelectedCredentialId(0);
@@ -151,6 +171,7 @@ export default function IssueCredential({
         setError("Failed to issue credential");
       } finally {
         setLoading(false);
+        setAnimationActive(false); // Stop the animation
       }
     }
   };
@@ -334,6 +355,27 @@ export default function IssueCredential({
               </Box>
             </Stack>
           </form>
+
+          {/* Animation Section */}
+          {animationActive && (
+            <Box
+              sx={{
+                mt: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress color="secondary" />
+              <Typography
+                variant="h6"
+                sx={{ mt: 2, color: "secondary.main", textAlign: "center" }}
+              >
+                {statements[currentStatement]}
+              </Typography>
+            </Box>
+          )}
         </CardContent>
       </Card>
     </Container>
