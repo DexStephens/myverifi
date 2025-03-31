@@ -108,7 +108,9 @@ export class IssuanceController {
 
       const token = AuthUtils.getTokenFromHeader(req);
       if (!token) {
-        res.status(401).json({ status: "error", message: "Bearer token not provided" });
+        res
+          .status(401)
+          .json({ status: "error", message: "Bearer token not provided" });
         return;
       }
 
@@ -120,7 +122,7 @@ export class IssuanceController {
         });
         return;
       }
-      
+
       const credential = await IssuanceService.getCredential(parseInt(id));
       const holder = await HolderModel.findHolderByUserId(user.id);
 

@@ -24,6 +24,7 @@ import CreateCredentialComponent from "../components/CreateCredentialComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
 import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
+import { PendingCredentialTypes } from "./PendingCredentialTypes";
 
 const modalStyle = {
   position: "absolute",
@@ -37,7 +38,7 @@ const modalStyle = {
 };
 
 export function IssuerDashboard() {
-  const { user, fetchUserData } = useUser();
+  const { user, fetchUserData, pendingCredentials } = useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
@@ -141,6 +142,7 @@ export function IssuerDashboard() {
           mb: 3,
         }}
       >
+        <PendingCredentialTypes pendingCredentials={pendingCredentials} />
         <Button
           variant="contained"
           color="secondary"
@@ -218,6 +220,7 @@ export function IssuerDashboard() {
               >
                 Credential Name
               </TableCell>
+
               <TableCell
                 sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
               >
