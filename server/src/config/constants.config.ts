@@ -18,6 +18,7 @@ export const SOCKET_EVENTS = {
   CREDENTIAL_CREATION: "credential_creation",
   CREDENTIAL_ISSUANCE: "credential_issued",
   CREDENTIAL_QUEUE_UPDATE: "credential_queue_update",
+  ISSUANCE_QUEUE_UPDATE: "issuance_queue_update",
 };
 
 export const CREDENTIAL_CONTRACT_METHODS = {

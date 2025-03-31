@@ -9,10 +9,9 @@ import { CredentialTypeModel } from "../models/credentialType.model";
 import { institutionCredentialAbi } from "../utils/abi.util";
 import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
-import { HolderModel } from "../models/holder.model";
 import { CredentialIssueModel } from "../models/credentialIssue.model";
 import { credentialQueue } from "./credentialQueue.service";
-
+import { issuanceQueue } from "./issuanceQueue.service";
 export class IssuanceService {
   static async retrieveAddress(email: string) {
     const user = await UserModel.findUserByEmail(email);
@@ -81,27 +80,14 @@ export class IssuanceService {
       );
     }
 
-    const holders = await HolderModel.findByEmails(emails);
+    issuanceQueue.enqueue(
+      credentialType.issuer.user.email,
+      credential_id,
+      credentialType.name,
+      emails
+    );
 
-    if (holders.length === 1) {
-      const holder = holders[0];
-
-      await ChainUtils.issueCredential(
-        credentialType.issuer.user.wallet.privateKey as Address,
-        credentialType.issuer.contract_address as Address,
-        holder.user.wallet.address as Address,
-        credentialType.token_id
-      );
-    } else {
-      await ChainUtils.batchIssueCredential(
-        credentialType.issuer.user.wallet.privateKey as Address,
-        credentialType.issuer.contract_address as Address,
-        holders.map((holder) => holder.user.wallet.address as Address),
-        credentialType.token_id
-      );
-    }
-
-    return holders.map((holder) => holder.user.email);
+    return { status: "pending" };
   }
 
   static async verify(email: string, credentialTypeIds: number[]) {

@@ -7,8 +7,11 @@ import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
 import { ChainUtils } from "../utils/chain.util";
 import { Address } from "viem";
-import { credentialQueue } from "./credentialQueue.service";
-import { QueuedCredentialType } from "./credentialQueue.service";
+import {
+  credentialQueue,
+  QueuedCredentialType,
+} from "./credentialQueue.service";
+import { issuanceQueue, QueuedIssuanceType } from "./issuanceQueue.service";
 import { CredentialType } from "@prisma/client";
 
 interface AuthResponse extends BaseAuthResponse {
@@ -17,6 +20,7 @@ interface AuthResponse extends BaseAuthResponse {
     contract_address: Address;
     credential_types: CredentialType[];
     pending_credential_types?: QueuedCredentialType[];
+    pending_issuances?: QueuedIssuanceType[];
     apiKey?: string;
   };
 }
@@ -143,6 +147,7 @@ export class AuthService {
       }
 
       const pendingCredTypes = credentialQueue.getPendingByEmail(user.email);
+      const pendingIssuances = issuanceQueue.getPendingByEmail(user.email);
 
       return {
         id: user.id,
@@ -159,6 +164,7 @@ export class AuthService {
               contract_address: user.issuer?.contract_address as Address,
               credential_types: user.issuer?.credential_types ?? [],
               pending_credential_types: pendingCredTypes,
+              pending_issuances: pendingIssuances,
               apiKey: user.issuer?.apiKey,
             }
           : undefined,

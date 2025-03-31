@@ -9,6 +9,7 @@ import {
   PendingCredentialType,
   User,
   UserContextType,
+  PendingIssuanceType,
 } from "../utils/user.util";
 import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
@@ -25,6 +26,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const [pendingCredentials, setPendingCredentials] = useState<
     PendingCredentialType[]
+  >([]);
+
+  const [pendingIssuances, setPendingIssuances] = useState<
+    PendingIssuanceType[]
   >([]);
 
   const navigate = useNavigate();
@@ -156,7 +161,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       if (user?.issuer?.credential_types) {
         const filteredData = data.filter((pending: PendingCredentialType) => {
-          const exists = user.issuer.credential_types.some(
+          const exists = user?.issuer?.credential_types.some(
             (existing) => existing.name === pending.title
           );
           return !exists;
@@ -166,6 +171,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       } else {
         setPendingCredentials(data);
       }
+    },
+    [CONSTANTS.SOCKET_EVENTS.ISSUANCE_QUEUE_UPDATE]: (data) => {
+      console.log("Received issuance queue update:", data);
+
+      setPendingIssuances(data);
     },
   };
 
@@ -187,6 +197,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         logout: handleLogout,
         fetchUserData,
         pendingCredentials,
+        pendingIssuances,
       }}
 
     >

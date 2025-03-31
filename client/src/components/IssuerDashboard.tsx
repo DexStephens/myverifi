@@ -25,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import "../styles/style.scss";
 import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
 import { PendingCredentialTypes } from "./PendingCredentialTypes";
+import { PendingIssuances } from "./PendingIssuances";
 
 const modalStyle = {
   position: "absolute",
@@ -38,7 +39,8 @@ const modalStyle = {
 };
 
 export function IssuerDashboard() {
-  const { user, fetchUserData, pendingCredentials } = useUser();
+  const { user, fetchUserData, pendingCredentials, pendingIssuances } =
+    useUser();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [selectedCredentialType, setSelectedCredentialType] = useState<
@@ -159,6 +161,7 @@ export function IssuerDashboard() {
         >
           Issue Credential
         </Button>
+        <PendingIssuances pendingIssuances={pendingIssuances} />
       </Box>
 
       <TextField

@@ -77,7 +77,7 @@ class CredentialTypeQueue {
         });
       }
     } catch (error) {
-      console.error("Error emitting queue update: ", error);
+      console.error("Error emitting credentialqueue update: ", error);
     }
   }
 

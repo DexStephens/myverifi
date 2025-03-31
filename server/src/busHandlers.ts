@@ -64,5 +64,16 @@ export function setupEventBusHandlers(users: Map<Address, Socket>) {
     }
   );
 
+  eventBus.on(
+    SOCKET_EVENTS.ISSUANCE_QUEUE_UPDATE,
+    ({ address, pendingIssuances }) => {
+      const socket = users.get(address);
+
+      if (socket !== undefined) {
+        socket.emit(SOCKET_EVENTS.ISSUANCE_QUEUE_UPDATE, pendingIssuances);
+      }
+    }
+  );
+
   console.log("Event listeners set up!");
 }

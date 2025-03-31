@@ -12,5 +12,6 @@ export const CONSTANTS = {
     CREDENTIAL_ISSUANCE: "credential_issued",
     CONNECTION_ERROR: "connect_error",
     CREDENTIAL_QUEUE_UPDATE: "credential_queue_update",
+    ISSUANCE_QUEUE_UPDATE: "issuance_queue_update",
   },
 };
