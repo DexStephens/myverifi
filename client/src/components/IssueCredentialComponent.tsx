@@ -28,11 +28,11 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 export default function IssueCredential({
   credentialType,
   onClose,
-  onIssue, // Added prop to trigger animation
+  onIssue, // Updated to accept arguments
 }: {
   credentialType: number | null;
   onClose: () => void;
-  onIssue: () => void; // New prop for triggering animation
+  onIssue: (emails: string[], credentialId: number) => void; // Updated to accept arguments
 }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -85,33 +85,6 @@ export default function IssueCredential({
     }
   };
 
-  async function onIssueInstitutionCredential(
-    emails: string[],
-    credential_id: number
-  ) {
-    const data = await issueCredentialType(emails, credential_id);
-
-    if (data.status && Array.isArray(data.issued)) {
-      const successful: string[] = data.issued;
-      const failed = emails.filter((e) => !data.issued.includes(e));
-
-      if (successful.length > 0) {
-        setDisplayMessage(
-          `${
-            successful.length > 1 ? successful.length + " " : ""
-          }Credential(s) Issued`
-        );
-      }
-      if (failed.length > 0) {
-        setError(
-          `${
-            failed.length > 1 ? failed.length + " " : ""
-          }Credential(s) Failed: ${failed.join(", ")}`
-        );
-      }
-    }
-  }
-
   const validateForm = (emails: string[]): boolean => {
     if (selectedCredentialId === null || emails.length === 0) {
       setError("Please fill in all required fields");
@@ -137,7 +110,7 @@ export default function IssueCredential({
     setError(null);
     setDisplayMessage(null);
 
-    const extractedEmails = [];
+    const extractedEmails: string[] = [];
 
     if (file) {
       try {
@@ -167,19 +140,12 @@ export default function IssueCredential({
       setLoading(true);
       setError(null);
       try {
-        await onIssueInstitutionCredential(
-          extractedEmails,
-          selectedCredentialId ?? 0
-        );
+        // Trigger the animation and loading process in the parent component
+        onIssue(extractedEmails, selectedCredentialId ?? 0);
 
         setEmail(null);
         setFile(null);
         setSelectedCredentialId(0);
-
-        // Trigger the animation in the parent component
-        if (onIssue) {
-          onIssue();
-        }
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
