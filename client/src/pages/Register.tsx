@@ -1,5 +1,6 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router";
+import loadingImage from "../../assets/loading.gif"; 
 import {
   Typography,
   Button,
@@ -352,7 +353,7 @@ export default function Register() {
 
           {/* Add the GIF at the top */}
           <img
-            src="../../assets/loading.gif"
+            src={loadingImage}
             alt="Loading Animation"
             style={{
               width: "100%",
