@@ -177,4 +177,26 @@ export class IssuanceService {
   ) {
     return await this.issueCredential([email], credential_id);
   }
+
+  static async getCredentialsApi(email: string) {
+    const user = await UserModel.findUserByEmail(email);
+
+    if (!user) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No user exists for the email: ${email}`
+      );
+    }
+
+    const credentials = await CredentialIssueModel.findNonHiddenCredentialsById(user.holder.id);
+
+    if (!credentials) {
+      throw new ControllerError(
+        ERROR_TITLES.DNE,
+        `No credentials exist for the email: ${email}`
+      );
+    }
+
+    return credentials;
+  }
 }
