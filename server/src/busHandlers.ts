@@ -55,22 +55,14 @@ export function setupEventBusHandlers(users: Map<Address, Socket>) {
 
   eventBus.on(
     SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE,
-    ({ address, pendingCredTypes }) => {
+    ({ address, pendingCredTypes, pendingIssuances }) => {
       const socket = users.get(address);
 
       if (socket !== undefined) {
-        socket.emit(SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE, pendingCredTypes);
-      }
-    }
-  );
-
-  eventBus.on(
-    SOCKET_EVENTS.ISSUANCE_QUEUE_UPDATE,
-    ({ address, pendingIssuances }) => {
-      const socket = users.get(address);
-
-      if (socket !== undefined) {
-        socket.emit(SOCKET_EVENTS.ISSUANCE_QUEUE_UPDATE, pendingIssuances);
+        socket.emit(SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE, {
+          pendingCredTypes,
+          pendingIssuances,
+        });
       }
     }
   );

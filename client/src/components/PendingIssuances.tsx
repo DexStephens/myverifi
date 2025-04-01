@@ -53,11 +53,11 @@ export const PendingIssuances = ({
         onClose={handlePopoverClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "left",
+          horizontal: "right",
         }}
       >
         <Box sx={{ p: 2, maxWidth: 300 }}>

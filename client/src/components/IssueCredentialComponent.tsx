@@ -16,6 +16,7 @@ import {
   Box,
   Alert,
   Tooltip,
+  Snackbar,
 } from "@mui/material";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router";
@@ -43,6 +44,8 @@ export default function IssueCredential({
   >(credentialType);
   const [file, setFile] = useState<File | null>(null);
   const [batch, setBatch] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [credentialName, setCredentialName] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -134,6 +137,11 @@ export default function IssueCredential({
     e.preventDefault();
     setError(null);
     setDisplayMessage(null);
+    setCredentialName(
+      user?.issuer?.credential_types.find(
+        (credential) => credential.id === selectedCredentialId
+      )?.name ?? ""
+    );
 
     const extractedEmails = [];
 
@@ -170,9 +178,10 @@ export default function IssueCredential({
           selectedCredentialId ?? 0
         );
 
-        setEmail(null);
+        setEmail("");
         setFile(null);
         setSelectedCredentialId(0);
+        setShowConfirmation(true);
       } catch (error) {
         console.error("Failed to issue credential:", error);
         setError("Failed to issue credential");
@@ -364,6 +373,27 @@ export default function IssueCredential({
           </form>
         </CardContent>
       </Card>
+      <Snackbar
+        open={showConfirmation}
+        autoHideDuration={2000}
+        onClose={() => setShowConfirmation(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{
+            width: "100%",
+            backgroundColor: "success.main",
+            color: "white",
+            "& .MuiAlert-icon": {
+              color: "white",
+            },
+          }}
+        >
+          {`"Credential: ${credentialName} is being issued. Click on the hourglass to check status.`}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

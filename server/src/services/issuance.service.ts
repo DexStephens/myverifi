@@ -11,7 +11,6 @@ import { IssuerModel } from "../models/issuer.model";
 import { ChainUtils } from "../utils/chain.util";
 import { CredentialIssueModel } from "../models/credentialIssue.model";
 import { credentialQueue } from "./credentialQueue.service";
-import { issuanceQueue } from "./issuanceQueue.service";
 export class IssuanceService {
   static async retrieveAddress(email: string) {
     const user = await UserModel.findUserByEmail(email);
@@ -42,7 +41,7 @@ export class IssuanceService {
       );
     }
 
-    credentialQueue.enqueue(email, title, cid);
+    credentialQueue.enqueueCredentialType(email, title, cid);
 
     return { status: "pending" };
   }
@@ -80,7 +79,7 @@ export class IssuanceService {
       );
     }
 
-    issuanceQueue.enqueue(
+    credentialQueue.enqueueIssuance(
       credentialType.issuer.user.email,
       credential_id,
       credentialType.name,

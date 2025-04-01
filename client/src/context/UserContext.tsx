@@ -42,7 +42,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/auth/user`,
         {
@@ -156,26 +155,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return currentUser;
       });
     },
-    [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: (data) => {
-      console.log("Received credential queue update:", data);
+    [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: ({
+      pendingCredTypes,
+      pendingIssuances,
+    }) => {
+      console.log("Received credential queue update");
 
       if (user?.issuer?.credential_types) {
-        const filteredData = data.filter((pending: PendingCredentialType) => {
-          const exists = user?.issuer?.credential_types.some(
-            (existing) => existing.name === pending.title
-          );
-          return !exists;
-        });
+        const filteredData = pendingCredTypes.filter(
+          (pending: PendingCredentialType) => {
+            const exists = user?.issuer?.credential_types.some(
+              (existing) => existing.name === pending.title
+            );
+            return !exists;
+          }
+        );
 
         setPendingCredentials(filteredData);
+        setPendingIssuances(pendingIssuances);
       } else {
-        setPendingCredentials(data);
+        setPendingCredentials(pendingCredTypes);
+        setPendingIssuances(pendingIssuances);
       }
-    },
-    [CONSTANTS.SOCKET_EVENTS.ISSUANCE_QUEUE_UPDATE]: (data) => {
-      console.log("Received issuance queue update:", data);
-
-      setPendingIssuances(data);
     },
   };
 
@@ -199,7 +200,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         pendingCredentials,
         pendingIssuances,
       }}
-
     >
       {children}
     </UserContext.Provider>
