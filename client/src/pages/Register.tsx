@@ -1,4 +1,4 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {
   Typography,
@@ -14,7 +14,7 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import "../styles/style.scss";
+import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { registerUser } from "../utils/registration.util";
 import { useUser } from "../context/UserContext";
@@ -39,6 +39,39 @@ export default function Register() {
     isOrganization: false,
   });
 
+  // Toast animation states
+  const [showToast, setShowToast] = useState(false);
+  const [currentStatement, setCurrentStatement] = useState(0);
+
+  const statements = [
+    {
+      title: "1. Setting Up Your Digital Identity:",
+      description: "Creating a secure digital account for your institution.",
+    },
+    {
+      title: "2. Building Your Credential System:",
+      description: "Setting up a customized system to issue and manage credentials.",
+    },
+    {
+      title: "3. Ready to Share and Verify:",
+      description: "Your institution is now equipped to issue trusted, verifiable credentials.",
+    },
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (showToast) {
+      interval = setInterval(() => {
+        setCurrentStatement((prev) => (prev + 1) % statements.length);
+      }, 5000); // Rotate every 4 seconds
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [showToast]);
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -52,7 +85,6 @@ export default function Register() {
     }));
   };
 
-  // Validate form fields
   const validateForm = (): boolean => {
     const newErrors: Record<keyof RegistrationFormData, boolean> = {
       email: !formData.email,
@@ -74,6 +106,7 @@ export default function Register() {
     if (validateForm()) {
       setLoading(true);
       setError(null);
+      setShowToast(true); // Start the toast animation immediately
       try {
         const response = await registerUser(
           formData.email,
@@ -85,13 +118,18 @@ export default function Register() {
         if (response.status) {
           console.log("Registration successful:", response.user);
           sessionStorage.setItem("token", response.user.token);
+
+          // Close the toast and navigate to the dashboard after registration
+          setShowToast(false);
           navigate("/dashboard");
         } else {
           setError(response.error || "Registration failed");
+          setShowToast(false); // Stop the toast if registration fails
         }
       } catch (error) {
         console.error("Registration failed:", error);
         setError("An unexpected error occurred");
+        setShowToast(false); // Stop the toast if registration fails
       } finally {
         setLoading(false);
       }
@@ -102,7 +140,11 @@ export default function Register() {
     navigate("/login");
   };
 
-  // State for validation errors
+  const handleCloseToast = () => {
+    setShowToast(false); // Close the toast early
+    navigate("/dashboard");
+  };
+
   const [errors, setErrors] = useState<
     Record<keyof RegistrationFormData, boolean>
   >({
@@ -275,6 +317,46 @@ export default function Register() {
           </Card>
         </Box>
       </Container>
+
+      // Toast Animation
+      {showToast && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "#EAEAE0", // Cream color from your theme
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: 3,
+            textAlign: "center",
+            zIndex: 1300,
+            width: "90%",
+            maxWidth: "400px",
+          }}
+        >
+          <IconButton
+            onClick={handleCloseToast}
+            size="small"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              color: "gray",
+              "&:hover": { color: "error.main" },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+            {statements[currentStatement].title}
+          </Typography>
+          <Typography variant="body1" sx={{ color: "gray" }}>
+            {statements[currentStatement].description}
+          </Typography>
+        </Box>
+      )}
     </div>
   );
 }
