@@ -318,7 +318,7 @@ export default function Register() {
         </Box>
       </Container>
 
-      // Toast Animation
+      {/* Toast animation */}
       {showToast && (
         <Box
           sx={{
@@ -326,7 +326,7 @@ export default function Register() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            backgroundColor: "#EAEAE0", // Cream color from your theme
+            backgroundColor: "#EAEAE0",
             padding: "20px",
             borderRadius: "8px",
             boxShadow: 3,
@@ -349,6 +349,18 @@ export default function Register() {
           >
             <CloseIcon />
           </IconButton>
+
+          {/* Add the GIF at the top */}
+          <img
+            src="../../assets/loading.gif"
+            alt="Loading Animation"
+            style={{
+              width: "100%",
+              maxWidth: "200px", // Adjust the size of the GIF
+              marginBottom: "16px", // Add spacing below the GIF
+            }}
+          />
+
           <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
             {statements[currentStatement].title}
           </Typography>
