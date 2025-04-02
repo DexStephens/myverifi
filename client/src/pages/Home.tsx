@@ -1,9 +1,4 @@
-import {
-  Typography,
-  Stack,
-  Divider,
-} from "@mui/material";
-
+import { Typography, Stack, Divider } from "@mui/material";
 import HomeSection from "../components/HomeSection";
 import "../styles/style.scss";
 import TeamComponent from "../components/Homepage/TeamComponent";
@@ -12,7 +7,6 @@ import InfoComponent from "../components/Homepage/InfoComponent";
 import AboutUsComponent from "../components/Homepage/AboutUsComponent";
 
 export default function Home() {
-
   return (
     <div className="home-wrapper">
       <HomeSection sx={{ my: 2 }}>
@@ -23,11 +17,11 @@ export default function Home() {
         <InfoComponent />
       </HomeSection>
 
-      <HomeSection sx={{ my: 2 }}>
+      <HomeSection id="about" sx={{ my: 2 }}>
         <AboutUsComponent />
       </HomeSection>
 
-      <HomeSection sx={{ my: 2}}>
+      <HomeSection sx={{ my: 2 }}>
         <TeamComponent />
       </HomeSection>
 
@@ -43,7 +37,7 @@ export default function Home() {
           gutterBottom
           color="primary"
         >
-          Contact Us to do liquidity provisioning or to purchase KASPA
+          Contact Us to Learn More
         </Typography>
       </Stack>
     </div>

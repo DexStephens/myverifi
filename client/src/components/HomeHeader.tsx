@@ -20,7 +20,6 @@ export default function HomeHeader() {
   };
 
   return (
-    // <AppBar position="sticky" color="success" elevation={3}>
     <>
       <Toolbar
         sx={{
@@ -28,11 +27,36 @@ export default function HomeHeader() {
           px: 2,
         }}
       >
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Typography variant="h6" component="div" color="primary">
-            myverifi
-          </Typography>
-        </Link>
+        <Stack direction="row" spacing={3}>
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <Typography variant="h6" component="div" color="primary">
+              myverifi
+            </Typography>
+          </Link>
+          {window.location.pathname === "/" ? (
+            <Button
+              onClick={() => {
+                if (window.location.pathname !== "/") {
+                  navigate("/", { state: { scrollToAbout: true } });
+                } else {
+                  const element = document.getElementById("about");
+                  element?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              sx={{
+                textTransform: "none",
+                color: "primary.main",
+                "&:hover": {
+                  background: "none",
+                },
+              }}
+            >
+              <Typography variant="subtitle2">About Us</Typography>
+            </Button>
+          ) : (
+            <></>
+          )}
+        </Stack>
         <Box>
           {user ? (
             <Stack
@@ -103,6 +127,5 @@ export default function HomeHeader() {
         sx={{ border: "1px solid rgba(28, 70, 112, 0.4)" }}
       />
     </>
-    // </AppBar>
   );
 }
