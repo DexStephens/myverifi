@@ -13,6 +13,7 @@ export default function HomeHeader() {
   const { user, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = window.innerWidth <= 768;
 
   const handleLogout = async () => {
     logout();
@@ -42,14 +43,16 @@ export default function HomeHeader() {
               justifyContent={"flex-end"}
               pb={1}
             >
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "primary.main",
-                }}
-              >
-                Welcome, {user.issuer?.name || user.email}
-              </Typography>
+              {!isMobile && (
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    color: "primary.main",
+                  }}
+                >
+                  Welcome, {user.issuer?.name || user.email}
+                </Typography>
+              )}
               {location.pathname !== "/dashboard" && (
                 <Button
                   onClick={() => navigate("/dashboard")}

@@ -59,7 +59,7 @@ export function CredentialIssueCard({
           credentialIssue.credential_type.issuer.contract_address
         }
       />
-      <Card sx={{ minWidth: 375, display: "flex", flexDirection: "column" }}>
+      <Card sx={{ display: "flex", flexDirection: "column" }}>
         <CardContent sx={{ flexGrow: 1 }}>
           <Typography gutterBottom sx={{ color: "white" }}>
             {credentialIssue.credential_type.issuer.name}
