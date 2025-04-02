@@ -120,7 +120,7 @@ print(response.json())`,
           For Issuers
         </Typography>
         <List>
-          <ListItem>
+          <ListItem style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="GET /api/listCredentials"
               secondary="Fetch a list of all credentials."
@@ -128,7 +128,7 @@ print(response.json())`,
             />
           </ListItem>
           <Divider />
-          <ListItem>
+          <ListItem style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="POST /api/createCredential"
               secondary="Create a new credential with a title and attributes."
@@ -160,7 +160,7 @@ print(response.json())`,
             />
           </ListItem>
           <Divider />
-          <ListItem>
+          <ListItem style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="POST /api/issue"
               secondary="Issue a credential to a user by email."

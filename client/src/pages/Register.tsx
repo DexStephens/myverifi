@@ -1,6 +1,6 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router";
-import loadingImage from "../../assets/loading.gif"; 
+import loadingImage from "../../assets/loading.gif";
 import {
   Typography,
   Button,
@@ -51,11 +51,13 @@ export default function Register() {
     },
     {
       title: "2. Building Your Credential System:",
-      description: "Setting up a customized system to issue and manage credentials.",
+      description:
+        "Setting up a customized system to issue and manage credentials.",
     },
     {
       title: "3. Ready to Share and Verify:",
-      description: "Your institution is now equipped to issue trusted, verifiable credentials.",
+      description:
+        "Your institution is now equipped to issue trusted, verifiable credentials.",
     },
   ];
 
@@ -266,6 +268,7 @@ export default function Register() {
                     justifyContent: "center",
                     gap: 2,
                     mt: 4,
+                    flexWrap: "wrap",
                   }}
                 >
                   <Typography

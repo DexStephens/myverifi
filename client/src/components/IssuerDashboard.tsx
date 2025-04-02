@@ -368,7 +368,14 @@ export function IssuerDashboard() {
 
         {/* API Key Display/Regeneration Section */}
         {(apiKey && !hasApiKeyBeenShown) || hasApiKeyBeenShown ? (
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <TextField
               type={showApiKey ? "text" : "password"}
               value={apiKey}

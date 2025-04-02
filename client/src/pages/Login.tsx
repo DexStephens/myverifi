@@ -117,6 +117,7 @@ export default function Login() {
                     justifyContent: "center",
                     gap: 2,
                     mt: 3,
+                    flexWrap: "wrap",
                   }}
                 >
                   <Typography

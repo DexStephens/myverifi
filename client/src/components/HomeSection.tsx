@@ -5,6 +5,9 @@ export default function HomeSection({ children, sx, ...props }: BoxProps) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    const threshold = isMobile ? 0.1 : 0.33;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -14,7 +17,7 @@ export default function HomeSection({ children, sx, ...props }: BoxProps) {
         }
       },
       {
-        threshold: 0.33,
+        threshold,
       }
     );
 
