@@ -53,4 +53,27 @@ export class CredentialIssueModel {
       data: { hidden },
     });
   }
+
+  static async findNonHiddenCredentialsById(
+    holder_id: number
+  ): Promise<CredentialIssue[]> {
+    return prisma.credentialIssue.findMany({
+      where: {
+        holder_id,
+        hidden: false,
+      },
+      include: {
+        credential_type: {
+          include: {
+            issuer: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }  
 }
