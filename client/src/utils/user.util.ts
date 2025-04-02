@@ -36,6 +36,14 @@ export type CredentialIssue = {
   hidden: boolean;
 };
 
+export interface PendingIssuanceType {
+  credential_name: string;
+  holder_emails: string[];
+  status: "pending" | "processing" | "completed" | "failed";
+  addedAt: Date;
+  error?: string;
+}
+
 type Holder = {
   credential_issues: CredentialIssue[];
 };
@@ -54,4 +62,5 @@ export interface UserContextType {
   logout: () => void;
   fetchUserData: () => Promise<void>;
   pendingCredentials: PendingCredentialType[];
+  pendingIssuances: PendingIssuanceType[];
 }

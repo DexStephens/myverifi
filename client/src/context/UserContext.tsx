@@ -9,6 +9,7 @@ import {
   PendingCredentialType,
   User,
   UserContextType,
+  PendingIssuanceType,
 } from "../utils/user.util";
 import { useNavigate } from "react-router";
 import { useSocket } from "../hooks/useSocket";
@@ -27,6 +28,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     PendingCredentialType[]
   >([]);
 
+  const [pendingIssuances, setPendingIssuances] = useState<
+    PendingIssuanceType[]
+  >([]);
+
   const navigate = useNavigate();
 
   const fetchUserData = async (): Promise<void> => {
@@ -36,7 +41,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setUser(null);
         return;
       }
-
 
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/auth/user`,
@@ -151,20 +155,27 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return currentUser;
       });
     },
-    [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: (data) => {
-      console.log("Received credential queue update:", data);
+    [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: ({
+      pendingCredTypes,
+      pendingIssuances,
+    }) => {
+      console.log("Received credential queue update");
 
       if (user?.issuer?.credential_types) {
-        const filteredData = data.filter((pending: PendingCredentialType) => {
-          const exists = user.issuer.credential_types.some(
-            (existing) => existing.name === pending.title
-          );
-          return !exists;
-        });
+        const filteredData = pendingCredTypes.filter(
+          (pending: PendingCredentialType) => {
+            const exists = user?.issuer?.credential_types.some(
+              (existing) => existing.name === pending.title
+            );
+            return !exists;
+          }
+        );
 
         setPendingCredentials(filteredData);
+        setPendingIssuances(pendingIssuances);
       } else {
-        setPendingCredentials(data);
+        setPendingCredentials(pendingCredTypes);
+        setPendingIssuances(pendingIssuances);
       }
     },
   };
@@ -187,8 +198,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         logout: handleLogout,
         fetchUserData,
         pendingCredentials,
+        pendingIssuances,
       }}
-
     >
       {children}
     </UserContext.Provider>

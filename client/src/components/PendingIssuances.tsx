@@ -10,15 +10,15 @@ import {
 } from "@mui/material";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { useState } from "react";
-import { PendingCredentialType } from "../utils/user.util";
+import { PendingIssuanceType } from "../utils/user.util";
 
-interface PendingCredentialTypesProps {
-  pendingCredentials: PendingCredentialType[];
+interface PendingIssuancesProps {
+  pendingIssuances: PendingIssuanceType[];
 }
 
-export const PendingCredentialTypes = ({
-  pendingCredentials,
-}: PendingCredentialTypesProps) => {
+export const PendingIssuances = ({
+  pendingIssuances,
+}: PendingIssuancesProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleHourglassClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -31,7 +31,7 @@ export const PendingCredentialTypes = ({
 
   const open = Boolean(anchorEl);
 
-  if (pendingCredentials.length === 0) return null;
+  if (pendingIssuances.length === 0) return null;
 
   return (
     <>
@@ -42,7 +42,7 @@ export const PendingCredentialTypes = ({
           "&:hover": { color: "warning.dark" },
         }}
       >
-        <Badge badgeContent={pendingCredentials.length} color="warning">
+        <Badge badgeContent={pendingIssuances.length} color="warning">
           <HourglassEmptyIcon />
         </Badge>
       </IconButton>
@@ -53,23 +53,27 @@ export const PendingCredentialTypes = ({
         onClose={handlePopoverClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "left",
+          horizontal: "right",
         }}
       >
         <Box sx={{ p: 2, maxWidth: 300 }}>
           <Typography variant="h6" sx={{ mb: 1, color: "white" }}>
-            Pending Credentials
+            Pending Issuances
           </Typography>
           <List dense>
-            {pendingCredentials.map((cred, index) => (
+            {pendingIssuances.map((issuance, index) => (
               <ListItem key={index}>
                 <ListItemText
-                  primary={cred.title}
-                  secondary={`Status: ${cred.status}`}
+                  primary={
+                    issuance.holder_emails.length > 1
+                      ? `Batch Issue of ${issuance.credential_name}`
+                      : `${issuance.credential_name} to ${issuance.holder_emails[0]}`
+                  }
+                  secondary={`Status: ${issuance.status}`}
                   primaryTypographyProps={{
                     sx: { color: "white" },
                   }}

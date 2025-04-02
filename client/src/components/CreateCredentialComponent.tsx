@@ -28,8 +28,6 @@ interface CredentialDetail {
 
 export default function CreateCredential({ onClose }: { onClose: () => void }) {
   const [credentialName, setCredentialName] = useState("");
-  //I couldn't get this to work, I think it goes too fast through so frontend thinks it's done before the actual transaction goes through
-  //Maybe there's some way to once length of credential_types is increased by 1, then the button goes back to create credential and not submitting
   const [isCreating, setIsCreating] = useState(false);
   const [credentialDetails, setCredentialDetails] = useState<
     CredentialDetail[]
@@ -256,7 +254,6 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
         </Card>
       </Container>
 
-      {/* Add Snackbar for confirmation */}
       <Snackbar
         open={showConfirmation}
         autoHideDuration={2000}
@@ -275,7 +272,7 @@ export default function CreateCredential({ onClose }: { onClose: () => void }) {
             },
           }}
         >
-          {`"${submittedName}" is being created. Click on the hourglass to see status.`}
+          {`"${submittedName}" is being created. Click on the hourglass to check status.`}
         </Alert>
       </Snackbar>
     </>

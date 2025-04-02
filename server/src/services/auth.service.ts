@@ -7,8 +7,11 @@ import { ControllerError } from "../utils/error.util";
 import { ERROR_TITLES } from "../config/constants.config";
 import { ChainUtils } from "../utils/chain.util";
 import { Address } from "viem";
-import { credentialQueue } from "./credentialQueue.service";
-import { QueuedCredentialType } from "./credentialQueue.service";
+import {
+  credentialQueue,
+  QueuedCredentialType,
+  QueuedIssuanceType,
+} from "./credentialQueue.service";
 import { CredentialType } from "@prisma/client";
 
 interface AuthResponse extends BaseAuthResponse {
@@ -17,6 +20,7 @@ interface AuthResponse extends BaseAuthResponse {
     contract_address: Address;
     credential_types: CredentialType[];
     pending_credential_types?: QueuedCredentialType[];
+    pending_issuances?: QueuedIssuanceType[];
     apiKey?: string;
   };
 }
@@ -142,7 +146,7 @@ export class AuthService {
         throw new ControllerError(ERROR_TITLES.DNE, "User not found");
       }
 
-      const pendingCredTypes = credentialQueue.getPendingByEmail(user.email);
+      const pendingQueueItems = credentialQueue.getPendingByEmail(user.email);
 
       return {
         id: user.id,
@@ -158,7 +162,8 @@ export class AuthService {
               name: user.issuer?.name,
               contract_address: user.issuer?.contract_address as Address,
               credential_types: user.issuer?.credential_types ?? [],
-              pending_credential_types: pendingCredTypes,
+              pending_credential_types: pendingQueueItems.pendingCredTypes,
+              pending_issuances: pendingQueueItems.pendingIssuances,
               apiKey: user.issuer?.apiKey,
             }
           : undefined,
