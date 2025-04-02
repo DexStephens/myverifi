@@ -166,9 +166,29 @@ export default function VerifyCredentials() {
                   }}
                 >
                   <div style={{ flexGrow: 1 }}>
-                    <Typography align="center" color="white">
-                      Credential #{idx + 1}
-                    </Typography>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography align="center" color="white">
+                        Credential #{idx + 1}
+                      </Typography>
+                      {idx !== 0 && (
+                        <IconButton
+                          color="error"
+                          onClick={() =>
+                            setCredentials((current) =>
+                              current.filter((_, i) => i !== idx)
+                            )
+                          }
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </div>
                     <Box mb={2}>
                       <Autocomplete
                         disablePortal
@@ -191,8 +211,7 @@ export default function VerifyCredentials() {
                                     issuerId:
                                       newValue !== null
                                         ? (issuers.find(
-                                            (issuer) =>
-                                              issuer.name === newValue
+                                            (issuer) => issuer.name === newValue
                                           )?.id as number)
                                         : -1,
                                   }
@@ -247,18 +266,6 @@ export default function VerifyCredentials() {
                       />
                     </Box>
                   </div>
-                  {idx !== 0 && (
-                    <IconButton
-                      color="error"
-                      onClick={() =>
-                        setCredentials((current) =>
-                          current.filter((_, i) => i !== idx)
-                        )
-                      }
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
                 </div>
               ))}
               <Button

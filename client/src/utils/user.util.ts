@@ -14,7 +14,7 @@ interface Wallet {
   address: string;
 }
 
-type CredentialType = {
+export type CredentialType = {
   id: number;
   name: string;
   token_id: string; // Needs to be converted to bigint

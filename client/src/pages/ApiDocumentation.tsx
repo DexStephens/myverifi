@@ -58,7 +58,6 @@ print(response.json())`,
     overflow: "auto",
     whiteSpace: "pre-wrap",
     maxHeight: 300,
-    width: "330px",
     marginLeft: "auto",
   };
 
@@ -139,7 +138,7 @@ print(response.json())`,
           For Issuers:
         </Typography>
         <List>
-          <ListItem>
+          <ListItem style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="GET /api/listCredentials"
               secondary="Fetch a list of all credentials."
@@ -147,7 +146,7 @@ print(response.json())`,
             />
           </ListItem>
           <Divider sx={{ bgcolor: "white" }} />
-          <ListItem sx={listItemStyle}>
+          <ListItem sx={listItemStyle} style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="POST /api/createCredential"
               secondary="Create a new credential with a title and attributes."
@@ -155,7 +154,11 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box component="pre" sx={exampleJsonBoxStyle}>
+                <Box
+                  component="pre"
+                  sx={exampleJsonBoxStyle}
+                  className="api-json-box"
+                >
                   {`{
  "title": "My New Credential",
  "attributes": {
@@ -168,7 +171,7 @@ print(response.json())`,
             />
           </ListItem>
           <Divider sx={{ bgcolor: "white" }} />
-          <ListItem sx={listItemStyle}>
+          <ListItem sx={listItemStyle} style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="POST /api/issue"
               secondary="Issue a credential to a user by email."
@@ -176,7 +179,11 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box component="pre" sx={exampleJsonBoxStyle}>
+                <Box
+                  component="pre"
+                  sx={exampleJsonBoxStyle}
+                  className="api-json-box"
+                >
                   {`{
  "email": "test@gmail.com",
   "credentialId": 123456
@@ -191,7 +198,7 @@ print(response.json())`,
           For Verifiers:
         </Typography>
         <List>
-          <ListItem sx={listItemStyle}>
+          <ListItem sx={listItemStyle} style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="POST /api/credentials"
               secondary="Retrieve a list of credentials for a user by email."
@@ -199,7 +206,11 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box component="pre" sx={exampleJsonBoxStyle}>
+                <Box
+                  component="pre"
+                  sx={exampleJsonBoxStyle}
+                  className="api-json-box"
+                >
                   {`{
  "email": "test@gmail.com"
  }`}

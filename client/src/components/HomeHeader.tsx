@@ -6,12 +6,14 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 
 export default function HomeHeader() {
   const { user, logout } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMobile = window.innerWidth <= 768;
 
   const handleLogout = async () => {
     logout();
@@ -57,25 +59,37 @@ export default function HomeHeader() {
         </Stack>
         <Box>
           {user ? (
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "primary.main",
-                }}
-              >
-                Welcome, {user.issuer?.name || user.email}
-              </Typography>
-              <Button
-                onClick={() => navigate("/dashboard")}
-                variant="contained"
-                color="secondary"
-                sx={{
-                  "&:hover": { backgroundColor: "#4CAF50", color: "white" },
-                }}
-              >
-                Dashboard
-              </Button>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              flexWrap={"wrap"}
+              justifyContent={"flex-end"}
+              pb={1}
+            >
+              {!isMobile && (
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    color: "primary.main",
+                  }}
+                >
+                  Welcome, {user.issuer?.name || user.email}
+                </Typography>
+              )}
+              {location.pathname !== "/dashboard" && (
+                <Button
+                  onClick={() => navigate("/dashboard")}
+                  variant="contained"
+                  color="secondary"
+                  sx={{
+                    "&:hover": { backgroundColor: "#4CAF50", color: "white" },
+                  }}
+                  size="small"
+                >
+                  Dashboard
+                </Button>
+              )}
               <Button
                 onClick={handleLogout}
                 variant="contained"
@@ -85,6 +99,7 @@ export default function HomeHeader() {
                     backgroundColor: "error.main",
                   },
                 }}
+                size="small"
               >
                 Logout
               </Button>

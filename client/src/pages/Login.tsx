@@ -16,7 +16,7 @@ import "../styles/style.scss";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,6 +56,11 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  // Don't allow logged in users to access the login page
+  if (user) {
+    navigate("/dashboard");
+  }
 
   return (
     <div className="home-wrapper">
@@ -117,6 +122,7 @@ export default function Login() {
                     justifyContent: "center",
                     gap: 2,
                     mt: 3,
+                    flexWrap: "wrap",
                   }}
                 >
                   <Typography
