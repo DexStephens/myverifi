@@ -26,6 +26,8 @@ import "../styles/style.scss";
 import { generateApiKey, revokeApiKey } from "../utils/apikey.util";
 import { PendingCredentialTypes } from "./PendingCredentialTypes";
 import { PendingIssuances } from "./PendingIssuances";
+import { IssuerCredentialRow } from "./IssuerCredentialRow";
+import { Address } from "viem";
 
 const modalStyle = {
   position: "absolute",
@@ -65,10 +67,6 @@ export function IssuerDashboard() {
   const handleIssueCredential = (credentialType: number | null) => {
     setSelectedCredentialType(credentialType);
     setOpenIssueModal(true);
-  };
-
-  const handleEdit = (credentialType: string) => {
-    console.log(`Edit credential type: ${credentialType}`);
   };
 
   const handleClearSearch = () => {
@@ -227,7 +225,7 @@ export function IssuerDashboard() {
               <TableCell
                 sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
               >
-                Edit
+                Details
               </TableCell>
               <TableCell
                 sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
@@ -238,37 +236,14 @@ export function IssuerDashboard() {
           </TableHead>
           <TableBody>
             {paginatedCredentials?.map((type, index) => (
-              <TableRow key={index}>
-                <TableCell sx={{ color: "white", textAlign: "left" }}>
-                  {type.name}
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleEdit(type.name)}
-                    sx={{
-                      "&:hover": { backgroundColor: "success.main" },
-                      display: "inline-block",
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => handleIssueCredential(type.id)}
-                    sx={{
-                      color: "white",
-                      display: "inline-block",
-                    }}
-                  >
-                    Issue
-                  </Button>
-                </TableCell>
-              </TableRow>
+              <IssuerCredentialRow
+                key={index}
+                type={type}
+                contractAddress={
+                  user?.issuer?.contract_address ?? ("" as Address)
+                }
+                handleIssueCredential={handleIssueCredential}
+              />
             ))}
           </TableBody>
         </Table>
