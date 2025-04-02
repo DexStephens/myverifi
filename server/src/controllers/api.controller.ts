@@ -68,4 +68,20 @@ export class ApiController {
             next(e);
         }
     }
+
+    static async getCredentials(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { email } = req.body;
+
+            if (!email) {
+                res.status(400).json({ error: "Email is required" });
+                return;
+            }
+
+            const credentials = await IssuanceService.getCredentialsApi(email);
+            res.json({ status: "success", credentials });
+        } catch (e) {
+            next(e);
+        }
+    }
 };

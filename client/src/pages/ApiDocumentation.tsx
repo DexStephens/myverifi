@@ -29,10 +29,10 @@ export default function ApiDocumentation() {
   };
 
   const codeExamples: Record<typeof codeLang, string> = {
-    curl: `curl -X GET https://myverifi.com/api/listCredentials \\
+    curl: `curl -X GET https://myverifi.org:3000/api/listCredentials \\
   -H "Authorization: Bearer YOUR_API_KEY"`,
 
-    javascript: `fetch("https://myverifi.com/api/listCredentials", {
+    javascript: `fetch("https://myverifi.org:3000/api/listCredentials", {
   headers: {
     "Authorization": "Bearer YOUR_API_KEY"
   }
@@ -46,7 +46,7 @@ headers = {
   "Authorization": "Bearer YOUR_API_KEY"
 }
 
-response = requests.get("https://myverifi.com/api/listCredentials", headers=headers)
+response = requests.get("https://myverifi.org:3000/api/listCredentials", headers=headers)
 print(response.json())`,
   };
 
@@ -190,18 +190,38 @@ print(response.json())`,
           </ListItem>
         </List>
 
-        {/* <Typography variant="h6" sx={{ mt: 4 }}>
+        <Typography variant="h6" sx={{ mt: 4 }}>
           For Verifiers
         </Typography>
         <List>
           <ListItem>
             <ListItemText
-              primary="GET /api/credentials/:id"
-              secondary="Retrieve a specific credential by ID for verification."
+              primary="POST /api/credentials"
+              secondary="Retrieve a list of credentials for a user by email."
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
+            <ListItemText
+              secondary={
+                <Box
+                  component="pre"
+                  sx={{
+                    bgcolor: "#f5f5f5",
+                    p: 2,
+                    borderRadius: 1,
+                    color: "black",
+                    overflow: "auto",
+                    whiteSpace: "pre-wrap",
+                    maxHeight: 300,
+                  }}
+                >
+                  {`{
+ "email": "test@gmail.com"
+ }`}
+                </Box>
+              }
+            />
           </ListItem>
-        </List> */}
+        </List>
       </Paper>
 
       {/* Example Request */}
