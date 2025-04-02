@@ -50,6 +50,25 @@ response = requests.get("https://myverifi.org:3000/api/listCredentials", headers
 print(response.json())`,
   };
 
+  const exampleJsonBoxStyle = {
+    bgcolor: "white",
+    p: 2,
+    borderRadius: 1,
+    color: "black",
+    overflow: "auto",
+    whiteSpace: "pre-wrap",
+    maxHeight: 300,
+    width: "330px",
+    marginLeft: "auto",
+  };
+
+  const listItemStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 2,
+    pr: 2,
+  };
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom color="primary">
@@ -59,7 +78,7 @@ print(response.json())`,
       {/* Overview */}
       <Paper elevation={3} sx={{ p: 3, mb: 4, color: "white" }}>
         <Typography variant="h5" gutterBottom>
-          Overview
+          Overview:
         </Typography>
         <Typography>
           Our API allows you to manage credentials programmatically. You can
@@ -70,7 +89,7 @@ print(response.json())`,
       {/* Authentication */}
       <Paper elevation={3} sx={{ p: 3, mb: 4, color: "white" }}>
         <Typography variant="h5" gutterBottom>
-          Authentication
+          Authentication:
         </Typography>
         <Typography>
           All API requests require an API key. Include your API key in the
@@ -113,11 +132,11 @@ print(response.json())`,
       {/* Endpoints */}
       <Paper elevation={3} sx={{ p: 3, mb: 4, color: "white" }}>
         <Typography variant="h5" gutterBottom>
-          Endpoints
+          Endpoints:
         </Typography>
 
         <Typography variant="h6" sx={{ mt: 2 }}>
-          For Issuers
+          For Issuers:
         </Typography>
         <List>
           <ListItem>
@@ -127,8 +146,8 @@ print(response.json())`,
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
           </ListItem>
-          <Divider />
-          <ListItem>
+          <Divider sx={{ bgcolor: "white" }} />
+          <ListItem sx={listItemStyle}>
             <ListItemText
               primary="POST /api/createCredential"
               secondary="Create a new credential with a title and attributes."
@@ -136,18 +155,7 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box
-                  component="pre"
-                  sx={{
-                    bgcolor: "#f5f5f5",
-                    p: 2,
-                    borderRadius: 1,
-                    color: "black",
-                    overflow: "auto",
-                    whiteSpace: "pre-wrap",
-                    maxHeight: 300,
-                  }}
-                >
+                <Box component="pre" sx={exampleJsonBoxStyle}>
                   {`{
  "title": "My New Credential",
  "attributes": {
@@ -159,8 +167,8 @@ print(response.json())`,
               }
             />
           </ListItem>
-          <Divider />
-          <ListItem>
+          <Divider sx={{ bgcolor: "white" }} />
+          <ListItem sx={listItemStyle}>
             <ListItemText
               primary="POST /api/issue"
               secondary="Issue a credential to a user by email."
@@ -168,18 +176,7 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box
-                  component="pre"
-                  sx={{
-                    bgcolor: "#f5f5f5",
-                    p: 2,
-                    borderRadius: 1,
-                    color: "black",
-                    overflow: "auto",
-                    whiteSpace: "pre-wrap",
-                    maxHeight: 300,
-                  }}
-                >
+                <Box component="pre" sx={exampleJsonBoxStyle}>
                   {`{
  "email": "test@gmail.com",
   "credentialId": 123456
@@ -189,12 +186,12 @@ print(response.json())`,
             />
           </ListItem>
         </List>
-
+        <Divider sx={{ bgcolor: "white" }} />
         <Typography variant="h6" sx={{ mt: 4 }}>
-          For Verifiers
+          For Verifiers:
         </Typography>
         <List>
-          <ListItem>
+          <ListItem sx={listItemStyle}>
             <ListItemText
               primary="POST /api/credentials"
               secondary="Retrieve a list of credentials for a user by email."
@@ -202,18 +199,7 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box
-                  component="pre"
-                  sx={{
-                    bgcolor: "#f5f5f5",
-                    p: 2,
-                    borderRadius: 1,
-                    color: "black",
-                    overflow: "auto",
-                    whiteSpace: "pre-wrap",
-                    maxHeight: 300,
-                  }}
-                >
+                <Box component="pre" sx={exampleJsonBoxStyle}>
                   {`{
  "email": "test@gmail.com"
  }`}

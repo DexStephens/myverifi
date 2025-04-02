@@ -317,8 +317,14 @@ export function IssuerDashboard() {
       </Modal>
 
       {/* API Management Section */}
-      <Box sx={{ mt: 5, p: 3, border: "1px solid #ccc", borderRadius: "8px" }}>
-        <Typography variant="h5" component="h2" gutterBottom>
+      <Box sx={{ mt: 5, p: 3, border: "2px solid #ccc", borderRadius: "8px" }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          color="primary"
+          fontWeight={500}
+        >
           API Management
         </Typography>
 
@@ -394,6 +400,7 @@ export function IssuerDashboard() {
           <Button
             variant="contained"
             color="secondary"
+            sx={{ "&:hover": { backgroundColor: "success.main" } }}
             onClick={handleGenerateApiKey}
           >
             Generate API Key
