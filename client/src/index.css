@@ -29,3 +29,14 @@ body {
   padding: 0;
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
+
+.api-json-box {
+  min-width: 30vw;
+  width: auto;
+}
+
+@media (min-width: 768px) {
+  .api-json-box {
+    width: 330px;
+  }
+}

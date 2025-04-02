@@ -58,7 +58,6 @@ print(response.json())`,
     overflow: "auto",
     whiteSpace: "pre-wrap",
     maxHeight: 300,
-    width: "330px",
     marginLeft: "auto",
   };
 
@@ -155,7 +154,11 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box component="pre" sx={exampleJsonBoxStyle}>
+                <Box
+                  component="pre"
+                  sx={exampleJsonBoxStyle}
+                  className="api-json-box"
+                >
                   {`{
  "title": "My New Credential",
  "attributes": {
@@ -176,7 +179,11 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box component="pre" sx={exampleJsonBoxStyle}>
+                <Box
+                  component="pre"
+                  sx={exampleJsonBoxStyle}
+                  className="api-json-box"
+                >
                   {`{
  "email": "test@gmail.com",
   "credentialId": 123456
@@ -199,7 +206,11 @@ print(response.json())`,
             />
             <ListItemText
               secondary={
-                <Box component="pre" sx={exampleJsonBoxStyle}>
+                <Box
+                  component="pre"
+                  sx={exampleJsonBoxStyle}
+                  className="api-json-box"
+                >
                   {`{
  "email": "test@gmail.com"
  }`}
