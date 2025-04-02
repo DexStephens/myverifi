@@ -194,7 +194,7 @@ print(response.json())`,
           For Verifiers
         </Typography>
         <List>
-          <ListItem>
+          <ListItem style={{ flexWrap: "wrap" }}>
             <ListItemText
               primary="POST /api/credentials"
               secondary="Retrieve a list of credentials for a user by email."

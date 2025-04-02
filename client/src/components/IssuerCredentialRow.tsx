@@ -3,6 +3,8 @@ import { Address } from "viem";
 import { ViewCredentialDetailsModal } from "./ViewCredentialDetailsModal";
 import { CredentialType } from "../utils/user.util";
 import { useState } from "react";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import PageviewRoundedIcon from "@mui/icons-material/PageviewRounded";
 
 export function IssuerCredentialRow({
   type,
@@ -34,10 +36,9 @@ export function IssuerCredentialRow({
           onClick={() => setViewDetails(true)}
           sx={{
             "&:hover": { backgroundColor: "success.main" },
-            display: "inline-block",
           }}
         >
-          Details
+          <PageviewRoundedIcon />
         </Button>
       </TableCell>
       <TableCell align="center">
@@ -47,10 +48,9 @@ export function IssuerCredentialRow({
           onClick={() => handleIssueCredential(type.id)}
           sx={{
             color: "white",
-            display: "inline-block",
           }}
         >
-          Issue
+          <SendRoundedIcon />
         </Button>
       </TableCell>
     </TableRow>
