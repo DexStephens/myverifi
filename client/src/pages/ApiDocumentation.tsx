@@ -171,7 +171,7 @@ print(response.json())`,
           <ListItem sx={listItemStyle}>
             <ListItemText
               primary="POST /api/issue"
-              secondary="Issue a credential to a user by email.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+              secondary="Issue a credential to a user by email."
               secondaryTypographyProps={{ sx: { color: "white" } }}
             />
             <ListItemText
@@ -186,7 +186,7 @@ print(response.json())`,
             />
           </ListItem>
         </List>
-
+        <Divider sx={{ bgcolor: "white" }} />
         <Typography variant="h6" sx={{ mt: 4 }}>
           For Verifiers:
         </Typography>
