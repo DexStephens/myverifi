@@ -81,7 +81,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const eventHandlers = {
-    [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({ contract_address }) => {
+    [CONSTANTS.SOCKET_EVENTS.CONTRACT_CREATION]: ({
+      contract_address,
+    }: {
+      contract_address: any;
+    }) => {
       setUser((currentUser) => {
         if (currentUser && currentUser.issuer) {
           return {
@@ -97,6 +101,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       name,
       token_id,
       issuer_id,
+    }: {
+      id: any;
+      name: any;
+      token_id: any;
+      issuer_id: any;
     }) => {
       setUser((currentUser) => {
         if (
@@ -127,6 +136,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       holder_id,
       credential_type_id,
       credential_type,
+    }: {
+      id: any;
+      holder_id: any;
+      credential_type_id: any;
+      credential_type: any;
     }) => {
       setUser((currentUser) => {
         if (
@@ -158,6 +172,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [CONSTANTS.SOCKET_EVENTS.CREDENTIAL_QUEUE_UPDATE]: ({
       pendingCredTypes,
       pendingIssuances,
+    }: {
+      pendingCredTypes: PendingCredentialType[];
+      pendingIssuances: PendingIssuanceType[];
     }) => {
       console.log("Received credential queue update");
 

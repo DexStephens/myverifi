@@ -26,8 +26,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
-app.use("/auth", authRoutes);
-app.use("/issuances", issuanceRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/issuances", issuanceRoutes);
 app.use("/api", apiRoutes);
 
 //Error handling middleware

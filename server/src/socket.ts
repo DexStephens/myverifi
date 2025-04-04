@@ -12,7 +12,7 @@ export function setupSocketIO(server: any) {
     transports: ["websocket", "polling"],
   });
 
-  const addressWs = io.of(/^\/wallets\/0x[a-zA-z0-9]+$/);
+  const addressWs = io.of(/^\/api\/wallets\/0x[a-zA-z0-9]+$/);
 
   addressWs.on(SOCKET_EVENTS.CONNECTION, (socket) => {
     const namespace = socket.nsp.name;
